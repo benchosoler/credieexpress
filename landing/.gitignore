@@ -1,0 +1,23 @@
+# Build output
+dist/
+.output/
+
+# Generated types
+.astro/
+
+# Dependencies
+node_modules/
+
+# Environment variables (¡no commitear!)
+.env
+.env.local
+.env.production
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db

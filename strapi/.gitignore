@@ -1,0 +1,11 @@
+node_modules/
+.build/
+.cache/
+dist/
+.env
+.tmp/
+db.sqlite
+db.sqlite-shm
+db.sqlite-wal
+public/uploads/*
+!public/uploads/.gitkeep

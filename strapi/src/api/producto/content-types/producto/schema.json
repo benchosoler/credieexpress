@@ -1,0 +1,59 @@
+{
+  "kind": "collectionType",
+  "collectionName": "productos",
+  "info": {
+    "singularName": "producto",
+    "pluralName": "productos",
+    "displayName": "Producto",
+    "description": "Catálogo de productos CrediExpress con financiación"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "pluginOptions": {},
+  "attributes": {
+    "nombre": {
+      "type": "string",
+      "required": true,
+      "maxLength": 200
+    },
+    "slug": {
+      "type": "uid",
+      "targetField": "nombre"
+    },
+    "descripcion": {
+      "type": "text"
+    },
+    "precio": {
+      "type": "decimal",
+      "min": 0
+    },
+    "categoria": {
+      "type": "enumeration",
+      "enum": [
+        "Balanzas",
+        "Heladeras",
+        "Freezers",
+        "Estanterías",
+        "Cortadoras de fiambre",
+        "Góndolas",
+        "Accesorios",
+        "Otros"
+      ],
+      "required": true
+    },
+    "imagen": {
+      "type": "media",
+      "multiple": false,
+      "allowedTypes": ["images", "files"]
+    },
+    "destacado": {
+      "type": "boolean",
+      "default": false
+    },
+    "activo": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

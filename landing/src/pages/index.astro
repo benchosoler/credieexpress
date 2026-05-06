@@ -1,0 +1,42 @@
+---
+// Página principal — Landing page CREDIEXPRESS
+// Importa y ordena todas las secciones
+import Layout from '../layouts/Layout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import PorQueElegirnos from '../components/PorQueElegirnos.astro';
+import ComoFunciona from '../components/ComoFunciona.astro';
+import Catalogo from '../components/Catalogo.astro';
+import Contacto from '../components/Contacto.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+---
+
+<Layout
+  title="CREDIEXPRESS - PAGO DIARIO | Equipamiento para comercios con financiación flexible"
+  description="Balanzas, heladeras, freezers, estanterías y más para tu comercio. Planes de cuotas semanales o diarias adaptadas a tu capacidad de pago. +10 años de experiencia. Llamá al 11-6466-5339."
+>
+  <!-- Barra de navegación fija -->
+  <Navbar />
+
+  <!-- 1. Hero — impacto inmediato -->
+  <Hero />
+
+  <!-- 2. Por qué elegirnos — sección principal diferenciadora -->
+  <PorQueElegirnos />
+
+  <!-- 3. Cómo funciona — 3 pasos simples -->
+  <ComoFunciona />
+
+  <!-- 4. Catálogo — productos desde Strapi -->
+  <Catalogo />
+
+  <!-- 5. Contacto — WhatsApp directo -->
+  <Contacto />
+
+  <!-- Footer -->
+  <Footer />
+
+  <!-- Botón flotante de WhatsApp (visible en toda la página) -->
+  <WhatsAppFloat />
+</Layout>

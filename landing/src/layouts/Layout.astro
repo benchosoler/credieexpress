@@ -1,0 +1,57 @@
+---
+// Layout principal — envuelve todas las páginas
+// Importa las fuentes y estilos globales
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const {
+  title = 'CREDIEXPRESS - PAGO DIARIO | Equipamiento para comercios con financiación flexible',
+  description = 'Balanzas, heladeras, freezers, estanterías y más para tu comercio. Financiación en cuotas semanales o diarias adaptadas a tu capacidad de pago. Más de 10 años de experiencia.',
+} = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#1E90FF" />
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <slot />
+
+    <!-- Script global para animaciones de scroll -->
+    <script>
+      // IntersectionObserver para activar las animaciones al hacer scroll
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              // Una vez visible, dejamos de observar
+              observer.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.12 }
+      );
+
+      document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.animate-on-scroll').forEach((el) => {
+          observer.observe(el);
+        });
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,338 @@
+---
+// Catálogo de Productos — Grilla con fetch a Strapi
+// Maneja loading state, error state y filtro por categoría
+// Los precios y datos vienen del CMS en tiempo de build (SSG)
+//
+// ARQUITECTURA:
+// - En SSG: se hace el fetch en build time (los datos son estáticos)
+// - Para datos en tiempo real en producción: cambiar output a 'server' o 'hybrid'
+//   y usar server:defer en el componente de catálogo
+//
+// VARIABLE DE ENTORNO: PUBLIC_STRAPI_URL (definida en .env)
+
+// URL base de Strapi desde variable de entorno
+// En desarrollo: http://localhost:1337
+// En Strapi Cloud: cambiar PUBLIC_STRAPI_URL en las env vars del hosting
+const STRAPI_URL = import.meta.env.PUBLIC_STRAPI_URL || 'http://localhost:1337';
+const WA_NUMBER = '5491164665339';
+
+// Tipos TypeScript para los datos de Strapi
+interface StrapiImageFormat {
+  url: string;
+  width: number;
+  height: number;
+}
+
+interface StrapiImagen {
+  url: string;
+  alternativeText: string | null;
+  formats?: {
+    small?: StrapiImageFormat;
+    medium?: StrapiImageFormat;
+    thumbnail?: StrapiImageFormat;
+  };
+}
+
+interface ProductoStrapi {
+  id: number;
+  documentId: string;
+  nombre: string;
+  precio: number | null;
+  descripcion: string | null;
+  categoria: string | null;
+  imagen: StrapiImagen | null;
+}
+
+interface StrapiResponse {
+  data: ProductoStrapi[];
+  meta: {
+    pagination: {
+      total: number;
+    };
+  };
+}
+
+// Estado inicial
+let productos: ProductoStrapi[] = [];
+let errorMessage: string | null = null;
+let categorias: string[] = [];
+
+// Fetch a la API de Strapi
+try {
+  const response = await fetch(
+    `${STRAPI_URL}/api/productos?populate=imagen&pagination[pageSize]=100&sort=categoria:asc,nombre:asc`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  }
+
+  const json: StrapiResponse = await response.json();
+  productos = json.data || [];
+
+  // Extraer categorías únicas y ordenarlas
+  const cats = new Set(productos.map((p) => p.categoria).filter(Boolean) as string[]);
+  categorias = Array.from(cats).sort();
+} catch (error) {
+  // Error de conexión — puede ser que Strapi no esté corriendo
+  console.warn('[Catálogo] No se pudo conectar a Strapi:', error);
+  errorMessage =
+    'No se pudo cargar el catálogo en este momento. Por favor, consultanos por WhatsApp.';
+}
+
+// Helper: construir URL completa de imagen desde Strapi
+// Las URLs de Strapi pueden ser relativas (/uploads/...) o absolutas
+function getImageUrl(imagen: StrapiImagen | null): string {
+  if (!imagen) return '';
+  const url = imagen.formats?.medium?.url || imagen.formats?.small?.url || imagen.url;
+  if (!url) return '';
+  // Si ya es absoluta, retornarla directo
+  if (url.startsWith('http')) return url;
+  // Si es relativa, concatenar con la URL base de Strapi
+  return `${STRAPI_URL}${url}`;
+}
+
+// Helper: formatear precio en pesos argentinos
+function formatPrecio(precio: number | null): string {
+  if (!precio) return 'Consultar precio';
+  return new Intl.NumberFormat('es-AR', {
+    style: 'currency',
+    currency: 'ARS',
+    maximumFractionDigits: 0,
+  }).format(precio);
+}
+
+// Helper: generar link de WhatsApp con el nombre del producto
+function getWhatsAppLink(producto: ProductoStrapi): string {
+  const msg = `Hola! Me interesa consultar sobre el producto: *${producto.nombre}* (${producto.categoria || 'General'}). ¿Pueden darme más información y opciones de financiación?`;
+  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+}
+---
+
+<section id="catalogo" class="py-24 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+    <!-- Header de sección -->
+    <div class="text-center max-w-3xl mx-auto mb-12 animate-on-scroll">
+      <span class="inline-block bg-azul/10 text-azul px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+        Equipamiento disponible
+      </span>
+      <h2 class="font-display text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+        Nuestro catálogo
+      </h2>
+      <p class="text-lg text-gray-600">
+        Todos los productos se pueden financiar con cuotas adaptadas a tu comercio.
+        Consultá por WhatsApp para armar tu plan.
+      </p>
+    </div>
+
+    {errorMessage ? (
+      <!-- Estado de error -->
+      <div class="animate-on-scroll max-w-lg mx-auto">
+        <div class="bg-red-50 border border-red-100 rounded-2xl p-8 text-center">
+          <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+            </svg>
+          </div>
+          <h3 class="font-display font-bold text-gray-900 text-lg mb-2">
+            Catálogo no disponible
+          </h3>
+          <p class="text-gray-600 text-sm mb-6">{errorMessage}</p>
+          <a
+            href={`https://wa.me/${WA_NUMBER}?text=${encodeURIComponent('Hola! Quiero ver los productos disponibles y sus precios.')}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 bg-verde text-white px-6 py-3 rounded-xl font-semibold hover:bg-verde-dark transition-colors"
+          >
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Consultar productos
+          </a>
+        </div>
+      </div>
+    ) : productos.length === 0 ? (
+      <!-- Sin productos aún -->
+      <div class="animate-on-scroll max-w-lg mx-auto">
+        <div class="bg-gris-claro rounded-2xl p-12 text-center">
+          <div class="w-16 h-16 bg-azul/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <svg class="w-8 h-8 text-azul/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+            </svg>
+          </div>
+          <h3 class="font-display font-bold text-gray-900 text-lg mb-2">
+            Catálogo en preparación
+          </h3>
+          <p class="text-gray-500 text-sm">
+            Estamos cargando los productos. Mientras tanto, consultanos por WhatsApp.
+          </p>
+        </div>
+      </div>
+    ) : (
+      <!-- CATÁLOGO COMPLETO -->
+      <div>
+        <!-- Filtros por categoría -->
+        <div class="animate-on-scroll flex flex-wrap gap-2 justify-center mb-10" role="group" aria-label="Filtrar por categoría">
+          <button
+            data-filter="all"
+            class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-azul text-white shadow-md shadow-azul/20"
+          >
+            Todos
+          </button>
+          {categorias.map((cat) => (
+            <button
+              data-filter={cat}
+              class="filter-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-gris-claro text-gray-600 hover:bg-azul/10 hover:text-azul"
+            >
+              {cat}
+            </button>
+          ))}
+        </div>
+
+        <!-- Contador de resultados -->
+        <p class="text-center text-sm text-gray-400 mb-8 animate-on-scroll" id="productos-count">
+          Mostrando <strong id="count-number">{productos.length}</strong> producto{productos.length !== 1 ? 's' : ''}
+        </p>
+
+        <!-- Grilla de productos -->
+        <div
+          id="productos-grid"
+          class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
+        >
+          {productos.map((producto, i) => {
+            const imgUrl = getImageUrl(producto.imagen);
+            const waLink = getWhatsAppLink(producto);
+            const precio = formatPrecio(producto.precio);
+
+            return (
+              <article
+                data-categoria={producto.categoria || ''}
+                class="producto-card animate-on-scroll bg-white rounded-2xl overflow-hidden card-shadow border border-gray-100 group hover:border-azul/20 transition-all duration-300 flex flex-col"
+                style={`transition-delay: ${(i % 4) * 60}ms`}
+              >
+                <!-- Imagen del producto -->
+                <div class="relative aspect-[4/3] bg-gris-claro overflow-hidden flex-shrink-0">
+                  {imgUrl ? (
+                    <img
+                      src={imgUrl}
+                      alt={producto.imagen?.alternativeText || producto.nombre}
+                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                      loading="lazy"
+                    />
+                  ) : (
+                    <!-- Placeholder si no hay imagen -->
+                    <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-300">
+                      <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                      </svg>
+                      <span class="text-xs font-medium">Sin imagen</span>
+                    </div>
+                  )}
+
+                  <!-- Badge de categoría -->
+                  {producto.categoria && (
+                    <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-azul px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
+                      {producto.categoria}
+                    </div>
+                  )}
+                </div>
+
+                <!-- Info del producto -->
+                <div class="p-5 flex flex-col flex-1">
+                  <h3 class="font-display font-bold text-gray-900 text-base leading-tight mb-2 line-clamp-2">
+                    {producto.nombre}
+                  </h3>
+
+                  {producto.descripcion && (
+                    <p class="text-gray-500 text-xs leading-relaxed mb-3 line-clamp-2 flex-1">
+                      {producto.descripcion}
+                    </p>
+                  )}
+
+                  <!-- Precio -->
+                  <div class="mt-auto pt-3 border-t border-gray-100">
+                    <div class={`text-lg font-bold mb-3 ${
+                      producto.precio ? 'text-azul' : 'text-gray-400 text-sm'
+                    }`}>
+                      {precio}
+                    </div>
+
+                    <!-- Botón consulta WhatsApp -->
+                    <a
+                      href={waLink}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="flex items-center justify-center gap-2 w-full bg-verde text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-verde-dark transition-all duration-200 hover:shadow-md hover:shadow-verde/20"
+                      aria-label={`Consultar por WhatsApp: ${producto.nombre}`}
+                    >
+                      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                      </svg>
+                      Consultar precio y cuotas
+                    </a>
+                  </div>
+                </div>
+              </article>
+            );
+          })}
+        </div>
+
+        <!-- Sin resultados en filtro (se muestra/oculta con JS) -->
+        <div id="no-results" class="hidden text-center py-16">
+          <p class="text-gray-400 text-lg">No hay productos en esta categoría.</p>
+        </div>
+
+      </div>
+    )}
+
+  </div>
+</section>
+
+<script>
+  // Filtro por categoría — vanilla JS (no necesita hidratación de framework)
+  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const productoCards = document.querySelectorAll<HTMLElement>('.producto-card');
+  const countNumber = document.getElementById('count-number');
+  const noResults = document.getElementById('no-results');
+  const grid = document.getElementById('productos-grid');
+
+  filterBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const filter = btn.dataset.filter || 'all';
+
+      // Actualizar botones activos
+      filterBtns.forEach((b) => {
+        b.classList.remove('active', 'bg-azul', 'text-white', 'shadow-md', 'shadow-azul/20');
+        b.classList.add('bg-gris-claro', 'text-gray-600');
+      });
+      btn.classList.add('active', 'bg-azul', 'text-white', 'shadow-md', 'shadow-azul/20');
+      btn.classList.remove('bg-gris-claro', 'text-gray-600');
+
+      // Filtrar tarjetas
+      let visibleCount = 0;
+      productoCards.forEach((card) => {
+        const cat = card.dataset.categoria || '';
+        const matches = filter === 'all' || cat === filter;
+        card.style.display = matches ? '' : 'none';
+        if (matches) visibleCount++;
+      });
+
+      // Actualizar contador
+      if (countNumber) {
+        countNumber.textContent = String(visibleCount);
+      }
+
+      // Mostrar/ocultar "sin resultados"
+      if (noResults && grid) {
+        noResults.classList.toggle('hidden', visibleCount > 0);
+        grid.classList.toggle('hidden', visibleCount === 0);
+      }
+    });
+  });
+</script>

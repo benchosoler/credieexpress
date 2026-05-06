@@ -1,0 +1,75 @@
+---
+// Componente Logo CREDIEXPRESS
+// SVG inline con las iniciales CE en azul y verde
+// + texto CREDIEXPRESS y PAGO DIARIO
+interface Props {
+  size?: 'sm' | 'md' | 'lg';
+  dark?: boolean;
+}
+const { size = 'md', dark = false } = Astro.props;
+
+const sizes = {
+  sm: { badge: 36, font: 13, sub: 8 },
+  md: { badge: 44, font: 16, sub: 10 },
+  lg: { badge: 56, font: 20, sub: 12 },
+};
+const s = sizes[size];
+---
+
+<a href="/" class="flex items-center gap-3 group" aria-label="CREDIEXPRESS - Ir al inicio">
+  <!-- Badge SVG con las iniciales CE -->
+  <svg
+    width={s.badge}
+    height={s.badge}
+    viewBox="0 0 56 56"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    class="flex-shrink-0"
+  >
+    <!-- Fondo con gradiente de marca -->
+    <defs>
+      <linearGradient id="logo-grad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#1E90FF"/>
+        <stop offset="100%" stop-color="#00C853"/>
+      </linearGradient>
+    </defs>
+    <rect width="56" height="56" rx="14" fill="url(#logo-grad)"/>
+    <!-- C en azul claro -->
+    <text
+      x="14"
+      y="38"
+      font-family="'Syne', Arial Black, sans-serif"
+      font-weight="800"
+      font-size="30"
+      fill="white"
+      fill-opacity="0.95"
+    >C</text>
+    <!-- E en verde más cálido -->
+    <text
+      x="31"
+      y="38"
+      font-family="'Syne', Arial Black, sans-serif"
+      font-weight="800"
+      font-size="30"
+      fill="#A8F0C6"
+    >E</text>
+  </svg>
+
+  <!-- Texto del logo -->
+  <div class="leading-tight">
+    <div
+      class={`font-display font-bold tracking-tight ${
+        dark ? 'text-white' : 'text-gray-900'
+      }`}
+      style={`font-size: ${s.font}px; font-family: 'Syne', sans-serif;`}
+    >
+      CREDIEXPRESS
+    </div>
+    <div
+      class="font-semibold tracking-widest uppercase"
+      style={`font-size: ${s.sub}px; color: #00C853; letter-spacing: 0.18em;`}
+    >
+      PAGO DIARIO
+    </div>
+  </div>
+</a>

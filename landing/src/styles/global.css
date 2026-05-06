@@ -1,0 +1,68 @@
+/* =============================================================
+   CREDIEXPRESS — Global Styles
+   Importamos las Google Fonts directamente desde CSS
+   ============================================================= */
+
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: 'DM Sans', system-ui, sans-serif;
+    background-color: #F7F8FA;
+    color: #1A202C;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, h5 {
+    font-family: 'Syne', system-ui, sans-serif;
+  }
+}
+
+@layer utilities {
+  /* Gradiente de marca */
+  .gradient-brand {
+    background: linear-gradient(135deg, #1E90FF 0%, #00C853 100%);
+  }
+
+  /* Texto con gradiente */
+  .text-gradient {
+    background: linear-gradient(135deg, #1E90FF 0%, #00C853 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* Sombra suave de tarjeta */
+  .card-shadow {
+    box-shadow: 0 4px 24px rgba(30, 144, 255, 0.08), 0 1px 4px rgba(0,0,0,0.05);
+  }
+  .card-shadow:hover {
+    box-shadow: 0 8px 36px rgba(30, 144, 255, 0.16), 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  /* Animación de entrada — se activa con la clase .visible via IntersectionObserver */
+  .animate-on-scroll {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease-out, transform 0.7s ease-out;
+  }
+  .animate-on-scroll.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Skeleton loader */
+  .skeleton {
+    background: linear-gradient(90deg, #E8EDF2 25%, #f3f6f9 50%, #E8EDF2 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.5s infinite;
+  }
+}
