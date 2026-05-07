@@ -9,7 +9,8 @@
     "develop": "strapi develop",
     "dev": "strapi develop",
     "start": "strapi start",
-    "strapi": "strapi"
+    "strapi": "strapi",
+    "upload-images": "node scripts/upload-images.js"
   },
   "dependencies": {
     "@strapi/plugin-cloud": "5.44.0",
