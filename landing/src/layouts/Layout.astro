@@ -1,7 +1,7 @@
 ---
 // Layout principal — envuelve todas las páginas
 // Importa las fuentes y estilos globales
-import '../styles/global.css';
+import "../styles/global.css";
 
 interface Props {
   title?: string;
@@ -9,8 +9,8 @@ interface Props {
 }
 
 const {
-  title = 'CREDIEXPRESS - PAGO DIARIO | Equipamiento para comercios con financiación flexible',
-  description = 'Balanzas, heladeras, freezers, estanterías y más para tu comercio. Financiación en cuotas semanales o diarias adaptadas a tu capacidad de pago. Más de 10 años de experiencia.',
+  title = "CREDIEXPRESS - PAGO DIARIO | Equipamiento para comercios con financiación flexible",
+  description = "Balanzas, heladeras, freezers, estanterías y más para tu comercio. Financiación en cuotas semanales o diarias adaptadas a tu capacidad de pago. Más de 10 años de experiencia.",
 } = Astro.props;
 ---
 
@@ -38,17 +38,17 @@ const {
         (entries) => {
           entries.forEach((entry) => {
             if (entry.isIntersecting) {
-              entry.target.classList.add('visible');
+              entry.target.classList.add("visible");
               // Una vez visible, dejamos de observar
               observer.unobserve(entry.target);
             }
           });
         },
-        { threshold: 0.12 }
+        { threshold: 0.12 },
       );
 
-      document.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.animate-on-scroll').forEach((el) => {
+      document.addEventListener("DOMContentLoaded", () => {
+        document.querySelectorAll(".animate-on-scroll").forEach((el) => {
           observer.observe(el);
         });
       });

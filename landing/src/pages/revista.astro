@@ -1,0 +1,9 @@
+---
+import RevistaLayout from "../layouts/RevistaLayout.astro";
+import { fetchTodosProductos, fetchCategorias } from "../lib/strapi";
+
+const productos = await fetchTodosProductos();
+const categorias = await fetchCategorias();
+---
+
+<RevistaLayout productos={productos} categorias={categorias} />

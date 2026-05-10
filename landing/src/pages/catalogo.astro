@@ -184,28 +184,28 @@ try {
 
   <script is:inline>
     (function() {
-      var productosData = JSON.parse(document.getElementById('productos-data').textContent);
-      var PRODUCTS_PER_PAGE = 12;
+      const productosData = JSON.parse(document.getElementById('productos-data').textContent);
+      const PRODUCTS_PER_PAGE = 12;
 
-      var searchInput = document.getElementById('search-input');
-      var categorySelect = document.getElementById('category-select');
-      var sortSelect = document.getElementById('sort-select');
-      var visibleCount = document.getElementById('visible-count');
-      var clearFiltersBtn = document.getElementById('clear-filters-btn');
-      var grid = document.getElementById('productos-grid');
-      var noResults = document.getElementById('no-results');
-      var paginationContainer = document.getElementById('pagination-container');
+      const searchInput = document.getElementById('search-input');
+      const categorySelect = document.getElementById('category-select');
+      const sortSelect = document.getElementById('sort-select');
+      const visibleCount = document.getElementById('visible-count');
+      const clearFiltersBtn = document.getElementById('clear-filters-btn');
+      const grid = document.getElementById('productos-grid');
+      const noResults = document.getElementById('no-results');
+      const paginationContainer = document.getElementById('pagination-container');
 
-      var currentSearch = '';
-      var currentCategory = '';
-      var currentSort = 'nombre-asc';
-      var currentPage = 1;
+      let currentSearch = '';
+      let currentCategory = '';
+      let currentSort = 'nombre-asc';
+      let currentPage = 1;
 
       function getFilteredAndSorted() {
-        var filtered = productosData.slice();
+        let filtered = productosData.slice();
 
         if (currentSearch) {
-          var s = currentSearch.toLowerCase();
+          const s = currentSearch.toLowerCase();
           filtered = filtered.filter(function(p) {
             return (p.nombre && p.nombre.toLowerCase().indexOf(s) !== -1) ||
                    (p.descripcion && p.descripcion.toLowerCase().indexOf(s) !== -1);
@@ -233,20 +233,20 @@ try {
       }
 
       function updateDisplay() {
-        var filtered = getFilteredAndSorted();
-        var totalPages = Math.max(1, Math.ceil(filtered.length / PRODUCTS_PER_PAGE));
+        const filtered = getFilteredAndSorted();
+        const totalPages = Math.max(1, Math.ceil(filtered.length / PRODUCTS_PER_PAGE));
         if (currentPage > totalPages) currentPage = totalPages;
 
-        var start = (currentPage - 1) * PRODUCTS_PER_PAGE;
-        var end = start + PRODUCTS_PER_PAGE;
-        var paginated = filtered.slice(start, end);
+        const start = (currentPage - 1) * PRODUCTS_PER_PAGE;
+        const end = start + PRODUCTS_PER_PAGE;
+        const paginated = filtered.slice(start, end);
 
         if (visibleCount) {
           visibleCount.textContent = String(filtered.length);
         }
 
         if (clearFiltersBtn) {
-          var hasFilters = currentSearch || currentCategory || currentSort !== 'nombre-asc';
+          const hasFilters = currentSearch || currentCategory || currentSort !== 'nombre-asc';
           clearFiltersBtn.classList.toggle('hidden', !hasFilters);
         }
 
@@ -260,13 +260,13 @@ try {
           }
         }
 
-        var cards = document.querySelectorAll('.producto-card');
-        var visibleIds = {};
+        const cards = document.querySelectorAll('.producto-card');
+        const visibleIds = {};
         paginated.forEach(function(p) { visibleIds[p.documentId] = true; });
 
         cards.forEach(function(card) {
-          var article = card.closest('article');
-          var docId = article ? article.getAttribute('data-document-id') : null;
+          const article = card.closest('article');
+          const docId = article ? article.getAttribute('data-document-id') : null;
           if (docId && visibleIds[docId]) {
             card.style.display = '';
           } else if (docId) {
@@ -283,7 +283,7 @@ try {
         if (totalPages <= 1) return;
 
         function buildPageUrl(page) {
-          var params = new URLSearchParams();
+          const params = new URLSearchParams();
           if (currentSearch) params.set('q', currentSearch);
           if (currentCategory) params.set('categoria', currentCategory);
           if (currentSort !== 'nombre-asc') params.set('orden', currentSort);
@@ -293,22 +293,22 @@ try {
 
         function getPageNumbers() {
           if (totalPages <= 7) {
-            var nums = [];
+            const nums = [];
             for (var i = 1; i <= totalPages; i++) nums.push(i);
             return nums;
           }
-          var pages = [];
+          const pages = [];
           pages.push(1);
           if (currentPage > 3) pages.push('...');
-          var start = Math.max(2, currentPage - 1);
-          var end = Math.min(totalPages - 1, currentPage + 1);
+          const start = Math.max(2, currentPage - 1);
+          const end = Math.min(totalPages - 1, currentPage + 1);
           for (var i = start; i <= end; i++) pages.push(i);
           if (currentPage < totalPages - 2) pages.push('...');
           pages.push(totalPages);
           return pages;
         }
 
-        var prevBtn = document.createElement(currentPage > 1 ? 'a' : 'span');
+        const prevBtn = document.createElement(currentPage > 1 ? 'a' : 'span');
         prevBtn.className = 'flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold ' +
           (currentPage > 1
             ? 'bg-white border border-gray-200 text-gray-700 hover:border-azul hover:text-azul transition-colors cursor-pointer'
@@ -317,17 +317,17 @@ try {
         if (currentPage > 1) prevBtn.href = buildPageUrl(currentPage - 1);
         paginationContainer.appendChild(prevBtn);
 
-        var numbersDiv = document.createElement('div');
+        const numbersDiv = document.createElement('div');
         numbersDiv.className = 'flex items-center gap-1';
 
         getPageNumbers().forEach(function(page) {
           if (page === '...') {
-            var span = document.createElement('span');
+            const span = document.createElement('span');
             span.className = 'px-3 py-2 text-gray-400';
             span.textContent = '...';
             numbersDiv.appendChild(span);
           } else {
-            var link = document.createElement('a');
+            const link = document.createElement('a');
             link.href = buildPageUrl(page);
             link.className = 'min-w-[40px] flex items-center justify-center px-3 py-2 rounded-xl text-sm font-semibold transition-colors ' +
               (page === currentPage
@@ -339,7 +339,7 @@ try {
         });
         paginationContainer.appendChild(numbersDiv);
 
-        var nextBtn = document.createElement(currentPage < totalPages ? 'a' : 'span');
+        const nextBtn = document.createElement(currentPage < totalPages ? 'a' : 'span');
         nextBtn.className = 'flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold ' +
           (currentPage < totalPages
             ? 'bg-white border border-gray-200 text-gray-700 hover:border-azul hover:text-azul transition-colors cursor-pointer'
@@ -381,11 +381,11 @@ try {
       if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', clearFilters);
 
       function loadFromUrl() {
-        var params = new URLSearchParams(window.location.search);
-        var q = params.get('q');
-        var cat = params.get('categoria');
-        var sort = params.get('orden');
-        var page = params.get('pagina');
+        const params = new URLSearchParams(window.location.search);
+        const q = params.get('q');
+        const cat = params.get('categoria');
+        const sort = params.get('orden');
+        const page = params.get('pagina');
 
         if (q) { currentSearch = q; if (searchInput) searchInput.value = q; }
         if (cat) { currentCategory = cat; if (categorySelect) categorySelect.value = cat; }

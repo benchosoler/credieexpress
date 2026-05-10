@@ -52,5 +52,5 @@ export interface StrapiResponse<T> {
 
 export interface StrapiSingleResponse<T> {
   data: T;
-  meta: {};
+  meta: Record<string, unknown>;
 }
