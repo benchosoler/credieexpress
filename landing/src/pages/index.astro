@@ -6,10 +6,19 @@ import Navbar from '../components/Navbar.astro';
 import Hero from '../components/Hero.astro';
 import PorQueElegirnos from '../components/PorQueElegirnos.astro';
 import ComoFunciona from '../components/ComoFunciona.astro';
-import Catalogo from '../components/Catalogo.astro';
 import Contacto from '../components/Contacto.astro';
 import Footer from '../components/Footer.astro';
 import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { fetchProductosAleatorios } from '../lib/strapi';
+import type { ProductoStrapi } from '../lib/strapi-types';
+
+let productosDestacados: ProductoStrapi[] = [];
+try {
+  productosDestacados = await fetchProductosAleatorios(6);
+} catch (error) {
+  console.warn('[Homepage] No se pudieron cargar productos destacados:', error);
+}
 ---
 
 <Layout
@@ -28,8 +37,75 @@ import WhatsAppFloat from '../components/WhatsAppFloat.astro';
   <!-- 3. Cómo funciona — 3 pasos simples -->
   <ComoFunciona />
 
-  <!-- 4. Catálogo — productos desde Strapi -->
-  <Catalogo />
+  <!-- 4. Productos destacados con CTA al catálogo -->
+  <section id="productos-destacados" class="py-24 bg-gris-claro">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Header de sección -->
+      <div class="text-center max-w-3xl mx-auto mb-12 animate-on-scroll">
+        <span class="inline-block bg-azul/10 text-azul px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+          Productos seleccionados
+        </span>
+        <h2 class="font-display text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+          Algunos de nuestros productos
+        </h2>
+        <p class="text-lg text-gray-600">
+          Explorá una muestra de lo que tenemos disponible. ¡Tenemos mucho más esperándote!
+        </p>
+      </div>
+
+      {productosDestacados.length > 0 ? (
+        <div>
+          <!-- Grilla de productos destacados -->
+          <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {productosDestacados.map((producto, i) => (
+              <ProductCard producto={producto} index={i} />
+            ))}
+          </div>
+
+          <!-- Botón grande al catálogo completo -->
+          <div class="text-center animate-on-scroll">
+            <a
+              href="/catalogo"
+              class="inline-flex items-center gap-3 bg-azul text-white px-10 py-5 rounded-2xl font-bold text-lg hover:bg-azul-dark transition-all duration-200 hover:shadow-xl hover:shadow-azul/30 hover:-translate-y-1 group"
+            >
+              <svg class="w-6 h-6 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+              </svg>
+              Ver catálogo completo
+              <svg class="w-5 h-5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+              </svg>
+            </a>
+            <p class="mt-4 text-sm text-gray-500">
+              Más de 300 productos disponibles con filtros, búsqueda y ordenamiento
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div class="max-w-lg mx-auto text-center">
+          <div class="bg-white rounded-2xl p-12 card-shadow">
+            <div class="w-16 h-16 bg-azul/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-azul/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+              </svg>
+            </div>
+            <h3 class="font-display font-bold text-gray-900 text-lg mb-2">
+              Catálogo en preparación
+            </h3>
+            <p class="text-gray-500 text-sm mb-6">
+              Estamos cargando los productos. Mientras tanto, explorá lo que tenemos disponible.
+            </p>
+            <a
+              href="/catalogo"
+              class="inline-flex items-center gap-2 bg-azul text-white px-6 py-3 rounded-xl font-semibold hover:bg-azul-dark transition-colors"
+            >
+              Ir al catálogo
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  </section>
 
   <!-- 5. Contacto — WhatsApp directo -->
   <Contacto />

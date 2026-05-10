@@ -1,0 +1,400 @@
+---
+import Layout from '../layouts/Layout.astro';
+import NavbarCatalogo from '../components/NavbarCatalogo.astro';
+import Footer from '../components/Footer.astro';
+import WhatsAppFloat from '../components/WhatsAppFloat.astro';
+import ProductCard from '../components/ProductCard.astro';
+import { fetchProductos, fetchCategorias } from '../lib/strapi';
+import type { ProductoStrapi } from '../lib/strapi-types';
+
+const PRODUCTS_PER_PAGE = 12;
+
+let productos: ProductoStrapi[] = [];
+let categorias: string[] = [];
+let errorMessage: string | null = null;
+
+try {
+  const [productosRes, categoriasRes] = await Promise.all([
+    fetchProductos({
+      populate: 'imagen',
+      pagination: { page: 1, pageSize: 500 },
+      sort: 'categoria:asc,nombre:asc',
+    }),
+    fetchCategorias(),
+  ]);
+  productos = productosRes.data || [];
+  categorias = categoriasRes || [];
+} catch (error) {
+  console.warn('[Catálogo] No se pudo conectar a Strapi:', error);
+  errorMessage = 'No se pudo cargar el catálogo en este momento. Por favor, consultanos por WhatsApp.';
+}
+---
+
+<Layout
+  title="Catálogo Completo | CREDIEXPRESS - Equipamiento para comercios"
+  description="Explorá nuestro catálogo completo con más de 300 productos: balanzas, heladeras, freezers, estanterías y más. Filtrá, ordená y encontrá lo que necesitás para tu comercio."
+>
+  <NavbarCatalogo />
+
+  <main class="pt-20">
+    <section class="bg-gradient-to-br from-gris-claro to-blue-50 py-12 md:py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto animate-on-scroll">
+          <span class="inline-block bg-azul/10 text-azul px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+            Catálogo completo
+          </span>
+          <h1 class="font-display text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+            Todos nuestros productos
+          </h1>
+          <p class="text-lg text-gray-600">
+            Explorá nuestro catálogo completo. Filtrá por categoría, buscá por nombre y ordená como prefieras.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="py-12 md:py-16 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {errorMessage ? (
+          <div class="max-w-lg mx-auto">
+            <div class="bg-red-50 border border-red-100 rounded-2xl p-8 text-center">
+              <div class="w-16 h-16 bg-red-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+              </div>
+              <h3 class="font-display font-bold text-gray-900 text-lg mb-2">Catálogo no disponible</h3>
+              <p class="text-gray-600 text-sm mb-6">{errorMessage}</p>
+              <a
+                href="https://wa.me/5491164665339?text=Hola!%20Quiero%20ver%20los%20productos%20disponibles%20y%20sus%20precios."
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-2 bg-verde text-white px-6 py-3 rounded-xl font-semibold hover:bg-verde-dark transition-colors"
+              >
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                </svg>
+                Consultar productos
+              </a>
+            </div>
+          </div>
+        ) : productos.length === 0 ? (
+          <div class="max-w-lg mx-auto">
+            <div class="bg-gris-claro rounded-2xl p-12 text-center">
+              <div class="w-16 h-16 bg-azul/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                <svg class="w-8 h-8 text-azul/50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+                </svg>
+              </div>
+              <h3 class="font-display font-bold text-gray-900 text-lg mb-2">Catálogo en preparación</h3>
+              <p class="text-gray-500 text-sm">Estamos cargando los productos. Mientras tanto, consultanos por WhatsApp.</p>
+            </div>
+          </div>
+        ) : (
+          <div>
+            <div class="animate-on-scroll bg-gris-claro rounded-2xl p-4 md:p-6 mb-8">
+              <div class="flex flex-col lg:flex-row gap-4">
+                <div class="flex-1">
+                  <label for="search-input" class="sr-only">Buscar productos</label>
+                  <div class="relative">
+                    <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                    </svg>
+                    <input
+                      type="text"
+                      id="search-input"
+                      placeholder="Buscar por nombre..."
+                      class="w-full pl-10 pr-4 py-3 rounded-xl border border-gray-200 bg-white focus:border-azul focus:ring-2 focus:ring-azul/20 outline-none transition-colors text-sm"
+                    />
+                  </div>
+                </div>
+
+                <div class="lg:w-64">
+                  <label for="category-select" class="sr-only">Filtrar por categoría</label>
+                  <select
+                    id="category-select"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:border-azul focus:ring-2 focus:ring-azul/20 outline-none transition-colors text-sm appearance-none cursor-pointer"
+                  >
+                    <option value="">Todas las categorías</option>
+                    {categorias.map((cat) => (
+                      <option value={cat}>{cat}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div class="lg:w-56">
+                  <label for="sort-select" class="sr-only">Ordenar por</label>
+                  <select
+                    id="sort-select"
+                    class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:border-azul focus:ring-2 focus:ring-azul/20 outline-none transition-colors text-sm appearance-none cursor-pointer"
+                  >
+                    <option value="nombre-asc">Nombre (A-Z)</option>
+                    <option value="nombre-desc">Nombre (Z-A)</option>
+                    <option value="precio-asc">Precio (menor a mayor)</option>
+                    <option value="precio-desc">Precio (mayor a menor)</option>
+                    <option value="categoria-asc">Categoría (A-Z)</option>
+                    <option value="categoria-desc">Categoría (Z-A)</option>
+                    <option value="reciente">Más recientes</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="mt-4 flex items-center justify-between">
+                <p class="text-sm text-gray-500">
+                  Mostrando <strong id="visible-count" class="text-gray-900">{productos.length}</strong> de <strong class="text-gray-900">{productos.length}</strong> productos
+                </p>
+                <button
+                  id="clear-filters-btn"
+                  class="hidden text-sm text-azul hover:text-azul-dark font-semibold transition-colors"
+                >
+                  Limpiar filtros
+                </button>
+              </div>
+            </div>
+
+            <div id="productos-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {productos.map((producto, i) => (
+                <ProductCard producto={producto} index={i} />
+              ))}
+            </div>
+
+            <div id="no-results" class="hidden text-center py-16">
+              <div class="w-20 h-20 bg-gris-claro rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                </svg>
+              </div>
+              <h3 class="font-display font-bold text-gray-900 text-lg mb-2">No se encontraron productos</h3>
+              <p class="text-gray-500">Intentá cambiando los filtros o la búsqueda.</p>
+            </div>
+
+            <div id="pagination-container" class="flex items-center justify-center gap-2 mt-12"></div>
+          </div>
+        )}
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+  <WhatsAppFloat />
+
+  <script is:inline id="productos-data" type="application/json">
+    {JSON.stringify(productos)}
+  </script>
+
+  <script is:inline>
+    (function() {
+      var productosData = JSON.parse(document.getElementById('productos-data').textContent);
+      var PRODUCTS_PER_PAGE = 12;
+
+      var searchInput = document.getElementById('search-input');
+      var categorySelect = document.getElementById('category-select');
+      var sortSelect = document.getElementById('sort-select');
+      var visibleCount = document.getElementById('visible-count');
+      var clearFiltersBtn = document.getElementById('clear-filters-btn');
+      var grid = document.getElementById('productos-grid');
+      var noResults = document.getElementById('no-results');
+      var paginationContainer = document.getElementById('pagination-container');
+
+      var currentSearch = '';
+      var currentCategory = '';
+      var currentSort = 'nombre-asc';
+      var currentPage = 1;
+
+      function getFilteredAndSorted() {
+        var filtered = productosData.slice();
+
+        if (currentSearch) {
+          var s = currentSearch.toLowerCase();
+          filtered = filtered.filter(function(p) {
+            return (p.nombre && p.nombre.toLowerCase().indexOf(s) !== -1) ||
+                   (p.descripcion && p.descripcion.toLowerCase().indexOf(s) !== -1);
+          });
+        }
+
+        if (currentCategory) {
+          filtered = filtered.filter(function(p) { return p.categoria === currentCategory; });
+        }
+
+        filtered.sort(function(a, b) {
+          switch (currentSort) {
+            case 'nombre-asc': return a.nombre.localeCompare(b.nombre);
+            case 'nombre-desc': return b.nombre.localeCompare(a.nombre);
+            case 'precio-asc': return (a.precio || 999999999) - (b.precio || 999999999);
+            case 'precio-desc': return (b.precio || 0) - (a.precio || 0);
+            case 'categoria-asc': return (a.categoria || '').localeCompare(b.categoria || '');
+            case 'categoria-desc': return (b.categoria || '').localeCompare(a.categoria || '');
+            case 'reciente': return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            default: return 0;
+          }
+        });
+
+        return filtered;
+      }
+
+      function updateDisplay() {
+        var filtered = getFilteredAndSorted();
+        var totalPages = Math.max(1, Math.ceil(filtered.length / PRODUCTS_PER_PAGE));
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        var start = (currentPage - 1) * PRODUCTS_PER_PAGE;
+        var end = start + PRODUCTS_PER_PAGE;
+        var paginated = filtered.slice(start, end);
+
+        if (visibleCount) {
+          visibleCount.textContent = String(filtered.length);
+        }
+
+        if (clearFiltersBtn) {
+          var hasFilters = currentSearch || currentCategory || currentSort !== 'nombre-asc';
+          clearFiltersBtn.classList.toggle('hidden', !hasFilters);
+        }
+
+        if (grid && noResults) {
+          if (filtered.length === 0) {
+            grid.classList.add('hidden');
+            noResults.classList.remove('hidden');
+          } else {
+            grid.classList.remove('hidden');
+            noResults.classList.add('hidden');
+          }
+        }
+
+        var cards = document.querySelectorAll('.producto-card');
+        var visibleIds = {};
+        paginated.forEach(function(p) { visibleIds[p.documentId] = true; });
+
+        cards.forEach(function(card) {
+          var article = card.closest('article');
+          var docId = article ? article.getAttribute('data-document-id') : null;
+          if (docId && visibleIds[docId]) {
+            card.style.display = '';
+          } else if (docId) {
+            card.style.display = 'none';
+          }
+        });
+
+        renderPagination(filtered.length, totalPages);
+      }
+
+      function renderPagination(totalFiltered, totalPages) {
+        if (!paginationContainer) return;
+        paginationContainer.innerHTML = '';
+        if (totalPages <= 1) return;
+
+        function buildPageUrl(page) {
+          var params = new URLSearchParams();
+          if (currentSearch) params.set('q', currentSearch);
+          if (currentCategory) params.set('categoria', currentCategory);
+          if (currentSort !== 'nombre-asc') params.set('orden', currentSort);
+          params.set('pagina', String(page));
+          return '/catalogo?' + params.toString();
+        }
+
+        function getPageNumbers() {
+          if (totalPages <= 7) {
+            var nums = [];
+            for (var i = 1; i <= totalPages; i++) nums.push(i);
+            return nums;
+          }
+          var pages = [];
+          pages.push(1);
+          if (currentPage > 3) pages.push('...');
+          var start = Math.max(2, currentPage - 1);
+          var end = Math.min(totalPages - 1, currentPage + 1);
+          for (var i = start; i <= end; i++) pages.push(i);
+          if (currentPage < totalPages - 2) pages.push('...');
+          pages.push(totalPages);
+          return pages;
+        }
+
+        var prevBtn = document.createElement(currentPage > 1 ? 'a' : 'span');
+        prevBtn.className = 'flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold ' +
+          (currentPage > 1
+            ? 'bg-white border border-gray-200 text-gray-700 hover:border-azul hover:text-azul transition-colors cursor-pointer'
+            : 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed');
+        prevBtn.innerHTML = '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>Anterior';
+        if (currentPage > 1) prevBtn.href = buildPageUrl(currentPage - 1);
+        paginationContainer.appendChild(prevBtn);
+
+        var numbersDiv = document.createElement('div');
+        numbersDiv.className = 'flex items-center gap-1';
+
+        getPageNumbers().forEach(function(page) {
+          if (page === '...') {
+            var span = document.createElement('span');
+            span.className = 'px-3 py-2 text-gray-400';
+            span.textContent = '...';
+            numbersDiv.appendChild(span);
+          } else {
+            var link = document.createElement('a');
+            link.href = buildPageUrl(page);
+            link.className = 'min-w-[40px] flex items-center justify-center px-3 py-2 rounded-xl text-sm font-semibold transition-colors ' +
+              (page === currentPage
+                ? 'bg-azul text-white shadow-md shadow-azul/20'
+                : 'bg-white border border-gray-200 text-gray-700 hover:border-azul hover:text-azul');
+            link.textContent = String(page);
+            numbersDiv.appendChild(link);
+          }
+        });
+        paginationContainer.appendChild(numbersDiv);
+
+        var nextBtn = document.createElement(currentPage < totalPages ? 'a' : 'span');
+        nextBtn.className = 'flex items-center gap-1 px-4 py-2 rounded-xl text-sm font-semibold ' +
+          (currentPage < totalPages
+            ? 'bg-white border border-gray-200 text-gray-700 hover:border-azul hover:text-azul transition-colors cursor-pointer'
+            : 'bg-gray-100 border border-gray-200 text-gray-400 cursor-not-allowed');
+        nextBtn.innerHTML = 'Siguiente<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>';
+        if (currentPage < totalPages) nextBtn.href = buildPageUrl(currentPage + 1);
+        paginationContainer.appendChild(nextBtn);
+      }
+
+      function clearFilters() {
+        currentSearch = '';
+        currentCategory = '';
+        currentSort = 'nombre-asc';
+        currentPage = 1;
+        if (searchInput) searchInput.value = '';
+        if (categorySelect) categorySelect.value = '';
+        if (sortSelect) sortSelect.value = 'nombre-asc';
+        updateDisplay();
+      }
+
+      if (searchInput) searchInput.addEventListener('input', function(e) {
+        currentSearch = e.target.value;
+        currentPage = 1;
+        updateDisplay();
+      });
+
+      if (categorySelect) categorySelect.addEventListener('change', function(e) {
+        currentCategory = e.target.value;
+        currentPage = 1;
+        updateDisplay();
+      });
+
+      if (sortSelect) sortSelect.addEventListener('change', function(e) {
+        currentSort = e.target.value;
+        currentPage = 1;
+        updateDisplay();
+      });
+
+      if (clearFiltersBtn) clearFiltersBtn.addEventListener('click', clearFilters);
+
+      function loadFromUrl() {
+        var params = new URLSearchParams(window.location.search);
+        var q = params.get('q');
+        var cat = params.get('categoria');
+        var sort = params.get('orden');
+        var page = params.get('pagina');
+
+        if (q) { currentSearch = q; if (searchInput) searchInput.value = q; }
+        if (cat) { currentCategory = cat; if (categorySelect) categorySelect.value = cat; }
+        if (sort) { currentSort = sort; if (sortSelect) sortSelect.value = sort; }
+        if (page) { currentPage = parseInt(page, 10) || 1; }
+      }
+
+      loadFromUrl();
+      updateDisplay();
+    })();
+  </script>
+</Layout>
