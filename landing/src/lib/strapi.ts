@@ -77,7 +77,7 @@ export function getImageUrl(imagen: ProductoStrapi['imagen']): string {
 
   if (url.startsWith('http')) return url;
 
-  return `${STRAPI_URL}${url}`;
+  return url;
 }
 
 export function formatPrecio(precio: number | null): string {
@@ -93,4 +93,33 @@ export function formatPrecio(precio: number | null): string {
 export function getWhatsAppLink(producto: ProductoStrapi, phoneNumber: string = '5491164665339'): string {
   const msg = `Hola! Me interesa consultar sobre el producto: *${producto.nombre}* (${producto.categoria || 'General'}). ¿Pueden darme más información y opciones de financiación?`;
   return `https://wa.me/${phoneNumber}?text=${encodeURIComponent(msg)}`;
+}
+
+export async function fetchProductosDestacados(limit: number = 6): Promise<ProductoStrapi[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_URL}/api/productos?populate=imagen&filters[destacado][$eq]=true&filters[activo][$eq]=true&pagination[pageSize]=${limit}&sort=createdAt:desc`
+    );
+    if (!response.ok) return [];
+    const json = await response.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function fetchProductosAleatorios(limit: number = 6): Promise<ProductoStrapi[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_URL}/api/productos?populate=imagen&filters[activo][$eq]=true&pagination[pageSize]=100`
+    );
+    if (!response.ok) return [];
+    const json = await response.json();
+    const productos = json.data || [];
+    if (productos.length <= limit) return productos;
+    const shuffled = [...productos].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, limit);
+  } catch {
+    return [];
+  }
 }
