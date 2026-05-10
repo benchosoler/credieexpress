@@ -28,6 +28,13 @@ try {
   console.warn('[Catálogo] No se pudo conectar a Strapi:', error);
   errorMessage = 'No se pudo cargar el catálogo en este momento. Por favor, consultanos por WhatsApp.';
 }
+
+const productosJson = JSON.stringify(productos)
+  .replace(/</g, '\\u003C')
+  .replace(/>/g, '\\u003E')
+  .replace(/&/g, '\\u0026')
+  .replace(/\u2028/g, '\\u2028')
+  .replace(/\u2029/g, '\\u2029');
 ---
 
 <Layout
@@ -178,13 +185,11 @@ try {
   <Footer />
   <WhatsAppFloat />
 
-  <script is:inline id="productos-data" type="application/json">
-    {JSON.stringify(productos)}
-  </script>
+  <div id="productos-data" data-json={productosJson} class="hidden"></div>
 
   <script is:inline>
     (function() {
-      const productosData = JSON.parse(document.getElementById('productos-data').textContent);
+      const productosData = JSON.parse(document.getElementById('productos-data').dataset.json);
       const PRODUCTS_PER_PAGE = 12;
 
       const searchInput = document.getElementById('search-input');

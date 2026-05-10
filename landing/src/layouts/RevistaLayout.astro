@@ -1,0 +1,137 @@
+---
+import type { ProductoStrapi } from "../lib/strapi-types";
+import MagazineBuilder from "../components/magazine/MagazineBuilder";
+
+interface Props {
+  productos: ProductoStrapi[];
+  categorias: string[];
+}
+
+const { productos, categorias } = Astro.props;
+---
+
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="noindex, nofollow" />
+    <title>CREDIEXPRESS — Generador de Revista</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;0,9..40,700;1,9..40,400&family=Syne:wght@600;700;800&family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
+      body {
+        font-family: "DM Sans", system-ui, sans-serif;
+        background-color: #f7f8fa;
+        color: #1a202c;
+        -webkit-font-smoothing: antialiased;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5 {
+        font-family: "Syne", system-ui, sans-serif;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="revista-nav">
+      <div class="nav-inner">
+        <a href="/" class="nav-back">
+          <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <path
+              d="M12.5 15L7.5 10L12.5 5"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"></path>
+          </svg>
+          Volver al sitio
+        </a>
+        <div class="nav-brand">
+          <span class="nav-logo">CE</span>
+          <span class="nav-title">Generador de Revista</span>
+        </div>
+        <div class="nav-spacer"></div>
+      </div>
+    </nav>
+
+    <MagazineBuilder
+      client:only="react"
+      productos={productos}
+      categorias={categorias}
+    />
+
+    <style>
+      .revista-nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: white;
+        border-bottom: 1px solid #e8edf2;
+        height: 56px;
+        box-shadow: 0 1px 8px rgba(0, 0, 0, 0.04);
+      }
+      .nav-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 0 1.5rem;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+      .nav-back {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        color: #4a5568;
+        text-decoration: none;
+        font-size: 0.85rem;
+        font-weight: 500;
+        transition: color 0.2s;
+      }
+      .nav-back:hover {
+        color: #00b4d8;
+      }
+      .nav-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+      }
+      .nav-logo {
+        width: 28px;
+        height: 28px;
+        background: linear-gradient(135deg, #1e90ff, #00c853);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 700;
+        font-size: 0.7rem;
+        font-family: "Syne", sans-serif;
+      }
+      .nav-title {
+        font-family: "Syne", sans-serif;
+        font-weight: 700;
+        font-size: 0.95rem;
+        color: #1a202c;
+      }
+      .nav-spacer {
+        flex: 1;
+      }
+    </style>
+  </body>
+</html>
