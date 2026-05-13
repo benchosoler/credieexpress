@@ -9,7 +9,7 @@ export default defineConfig({
   output: "static",
   vite: {
     server: {
-      allowedHosts: true,
+      allowedHosts: ["infections-angle-refer-trustees.trycloudflare.com"],
       proxy: {
         "/uploads": {
           target: "http://localhost:1337",
