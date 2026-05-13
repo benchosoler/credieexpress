@@ -19,6 +19,5 @@ COPY --from=build /app/src ./src
 COPY --from=build /app/public ./public
 COPY --from=build /app/config ./config
 COPY --from=build /app/types ./types
-COPY --from=build /app/database ./database
 EXPOSE 1337
 CMD ["npm", "run", "start"]
