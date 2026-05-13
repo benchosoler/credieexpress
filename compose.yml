@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  strapi:
+    build:
+      context: ./strapi
+      dockerfile: Dockerfile
+    container_name: catalogo-strapi
+    volumes:
+      - strapi_data:/app/database
+      - strapi_uploads:/app/public/uploads
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: 1337
+      DATABASE_FILENAME: /app/database/strapi.db
+      APP_KEYS: crediexpress-key1,crediexpress-key2,crediexpress-key3,crediexpress-key4
+      API_TOKEN_SALT: crediexpress-api-token-salt
+      ADMIN_JWT_SECRET: crediexpress-admin-jwt-secret
+      TRANSFER_TOKEN_SALT: crediexpress-transfer-token-salt
+      ENCRYPTION_KEY: crediexpress-encryption-key
+      JWT_SECRET: HjZCGCBH8CAWYRls4DDWqg==
+    ports:
+      - "1337:1337"
+    restart: unless-stopped
+    networks:
+      - catalogo-network
+
+  landing:
+    build:
+      context: ./landing
+      dockerfile: Dockerfile
+    container_name: catalogo-landing
+    environment:
+      NODE_ENV: production
+      PUBLIC_API_URL: http://localhost:1337
+    ports:
+      - "4321:4321"
+    depends_on:
+      - strapi
+    restart: unless-stopped
+    networks:
+      - catalogo-network
+
+networks:
+  catalogo-network:
+    driver: bridge
+
+volumes:
+  strapi_data:
+  strapi_uploads:
