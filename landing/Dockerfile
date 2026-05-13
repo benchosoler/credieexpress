@@ -7,7 +7,7 @@ RUN npm ci && npm cache clean --force
 COPY . .
 
 RUN apk add --no-cache curl && \
-    chmod +x /entrypoint.sh
+    chmod +x /app/entrypoint.sh
 
 EXPOSE 4321
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/app/entrypoint.sh"]
