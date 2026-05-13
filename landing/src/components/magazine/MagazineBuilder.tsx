@@ -215,7 +215,7 @@ export default function MagazineBuilder({
           <button
             onClick={handleExport}
             disabled={isExporting || pages.length === 0}
-            className="flex items-center gap-2 px-5 py-2 bg-gradient-to-br from-cyan-DEFAULT to-cyan-dark text-white border-none rounded-lg text-[0.85rem] font-bold cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:from-cyan-dark hover:to-cyan-darker hover:-translate-y-0.5 hover:shadow-lg hover:shadow-cyan-DEFAULT/30"
+            className="flex items-center gap-2 px-5 py-2 bg-azul text-white border-none rounded-lg text-[0.85rem] font-bold cursor-pointer transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-azul-dark hover:-translate-y-0.5 hover:shadow-lg hover:shadow-azul/30"
           >
             {isExporting ? (
               <>

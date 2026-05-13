@@ -40,7 +40,7 @@ export default function PageManager({
 
   return (
     <div className="flex items-center font-['DM_Sans',sans-serif]">
-      <div className="flex items-center gap-1 overflow-x-auto pb-[2px] overflow-visible">
+      <div className="flex items-center gap-1 overflow-x-auto pb-[2px] overflow-visible" style={{ overflow: 'visible' }}>
         {pages.map((page, idx) => {
           const def = TEMPLATE_DEFINITIONS.find(
             (d) => d.type === page.templateType,
