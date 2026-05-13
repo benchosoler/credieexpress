@@ -5,13 +5,13 @@ services:
       dockerfile: Dockerfile
     container_name: catalogo-strapi
     volumes:
-      - strapi_data:/app/database
+      - strapi_data:/app/.tmp
       - strapi_uploads:/app/public/uploads
     environment:
       NODE_ENV: production
       HOST: 0.0.0.0
       PORT: 1337
-      DATABASE_FILENAME: /app/database/strapi.db
+      DATABASE_FILENAME: /app/.tmp/data.db
       APP_KEYS: crediexpress-key1,crediexpress-key2,crediexpress-key3,crediexpress-key4
       API_TOKEN_SALT: crediexpress-api-token-salt
       ADMIN_JWT_SECRET: crediexpress-admin-jwt-secret
@@ -22,11 +22,11 @@ services:
       - "1337:1337"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:1337/api/health"]
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:1337/"]
       interval: 10s
       timeout: 5s
-      retries: 5
-      start_period: 40s
+      retries: 10
+      start_period: 60s
     networks:
       - catalogo-network
 
@@ -37,7 +37,7 @@ services:
     container_name: catalogo-landing
     environment:
       NODE_ENV: production
-      PUBLIC_API_URL: http://strapi:1337
+      PUBLIC_STRAPI_URL: http://strapi:1337
     ports:
       - "4321:4321"
     depends_on:
