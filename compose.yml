@@ -22,7 +22,7 @@ services:
       - "1337:1337"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:1337/"]
+      test: ["CMD", "curl", "-f", "http://localhost:1337/admin"]
       interval: 10s
       timeout: 5s
       retries: 10
