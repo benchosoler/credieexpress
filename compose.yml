@@ -39,7 +39,7 @@ services:
       NODE_ENV: production
       PUBLIC_STRAPI_URL: http://strapi:1337
     ports:
-      - "4321:4321"
+      - "4321:3003"
     depends_on:
       strapi:
         condition: service_healthy
