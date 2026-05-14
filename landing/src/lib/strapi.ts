@@ -1,6 +1,7 @@
 import type { ProductoStrapi, StrapiResponse } from "./strapi-types";
 
-const STRAPI_URL = import.meta.env.PUBLIC_STRAPI_URL || "http://localhost:1337";
+import config from '../strapi-config.json';
+const STRAPI_URL = config.strapiUrl || 'http://localhost:1337';
 
 interface FetchProductosParams {
   populate?: string;
@@ -87,7 +88,7 @@ export function getImageUrl(imagen: ProductoStrapi["imagen"]): string {
 
   if (url.startsWith("http")) return url;
 
-  return url;
+  return `${STRAPI_URL}${url}`;
 }
 
 export function formatPrecio(precio: number | null): string {
