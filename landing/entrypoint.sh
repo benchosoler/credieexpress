@@ -3,6 +3,9 @@ set -e
 
 export PUBLIC_STRAPI_URL="${PUBLIC_STRAPI_URL:-http://strapi:1337}"
 
+# Write to .env so Astro can read it during build
+echo "PUBLIC_STRAPI_URL=${PUBLIC_STRAPI_URL}" > .env
+
 echo "Waiting for Strapi at $PUBLIC_STRAPI_URL..."
 for i in $(seq 1 90); do
   if curl -sf "${PUBLIC_STRAPI_URL}/_health" > /dev/null 2>&1 || curl -sf "${PUBLIC_STRAPI_URL}/" > /dev/null 2>&1; then
