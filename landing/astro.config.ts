@@ -7,12 +7,12 @@ import react from "@astrojs/react";
 export default defineConfig({
   integrations: [tailwind(), react()],
   output: "static",
-  preview: {
-    allowedHosts: ["hormone-exchange-modelling-satin.trycloudflare.com"],
+  server: {
+    allowedHosts: true,
   },
   vite: {
     server: {
-      allowedHosts: ["infections-angle-refer-trustees.trycloudflare.com"],
+      allowedHosts: true,
       proxy: {
         "/uploads": {
           target: "http://localhost:1337",
