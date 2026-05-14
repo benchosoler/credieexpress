@@ -13,7 +13,7 @@
 // URL base de Strapi desde variable de entorno
 // En desarrollo: http://localhost:1337
 // En Strapi Cloud: cambiar PUBLIC_STRAPI_URL en las env vars del hosting
-const STRAPI_URL = import.meta.env.PUBLIC_STRAPI_URL || 'http://localhost:1337';
+const STRAPI_URL = process.env.PUBLIC_STRAPI_URL || 'http://localhost:1337';
 const WA_NUMBER = '5491164665339';
 
 // Tipos TypeScript para los datos de Strapi
