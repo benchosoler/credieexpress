@@ -1,11 +1,11 @@
 #!/bin/sh
 set -e
 
-STRAPI_URL="${PUBLIC_STRAPI_URL:-http://strapi:1337}"
+export PUBLIC_STRAPI_URL="${PUBLIC_STRAPI_URL:-http://strapi:1337}"
 
-echo "Waiting for Strapi at $STRAPI_URL..."
+echo "Waiting for Strapi at $PUBLIC_STRAPI_URL..."
 for i in $(seq 1 90); do
-  if curl -sf "${STRAPI_URL}/_health" > /dev/null 2>&1 || curl -sf "${STRAPI_URL}/" > /dev/null 2>&1; then
+  if curl -sf "${PUBLIC_STRAPI_URL}/_health" > /dev/null 2>&1 || curl -sf "${PUBLIC_STRAPI_URL}/" > /dev/null 2>&1; then
     echo "Strapi is ready! Building landing..."
     npx astro build
     echo "Build complete! Starting preview server..."
