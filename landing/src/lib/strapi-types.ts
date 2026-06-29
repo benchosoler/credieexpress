@@ -51,11 +51,11 @@ export interface ProductoStrapi {
   slug: string;
   precio: number | null;
   descripcion: string | null;
-  categoria: string | null;
-  imagen: StrapiImagen | null;
-  /** @deprecated use imagenes (multiple). Fallback when imagenes is empty. */
-  imagenes: StrapiImagen[];
   /** @deprecated use subcategorias relation. Maintained for migration compatibility. */
+  categoria: string | null;
+  /** @deprecated use imagenes (multiple). Maintained for migration compatibility. */
+  imagen: StrapiImagen | null;
+  imagenes: StrapiImagen[];
   subcategorias: SubcategoriaNode[];
   fichaTecnica: string | null;
   destacado: boolean;

@@ -189,6 +189,17 @@ try {
   <script>
     // Subcategory filtering via data-subcategorias attribute and
     // the 'subcategory-select' CustomEvent from CategoriasMenu/SubcategoriasList.
+
+    // REQ-CH-3: warn about products with no subcategorias linked (legacy-only fallback)
+    document
+      .querySelectorAll<HTMLElement>('[data-subcategorias=""]')
+      .forEach((card) => {
+        console.warn(
+          '[Catálogo] Producto sin subcategorías linkeadas (documentId):',
+          card.dataset.documentId,
+        );
+      });
+
     let activeSubSlug: string | null = null;
 
     const grid = document.getElementById('productos-grid');
