@@ -40,12 +40,28 @@
         "Accesorios",
         "Otros"
       ],
-      "required": true
+      "required": true,
+      "description": "DEPRECATED — use subcategorias relation. Maintained for migration compatibility."
     },
     "imagen": {
       "type": "media",
       "multiple": false,
-      "allowedTypes": ["images", "files"]
+      "allowedTypes": ["images", "files"],
+      "description": "DEPRECATED — use imagenes (multiple). Fallback when imagenes is empty."
+    },
+    "subcategorias": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::subcategoria.subcategoria",
+      "inversedBy": "productos"
+    },
+    "imagenes": {
+      "type": "media",
+      "multiple": true,
+      "allowedTypes": ["images"]
+    },
+    "fichaTecnica": {
+      "type": "richtext"
     },
     "destacado": {
       "type": "boolean",
