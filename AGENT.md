@@ -106,18 +106,17 @@ Se implementó una jerarquía de 2 niveles con Categoria → Subcategoria:
 - `SubcategoriasList.astro` — lista de subcategorías con CustomEvent para filtrado
 
 **Componentes Astro modificados:**
-- `Catalogo.astro` — orquestador: 3 fetches paralelos → Destacados + Categorías + Grid
+- `Catalogo.astro` — orquestador: 2 fetches paralelos → Categorías + Grid de productos (Destacados eliminado por feedback del cliente)
 - `ProductCard.astro` — usa ProductGallery + toggle ficha técnica (details/summary)
 
 **Fetchers nuevos en strapi.ts:**
 - `getCategorias()` → `/api/categorias?populate=subcategorias`
-- `getDestacados(limit)` → `/api/productos?filters[destacado][$eq]=true`
 - `getProductosBySubcategoria(slug)` → filtro por subcategorias.slug
 - `renderBlocks(blocks)` → convierte Strapi richtext JSON a HTML sanitizado
 
 **Flujo de datos:**
 ```
-Strapi :1338 → Catalogo.astro (3 fetch en build time) → CategoriasMenu → SubcategoriasList
+Strapi :1338 → Catalogo.astro (2 fetch en build time) → CategoriasMenu → SubcategoriasList
                    ↓                                        ↓
               ProductCard ← ProductGallery              CustomEvent('subcategory-select')
                    ↓                                        ↓

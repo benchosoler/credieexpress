@@ -6,26 +6,22 @@
 
 ## API Endpoints
 
-All three Strapi API endpoints return HTTP 200 with valid JSON.
+The Strapi API endpoints return HTTP 200 with valid JSON.
 
 | Endpoint | Status | Response |
 |---|---|---|
 | `GET /api/categorias?populate=subcategorias` | 200 | 3 categories (Electrodomésticos: 2 subs, Artículos del Hogar: 4 subs, Artículos Gastronómicos: 2 subs) |
-| `GET /api/productos?filters[destacado][$eq]=true&...` | 200 | Products with `destacado=true` returned (count may vary) |
 | `GET /api/productos?filters[activo][$eq]=true&...` | 200 | 20 active products returned |
+
+> **Note**: A third endpoint for `destacado=true` products was originally used to power a "Destacados" rail. The rail was removed per client feedback; the `destacado` field is still on Producto for future use, but no fetcher exposes it in the catalog UI.
 
 All product responses include `imagenes[]`, `imagen`, `subcategorias[]`, and `fichaTecnica` fields as per the new schema.
 
-## Browser Rendering (3 Sections)
+## Browser Rendering (2 Sections)
 
 Request to `http://localhost:4323/catalogo` produces a fully rendered page with:
 
-### 1. Destacados Rail (`⭐ Destacados`)
-- Renders above the category menu when `destacado=true` products exist
-- Uses `<ProductCard>` components with `<ProductGallery>` for images
-- Cards show: product image carousel, name, description, price, WhatsApp CTA
-
-### 2. Category Menu (`CategoriasMenu`)
+### 1. Category Menu (`CategoriasMenu`)
 - 3 category tiles rendered in a responsive grid
 - Each tile shows: placeholder SVG image, category name, subcategory count
 - Click expands inline `<SubcategoriasList>` with subcategory buttons

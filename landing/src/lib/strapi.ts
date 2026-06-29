@@ -198,21 +198,6 @@ export async function getProductosBySubcategoria(
   }
 }
 
-export async function getDestacados(
-  limit: number = 4,
-): Promise<ProductoStrapi[]> {
-  try {
-    const response = await fetch(
-      `${STRAPI_URL}/api/productos?filters[destacado][$eq]=true&filters[activo][$eq]=true&populate[imagenes]=true&populate[imagen]=true&pagination[pageSize]=${limit}&sort=nombre:asc`,
-    );
-    if (!response.ok) return [];
-    const json = await response.json();
-    return json.data || [];
-  } catch {
-    return [];
-  }
-}
-
 /**
  * Converts Strapi v5 richtext blocks to an HTML string.
  * Strips dangerous tags to prevent XSS.

@@ -12,18 +12,13 @@ import type { ProductoStrapi, CategoriaNode } from '../lib/strapi-types';
 
 // ─── State ────────────────────────────
 let categorias: CategoriaNode[] = [];
-let destacados: ProductoStrapi[] = [];
 let productos: ProductoStrapi[] = [];
 let errorMessage: string | null = null;
 
 try {
-  const [catRes, destRes, prodRes] = await Promise.all([
+  const [catRes, prodRes] = await Promise.all([
     fetch(
       `${STRAPI_URL}/api/categorias?filters[activo][$eq]=true&populate=subcategorias&sort=orden:asc`,
-      { headers: { 'Content-Type': 'application/json' } }
-    ),
-    fetch(
-      `${STRAPI_URL}/api/productos?filters[destacado][$eq]=true&filters[activo][$eq]=true&populate[imagenes]=true&populate[imagen]=true&populate[subcategorias]=true&pagination[pageSize]=4&sort=nombre:asc`,
       { headers: { 'Content-Type': 'application/json' } }
     ),
     fetch(
@@ -32,18 +27,16 @@ try {
     ),
   ]);
 
-  if (!catRes.ok || !destRes.ok || !prodRes.ok) {
-    throw new Error(`Error en las APIs: cat=${catRes.status} dest=${destRes.status} prod=${prodRes.status}`);
+  if (!catRes.ok || !prodRes.ok) {
+    throw new Error(`Error en las APIs: cat=${catRes.status} prod=${prodRes.status}`);
   }
 
-  const [catJson, destJson, prodJson] = await Promise.all([
+  const [catJson, prodJson] = await Promise.all([
     catRes.json(),
-    destRes.json(),
     prodRes.json(),
   ]);
 
   categorias = catJson.data || [];
-  destacados = destJson.data || [];
   productos = prodJson.data || [];
 } catch (error) {
   console.warn('[Catálogo] No se pudo conectar a Strapi:', error);
@@ -114,24 +107,7 @@ try {
     ) : (
       <!-- CATÁLOGO COMPLETO — NEW UI -->
       <div>
-        {/* ─── 1. Productos Destacados rail ─── */}
-        {destacados.length > 0 && (
-          <div class="animate-on-scroll mb-16">
-            <div class="flex items-center gap-3 mb-6">
-              <span class="inline-block bg-verde text-white px-4 py-1.5 rounded-full text-sm font-semibold">
-                ⭐ Destacados
-              </span>
-              <div class="flex-1 h-px bg-gray-200"></div>
-            </div>
-            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {destacados.map((prod, i) => (
-                <ProductCard producto={prod} index={i} />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* ─── 2. Category Menu with subcategories ─── */}
+        {/* ─── 1. Category Menu with subcategories ─── */}
         {categorias.length > 0 && (
           <div class="animate-on-scroll mb-16" id="categoria-menu">
             <h3 class="font-display font-bold text-2xl text-gray-900 mb-6">
