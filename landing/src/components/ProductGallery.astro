@@ -1,0 +1,177 @@
+---
+import type { StrapiImagen } from "../lib/strapi-types";
+import config from "../strapi-config.json";
+
+interface Props {
+  images: StrapiImagen[];
+  alt: string;
+  priority?: boolean;
+  max?: number;
+}
+
+const { images, alt, priority = false, max = 5 } = Astro.props;
+const STRAPI_URL = config.strapiUrl || "http://localhost:1337";
+
+function getImageUrl(img: StrapiImagen | null): string {
+  if (!img) return "";
+  const url = img.formats?.medium?.url || img.formats?.small?.url || img.url;
+  if (!url) return "";
+  if (url.startsWith("http")) return url;
+  return `${STRAPI_URL}${url}`;
+}
+
+const displayImages = images.slice(0, max);
+const total = displayImages.length;
+// Generate a stable id for aria relationships
+const galleryId = `gallery-${Math.random().toString(36).slice(2, 9)}`;
+---
+
+{total === 0 ? (
+  <!-- Placeholder for no images -->
+  <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-300" role="img" aria-label="Sin imagen disponible">
+    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
+    </svg>
+    <span class="text-xs font-medium">Sin imagen</span>
+  </div>
+) : total === 1 ? (
+  <!-- Single image: no controls -->
+  <img
+    src={getImageUrl(displayImages[0])}
+    alt={displayImages[0]?.alternativeText || alt}
+    class="w-full h-full object-cover"
+    loading={priority ? "eager" : "lazy"}
+    {...(priority ? { fetchpriority: "high" } : {})}
+  />
+) : (
+  <!-- Multi-image carousel -->
+  <div
+    class="product-gallery relative w-full h-full overflow-hidden"
+    id={galleryId}
+    role="region"
+    aria-label={`Galería de imágenes: ${alt}`}
+    aria-roledescription="carrusel"
+    tabindex="0"
+    data-gallery={galleryId}
+  >
+    <!-- Slides container with aria-live -->
+    <div
+      class="gallery-slides w-full h-full flex transition-transform duration-300 ease-out"
+      aria-live="polite"
+      aria-atomic="true"
+    >
+      {displayImages.map((img, i) => {
+        const imgUrl = getImageUrl(img);
+        return (
+          <div
+            class="gallery-slide w-full h-full flex-shrink-0"
+            role="group"
+            aria-roledescription="diapositiva"
+            aria-label={`Imagen ${i + 1} de ${total}`}
+            data-slide={i}
+          >
+            <img
+              src={imgUrl}
+              alt={img.alternativeText || `${alt} - imagen ${i + 1}`}
+              class="w-full h-full object-cover select-none"
+              loading={i === 0 ? "eager" : "lazy"}
+              {...(i === 0 && priority ? { fetchpriority: "high" } : {})}
+              draggable="false"
+            />
+          </div>
+        );
+      })}
+    </div>
+
+    <!-- Prev button -->
+    <button
+      class="gallery-prev absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-gray-700 flex items-center justify-center shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-azul focus-visible:ring-offset-1 z-10"
+      aria-label="Imagen anterior"
+      type="button"
+      data-action="prev"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+      </svg>
+    </button>
+
+    <!-- Next button -->
+    <button
+      class="gallery-next absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-white/80 hover:bg-white text-gray-700 flex items-center justify-center shadow-md transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-azul focus-visible:ring-offset-1 z-10"
+      aria-label="Imagen siguiente"
+      type="button"
+      data-action="next"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+      </svg>
+    </button>
+
+    <!-- Dot indicators -->
+    <div class="gallery-dots absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10" role="tablist" aria-label="Navegación de imágenes">
+      {displayImages.map((_, i) => (
+        <button
+          class={`gallery-dot w-2 h-2 rounded-full transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-azul focus-visible:ring-offset-1 ${i === 0 ? 'bg-white w-3' : 'bg-white/60 hover:bg-white'}`}
+          role="tab"
+          aria-selected={i === 0 ? "true" : "false"}
+          aria-label={`Ir a imagen ${i + 1}`}
+          type="button"
+          data-dot={i}
+        ></button>
+      ))}
+    </div>
+  </div>
+)}
+
+<script>
+  // Vanilla JS carousel — attaches once per gallery instance
+  function initGallery(el: HTMLElement) {
+    const slides = el.querySelectorAll<HTMLElement>('.gallery-slide');
+    const dots = el.querySelectorAll<HTMLButtonElement>('.gallery-dot');
+    const prevBtn = el.querySelector<HTMLButtonElement>('[data-action="prev"]');
+    const nextBtn = el.querySelector<HTMLButtonElement>('[data-action="next"]');
+    const slidesContainer = el.querySelector<HTMLElement>('.gallery-slides');
+
+    if (!slides.length || !slidesContainer) return;
+
+    let current = 0;
+    const total = slides.length;
+
+    function goTo(index: number) {
+      current = ((index % total) + total) % total;
+      slidesContainer!.style.transform = `translateX(-${current * 100}%)`;
+
+      dots.forEach((dot, i) => {
+        dot.setAttribute('aria-selected', i === current ? 'true' : 'false');
+        if (i === current) {
+          dot.classList.add('bg-white', 'w-3');
+          dot.classList.remove('bg-white/60');
+        } else {
+          dot.classList.remove('bg-white', 'w-3');
+          dot.classList.add('bg-white/60');
+        }
+      });
+
+      // Update aria-labels for current slide context
+      const liveRegion = slidesContainer;
+      liveRegion.setAttribute('aria-atomic', 'false');
+      liveRegion.setAttribute('aria-atomic', 'true');
+    }
+
+    prevBtn?.addEventListener('click', () => goTo(current - 1));
+    nextBtn?.addEventListener('click', () => goTo(current + 1));
+
+    dots.forEach((dot, i) => {
+      dot.addEventListener('click', () => goTo(i));
+    });
+
+    // Keyboard navigation
+    el.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') { e.preventDefault(); goTo(current - 1); }
+      if (e.key === 'ArrowRight') { e.preventDefault(); goTo(current + 1); }
+    });
+  }
+
+  // Find all galleries on the page and init each
+  document.querySelectorAll<HTMLElement>('[data-gallery]').forEach(initGallery);
+</script>
