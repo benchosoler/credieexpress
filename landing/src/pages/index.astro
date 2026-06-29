@@ -8,14 +8,19 @@ import Contacto from "../components/Contacto.astro";
 import Footer from "../components/Footer.astro";
 import WhatsAppFloat from "../components/WhatsAppFloat.astro";
 import ProductCard from "../components/ProductCard.astro";
-import { fetchProductosAleatorios } from "../lib/strapi";
-import type { ProductoStrapi } from "../lib/strapi-types";
+import CategoriasMenu from "../components/CategoriasMenu.astro";
+import { fetchProductosAleatorios, getCategorias } from "../lib/strapi";
+import type { ProductoStrapi, CategoriaNode } from "../lib/strapi-types";
 
 let productosDestacados: ProductoStrapi[] = [];
+let categorias: CategoriaNode[] = [];
 try {
-  productosDestacados = await fetchProductosAleatorios(6);
+  [productosDestacados, categorias] = await Promise.all([
+    fetchProductosAleatorios(6),
+    getCategorias(),
+  ]);
 } catch (error) {
-  console.warn("[Homepage] No se pudieron cargar productos destacados:", error);
+  console.warn("[Homepage] No se pudieron cargar datos:", error);
 }
 ---
 
@@ -35,7 +40,52 @@ try {
   <!-- 3. Cómo funciona — 3 pasos simples -->
   <ComoFunciona />
 
-  <!-- 4. Productos destacados con CTA al catálogo -->
+  <!-- 4. Categorías — navegación visual al catálogo filtrado -->
+  {categorias.length > 0 && (
+    <section id="categorias" class="py-24 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12 animate-on-scroll">
+          <span
+            class="inline-block bg-azul/10 text-azul px-4 py-1.5 rounded-full text-sm font-semibold mb-4"
+          >
+            Explorá por categoría
+          </span>
+          <h2
+            class="font-display text-4xl sm:text-5xl font-bold text-gray-900 mb-4"
+          >
+            Nuestras categorías
+          </h2>
+          <p class="text-lg text-gray-600">
+            Elegí una categoría para ver los productos disponibles en el catálogo.
+          </p>
+        </div>
+        <CategoriasMenu categorias={categorias} mode="navigate" />
+        <div class="text-center mt-12 animate-on-scroll">
+          <a
+            href="/catalogo"
+            class="inline-flex items-center gap-2 text-azul font-semibold hover:underline"
+          >
+            Ver catálogo completo
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </a>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- 5. Productos destacados con CTA al catálogo -->
   <section id="productos-destacados" class="py-24 bg-gris-claro">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header de sección -->

@@ -219,5 +219,46 @@ try {
 
     // "Ver todos" button — reset filter
     verTodosBtn?.addEventListener('click', () => applyFilter(null));
+
+    // ─── Pre-filter from URL (e.g., /catalogo?categoria=electrodomesticos) ───
+    // If the URL carries a ?categoria={slug}, pre-filter the grid to show only
+    // products whose subcategorias belong to that category. Also expand the
+    // matching category tile in the menu so the user sees which subcategorias
+    // are available.
+    const params = new URLSearchParams(window.location.search);
+    const categoriaSlug = params.get('categoria');
+    if (categoriaSlug) {
+      const catTile = document.querySelector<HTMLElement>(
+        `.categoria-tile[data-categoria-slug="${categoriaSlug}"]`,
+      );
+      if (catTile) {
+        const catNombre = catTile.dataset.categoriaNombre || categoriaSlug;
+        const subSlugs = Array.from(
+          catTile.querySelectorAll<HTMLElement>('[data-subcategoria-slug]'),
+        ).map((el) => el.dataset.subcategoriaSlug).filter(Boolean) as string[];
+
+        if (subSlugs.length > 0) {
+          // Custom filter: show products that match ANY of the category's subcategorias
+          activeSubSlug = '__category__';
+          let visibleCount = 0;
+          document.querySelectorAll<HTMLElement>('[data-subcategorias]').forEach((card) => {
+            const cardSubs = (card.dataset.subcategorias || '').split(' ').filter(Boolean);
+            const matches = cardSubs.some((s) => subSlugs.includes(s));
+            card.style.display = matches ? '' : 'none';
+            if (matches) visibleCount++;
+          });
+          if (countNumber) countNumber.textContent = String(visibleCount);
+          if (noResults && grid) {
+            noResults.classList.toggle('hidden', visibleCount > 0);
+            grid.classList.toggle('hidden', visibleCount === 0);
+          }
+          if (verTodosBtn) verTodosBtn.classList.remove('hidden');
+          if (activeFilterBadge && activeFilterName) {
+            activeFilterBadge.classList.remove('hidden');
+            activeFilterName.textContent = catNombre;
+          }
+        }
+      }
+    }
   </script>
 )}
