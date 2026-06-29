@@ -20,6 +20,30 @@ export interface StrapiImagen {
   };
 }
 
+export interface SubcategoriaNode {
+  id: number;
+  documentId: string;
+  nombre: string;
+  slug: string;
+  orden: number;
+  activo: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CategoriaNode {
+  id: number;
+  documentId: string;
+  nombre: string;
+  slug: string;
+  imagenRef: string | null;
+  orden: number;
+  activo: boolean;
+  subcategorias: SubcategoriaNode[];
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface ProductoStrapi {
   id: number;
   documentId: string;
@@ -29,6 +53,11 @@ export interface ProductoStrapi {
   descripcion: string | null;
   categoria: string | null;
   imagen: StrapiImagen | null;
+  /** @deprecated use imagenes (multiple). Fallback when imagenes is empty. */
+  imagenes: StrapiImagen[];
+  /** @deprecated use subcategorias relation. Maintained for migration compatibility. */
+  subcategorias: SubcategoriaNode[];
+  fichaTecnica: string | null;
   destacado: boolean;
   activo: boolean;
   publishedAt: string;
