@@ -4,9 +4,16 @@ import type { SubcategoriaNode } from "../lib/strapi-types";
 interface Props {
   subcategorias: SubcategoriaNode[];
   activeSlug?: string;
+  /**
+   * If set, subcategories are rendered as `<a href="${linkBase}?subcategoria=${slug}">`
+   * so clicking them navigates instead of dispatching the `subcategory-select` event.
+   * If unset, the items are `<button>`s that dispatch the event (used by the catalog
+   * to filter the grid in place).
+   */
+  linkBase?: string;
 }
 
-const { subcategorias, activeSlug } = Astro.props;
+const { subcategorias, activeSlug, linkBase } = Astro.props;
 
 if (!subcategorias || subcategorias.length === 0) {
   return new Response(null, { status: 200 });
@@ -14,36 +21,55 @@ if (!subcategorias || subcategorias.length === 0) {
 ---
 
 <ul class="subcategorias-list space-y-1">
-  {subcategorias.map((sub) => (
-    <li>
-      <button
-        type="button"
-        class={`subcategoria-btn w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
-          activeSlug === sub.slug
-            ? "bg-azul text-white shadow-sm"
-            : "bg-white/60 text-gray-600 hover:bg-azul/10 hover:text-azul"
-        }`}
-        data-subcategoria-slug={sub.slug}
-        data-subcategoria-name={sub.nombre}
-        aria-pressed={activeSlug === sub.slug ? "true" : "false"}
-      >
-        {sub.nombre}
-      </button>
-    </li>
-  ))}
+  {subcategorias.map((sub) => {
+    const baseClasses =
+      "subcategoria-btn w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200";
+    const stateClasses =
+      activeSlug === sub.slug
+        ? "bg-azul text-white shadow-sm"
+        : "bg-white/60 text-gray-600 hover:bg-azul/10 hover:text-azul";
+
+    return (
+      <li>
+        {linkBase ? (
+          <a
+            href={`${linkBase}?subcategoria=${sub.slug}`}
+            class={`${baseClasses} ${stateClasses} block`}
+            data-subcategoria-slug={sub.slug}
+            data-subcategoria-name={sub.nombre}
+            aria-current={activeSlug === sub.slug ? "page" : undefined}
+          >
+            {sub.nombre}
+          </a>
+        ) : (
+          <button
+            type="button"
+            class={`${baseClasses} ${stateClasses}`}
+            data-subcategoria-slug={sub.slug}
+            data-subcategoria-name={sub.nombre}
+            aria-pressed={activeSlug === sub.slug ? "true" : "false"}
+          >
+            {sub.nombre}
+          </button>
+        )}
+      </li>
+    );
+  })}
 </ul>
 
-<script>
-  document.querySelectorAll<HTMLButtonElement>('.subcategoria-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const slug = btn.dataset.subcategoriaSlug;
-      const name = btn.dataset.subcategoriaName;
-      window.dispatchEvent(
-        new CustomEvent('subcategory-select', {
-          detail: { slug, name },
-          bubbles: true,
-        })
-      );
+{!linkBase && (
+  <script>
+    document.querySelectorAll<HTMLButtonElement>('.subcategoria-btn').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const slug = btn.dataset.subcategoriaSlug;
+        const name = btn.dataset.subcategoriaName;
+        window.dispatchEvent(
+          new CustomEvent('subcategory-select', {
+            detail: { slug, name },
+            bubbles: true,
+          })
+        );
+      });
     });
-  });
-</script>
+  </script>
+)}

@@ -220,14 +220,41 @@ try {
     // "Ver todos" button — reset filter
     verTodosBtn?.addEventListener('click', () => applyFilter(null));
 
-    // ─── Pre-filter from URL (e.g., /catalogo?categoria=electrodomesticos) ───
-    // If the URL carries a ?categoria={slug}, pre-filter the grid to show only
-    // products whose subcategorias belong to that category. Also expand the
-    // matching category tile in the menu so the user sees which subcategorias
-    // are available.
+    // ─── Pre-filter from URL ───
+    // /catalogo?categoria=electrodomesticos → pre-filter to all subcategorias of that category
+    // /catalogo?subcategoria=heladeras       → pre-filter to that specific subcategoria (wins over categoria)
     const params = new URLSearchParams(window.location.search);
-    const categoriaSlug = params.get('categoria');
-    if (categoriaSlug) {
+    const subcategoriaSlug = params.get('subcategoria');
+    const categoriaSlug = !subcategoriaSlug ? params.get('categoria') : null;
+
+    if (subcategoriaSlug) {
+      // Direct subcategoria pre-filter: reuse the existing single-slug filter
+      const subBtn = document.querySelector<HTMLElement>(
+        `[data-subcategoria-slug="${subcategoriaSlug}"]`,
+      );
+      if (subBtn) {
+        const subNombre = subBtn.dataset.subcategoriaName || subcategoriaSlug;
+        applyFilter(subcategoriaSlug);
+        if (activeFilterBadge && activeFilterName) {
+          activeFilterBadge.classList.remove('hidden');
+          activeFilterName.textContent = subNombre;
+        }
+        // Expand the parent category tile so the user sees context
+        const parentTile = subBtn.closest<HTMLElement>('.categoria-tile');
+        const parentSlug = parentTile?.dataset.categoriaSlug;
+        if (parentSlug) {
+          const panel = document.querySelector<HTMLElement>(`[data-panel="${parentSlug}"]`);
+          const chevron = parentTile?.querySelector<HTMLElement>('.categoria-chevron');
+          if (panel) {
+            document.querySelectorAll<HTMLElement>('.subcategorias-panel').forEach((p) => p.classList.add('hidden'));
+            document.querySelectorAll<HTMLElement>('.categoria-chevron').forEach((c) => (c.style.transform = ''));
+            panel.classList.remove('hidden');
+            if (chevron) chevron.style.transform = 'rotate(180deg)';
+          }
+        }
+      }
+    } else if (categoriaSlug) {
+      // Category pre-filter: show products that match ANY of the category's subcategorias
       const catTile = document.querySelector<HTMLElement>(
         `.categoria-tile[data-categoria-slug="${categoriaSlug}"]`,
       );
@@ -238,7 +265,6 @@ try {
         ).map((el) => el.dataset.subcategoriaSlug).filter(Boolean) as string[];
 
         if (subSlugs.length > 0) {
-          // Custom filter: show products that match ANY of the category's subcategorias
           activeSubSlug = '__category__';
           let visibleCount = 0;
           document.querySelectorAll<HTMLElement>('[data-subcategorias]').forEach((card) => {

@@ -15,9 +15,16 @@ interface Props {
    * - "navigate": tiles render as `<a href="/catalogo?categoria={slug}">` for use on the home page
    */
   mode?: "expand" | "navigate";
+  /**
+   * If set, subcategoria items inside the expanded tile are rendered as links to
+   * `${subcategoryLinkBase}?subcategoria={slug}` instead of dispatching a custom
+   * event. Use this on the home page so subcategory clicks navigate to the
+   * catalog with the filter applied.
+   */
+  subcategoryLinkBase?: string;
 }
 
-const { categorias, activeSubSlug, mode = "expand" } = Astro.props;
+const { categorias, activeSubSlug, mode = "expand", subcategoryLinkBase } = Astro.props;
 
 // Map category slug to its placeholder image
 const PLACEHOLDER_MAP: Record<string, ImageMetadata> = {
@@ -100,6 +107,7 @@ function activeSubCount(cat: CategoriaNode): number {
               <SubcategoriasList
                 subcategorias={cat.subcategorias.filter(s => s.activo)}
                 activeSlug={activeSubSlug}
+                linkBase={subcategoryLinkBase}
               />
             </div>
           </div>

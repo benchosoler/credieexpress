@@ -56,10 +56,11 @@ try {
             Nuestras categorías
           </h2>
           <p class="text-lg text-gray-600">
-            Elegí una categoría para ver los productos disponibles en el catálogo.
+            Hacé click en una categoría para ver sus rubros y entrá al catálogo
+            filtrado.
           </p>
         </div>
-        <CategoriasMenu categorias={categorias} mode="navigate" />
+        <CategoriasMenu categorias={categorias} mode="expand" subcategoryLinkBase="/catalogo" />
         <div class="text-center mt-12 animate-on-scroll">
           <a
             href="/catalogo"
