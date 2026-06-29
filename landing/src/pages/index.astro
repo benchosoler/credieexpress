@@ -8,6 +8,7 @@ import Contacto from "../components/Contacto.astro";
 import Footer from "../components/Footer.astro";
 import WhatsAppFloat from "../components/WhatsAppFloat.astro";
 import ProductCard from "../components/ProductCard.astro";
+import Catalogo from "../components/Catalogo.astro";
 import { fetchProductosAleatorios } from "../lib/strapi";
 import type { ProductoStrapi } from "../lib/strapi-types";
 
@@ -140,7 +141,10 @@ try {
     </div>
   </section>
 
-  <!-- 5. Contacto — WhatsApp directo -->
+  <!-- 5. Catálogo completo con categorías -->
+  <Catalogo />
+
+  <!-- 6. Contacto — WhatsApp directo -->
   <Contacto />
 
   <!-- Footer -->

@@ -1,117 +1,53 @@
 ---
-// Catálogo de Productos — Grilla con fetch a Strapi
-// Maneja loading state, error state y filtro por categoría
-// Los precios y datos vienen del CMS en tiempo de build (SSG)
-//
-// ARQUITECTURA:
-// - En SSG: se hace el fetch en build time (los datos son estáticos)
-// - Para datos en tiempo real en producción: cambiar output a 'server' o 'hybrid'
-//   y usar server:defer en el componente de catálogo
-//
-// VARIABLE DE ENTORNO: PUBLIC_STRAPI_URL (definida en .env)
-
-// URL base de Strapi desde archivo de config (generado en entrypoint.sh)
-// En desarrollo: http://localhost:1337
-// En Strapi Cloud: cambiar PUBLIC_STRAPI_URL en las env vars del compose
+// Catálogo de Productos — Visual category menu + grid orchestrator
+// Replaces the old button-row filter with CategoriasMenu + subcategory-driven grid.
+// Self-fetcher: 3 parallel fetches at build time (SSG).
 import config from '../strapi-config.json';
 const STRAPI_URL = config.strapiUrl || 'http://localhost:1337';
 const WA_NUMBER = '5491164665339';
 
-// Tipos TypeScript para los datos de Strapi
-interface StrapiImageFormat {
-  url: string;
-  width: number;
-  height: number;
-}
+import ProductCard from './ProductCard.astro';
+import CategoriasMenu from './CategoriasMenu.astro';
+import type { ProductoStrapi, CategoriaNode } from '../lib/strapi-types';
 
-interface StrapiImagen {
-  url: string;
-  alternativeText: string | null;
-  formats?: {
-    small?: StrapiImageFormat;
-    medium?: StrapiImageFormat;
-    thumbnail?: StrapiImageFormat;
-  };
-}
-
-interface ProductoStrapi {
-  id: number;
-  documentId: string;
-  nombre: string;
-  precio: number | null;
-  descripcion: string | null;
-  categoria: string | null;
-  imagen: StrapiImagen | null;
-}
-
-interface StrapiResponse {
-  data: ProductoStrapi[];
-  meta: {
-    pagination: {
-      total: number;
-    };
-  };
-}
-
-// Estado inicial
+// ─── State ────────────────────────────
+let categorias: CategoriaNode[] = [];
+let destacados: ProductoStrapi[] = [];
 let productos: ProductoStrapi[] = [];
 let errorMessage: string | null = null;
-let categorias: string[] = [];
 
-// Fetch a la API de Strapi
 try {
-  const response = await fetch(
-    `${STRAPI_URL}/api/productos?populate=imagen&pagination[pageSize]=100&sort=categoria:asc,nombre:asc`,
-    {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    }
-  );
+  const [catRes, destRes, prodRes] = await Promise.all([
+    fetch(
+      `${STRAPI_URL}/api/categorias?filters[activo][$eq]=true&populate=subcategorias&sort=orden:asc`,
+      { headers: { 'Content-Type': 'application/json' } }
+    ),
+    fetch(
+      `${STRAPI_URL}/api/productos?filters[destacado][$eq]=true&filters[activo][$eq]=true&populate[imagenes]=true&populate[imagen]=true&populate[subcategorias]=true&pagination[pageSize]=4&sort=nombre:asc`,
+      { headers: { 'Content-Type': 'application/json' } }
+    ),
+    fetch(
+      `${STRAPI_URL}/api/productos?filters[activo][$eq]=true&populate[subcategorias]=true&populate[imagenes]=true&populate[imagen]=true&pagination[pageSize]=100&sort=nombre:asc`,
+      { headers: { 'Content-Type': 'application/json' } }
+    ),
+  ]);
 
-  if (!response.ok) {
-    throw new Error(`Error ${response.status}: ${response.statusText}`);
+  if (!catRes.ok || !destRes.ok || !prodRes.ok) {
+    throw new Error(`Error en las APIs: cat=${catRes.status} dest=${destRes.status} prod=${prodRes.status}`);
   }
 
-  const json: StrapiResponse = await response.json();
-  productos = json.data || [];
+  const [catJson, destJson, prodJson] = await Promise.all([
+    catRes.json(),
+    destRes.json(),
+    prodRes.json(),
+  ]);
 
-  // Extraer categorías únicas y ordenarlas
-  const cats = new Set(productos.map((p) => p.categoria).filter(Boolean) as string[]);
-  categorias = Array.from(cats).sort();
+  categorias = catJson.data || [];
+  destacados = destJson.data || [];
+  productos = prodJson.data || [];
 } catch (error) {
-  // Error de conexión — puede ser que Strapi no esté corriendo
   console.warn('[Catálogo] No se pudo conectar a Strapi:', error);
-  errorMessage =
-    'No se pudo cargar el catálogo en este momento. Por favor, consultanos por WhatsApp.';
-}
-
-// Helper: construir URL completa de imagen desde Strapi
-// Las URLs de Strapi pueden ser relativas (/uploads/...) o absolutas
-function getImageUrl(imagen: StrapiImagen | null): string {
-  if (!imagen) return '';
-  const url = imagen.formats?.medium?.url || imagen.formats?.small?.url || imagen.url;
-  if (!url) return '';
-  // Si ya es absoluta, retornarla directo
-  if (url.startsWith('http')) return url;
-  // Si es relativa, concatenar con la URL base de Strapi
-  return `${STRAPI_URL}${url}`;
-}
-
-// Helper: formatear precio en pesos argentinos
-function formatPrecio(precio: number | null): string {
-  if (!precio) return 'Consultar precio';
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    maximumFractionDigits: 0,
-  }).format(precio);
-}
-
-// Helper: generar link de WhatsApp con el nombre del producto
-function getWhatsAppLink(producto: ProductoStrapi): string {
-  const msg = `Hola! Me interesa consultar sobre el producto: *${producto.nombre}* (${producto.categoria || 'General'}). ¿Pueden darme más información y opciones de financiación?`;
-  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  errorMessage = 'No se pudo cargar el catálogo en este momento. Por favor, consultanos por WhatsApp.';
 }
 ---
 
@@ -176,117 +112,71 @@ function getWhatsAppLink(producto: ProductoStrapi): string {
         </div>
       </div>
     ) : (
-      <!-- CATÁLOGO COMPLETO -->
+      <!-- CATÁLOGO COMPLETO — NEW UI -->
       <div>
-        <!-- Filtros por categoría -->
-        <div class="animate-on-scroll flex flex-wrap gap-2 justify-center mb-10" role="group" aria-label="Filtrar por categoría">
-          <button
-            data-filter="all"
-            class="filter-btn active px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-azul text-white shadow-md shadow-azul/20"
-          >
-            Todos
-          </button>
-          {categorias.map((cat) => (
-            <button
-              data-filter={cat}
-              class="filter-btn px-5 py-2 rounded-full text-sm font-semibold transition-all duration-200 bg-gris-claro text-gray-600 hover:bg-azul/10 hover:text-azul"
-            >
-              {cat}
-            </button>
-          ))}
-        </div>
+        {/* ─── 1. Productos Destacados rail ─── */}
+        {destacados.length > 0 && (
+          <div class="animate-on-scroll mb-16">
+            <div class="flex items-center gap-3 mb-6">
+              <span class="inline-block bg-verde text-white px-4 py-1.5 rounded-full text-sm font-semibold">
+                ⭐ Destacados
+              </span>
+              <div class="flex-1 h-px bg-gray-200"></div>
+            </div>
+            <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {destacados.map((prod, i) => (
+                <ProductCard producto={prod} index={i} />
+              ))}
+            </div>
+          </div>
+        )}
 
-        <!-- Contador de resultados -->
-        <p class="text-center text-sm text-gray-400 mb-8 animate-on-scroll" id="productos-count">
-          Mostrando <strong id="count-number">{productos.length}</strong> producto{productos.length !== 1 ? 's' : ''}
-        </p>
+        {/* ─── 2. Category Menu with subcategories ─── */}
+        {categorias.length > 0 && (
+          <div class="animate-on-scroll mb-16" id="categoria-menu">
+            <h3 class="font-display font-bold text-2xl text-gray-900 mb-6">
+              Categorías
+            </h3>
+            <CategoriasMenu categorias={categorias} activeSubSlug="" />
+          </div>
+        )}
 
-        <!-- Grilla de productos -->
-        <div
-          id="productos-grid"
-          class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"
-        >
-          {productos.map((producto, i) => {
-            const imgUrl = getImageUrl(producto.imagen);
-            const waLink = getWhatsAppLink(producto);
-            const precio = formatPrecio(producto.precio);
-
-            return (
-              <article
-                data-categoria={producto.categoria || ''}
-                class="producto-card animate-on-scroll bg-white rounded-2xl overflow-hidden card-shadow border border-gray-100 group hover:border-azul/20 transition-all duration-300 flex flex-col"
-                style={`transition-delay: ${(i % 4) * 60}ms`}
+        {/* ─── 3. Product Grid with subcategory filter ─── */}
+        <div class="animate-on-scroll">
+          <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
+            <h3 class="font-display font-bold text-2xl text-gray-900">
+              Todos los productos
+            </h3>
+            <div class="flex items-center gap-3">
+              <span class="text-sm text-gray-400" id="productos-count">
+                Mostrando <strong id="count-number">{productos.length}</strong> producto{productos.length !== 1 ? 's' : ''}
+              </span>
+              <button
+                id="ver-todos-btn"
+                class="hidden px-4 py-1.5 rounded-full text-xs font-semibold bg-gris-claro text-gray-500 hover:bg-azul/10 hover:text-azul transition-all"
+                type="button"
               >
-                <!-- Imagen del producto -->
-                <div class="relative aspect-[4/3] bg-gris-claro overflow-hidden flex-shrink-0">
-                  {imgUrl ? (
-                    <img
-                      src={imgUrl}
-                      alt={producto.imagen?.alternativeText || producto.nombre}
-                      class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <!-- Placeholder si no hay imagen -->
-                    <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-300">
-                      <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/>
-                      </svg>
-                      <span class="text-xs font-medium">Sin imagen</span>
-                    </div>
-                  )}
+                Ver todos
+              </button>
+            </div>
+          </div>
 
-                  <!-- Badge de categoría -->
-                  {producto.categoria && (
-                    <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-azul px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-                      {producto.categoria}
-                    </div>
-                  )}
-                </div>
+          {/* Active filter indicator */}
+          <div id="active-filter-badge" class="hidden mb-4">
+            <span class="inline-flex items-center gap-2 bg-azul/10 text-azul px-4 py-2 rounded-full text-sm font-semibold">
+              <span id="active-filter-name"></span>
+            </span>
+          </div>
 
-                <!-- Info del producto -->
-                <div class="p-5 flex flex-col flex-1">
-                  <h3 class="font-display font-bold text-gray-900 text-base leading-tight mb-2 line-clamp-2">
-                    {producto.nombre}
-                  </h3>
+          <div id="productos-grid" class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {productos.map((prod, i) => (
+              <ProductCard producto={prod} index={i} />
+            ))}
+          </div>
 
-                  {producto.descripcion && (
-                    <p class="text-gray-500 text-xs leading-relaxed mb-3 line-clamp-2 flex-1">
-                      {producto.descripcion}
-                    </p>
-                  )}
-
-                  <!-- Precio -->
-                  <div class="mt-auto pt-3 border-t border-gray-100">
-                    <div class={`text-lg font-bold mb-3 ${
-                      producto.precio ? 'text-azul' : 'text-gray-400 text-sm'
-                    }`}>
-                      {precio}
-                    </div>
-
-                    <!-- Botón consulta WhatsApp -->
-                    <a
-                      href={waLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="flex items-center justify-center gap-2 w-full bg-verde text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-verde-dark transition-all duration-200 hover:shadow-md hover:shadow-verde/20"
-                      aria-label={`Consultar por WhatsApp: ${producto.nombre}`}
-                    >
-                      <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
-                      </svg>
-                      Consultar precio y cuotas
-                    </a>
-                  </div>
-                </div>
-              </article>
-            );
-          })}
-        </div>
-
-        <!-- Sin resultados en filtro (se muestra/oculta con JS) -->
-        <div id="no-results" class="hidden text-center py-16">
-          <p class="text-gray-400 text-lg">No hay productos en esta categoría.</p>
+          <div id="no-results" class="hidden text-center py-16">
+            <p class="text-gray-400 text-lg">No hay productos en esta categoría.</p>
+          </div>
         </div>
 
       </div>
@@ -295,45 +185,66 @@ function getWhatsAppLink(producto: ProductoStrapi): string {
   </div>
 </section>
 
-<script>
-  // Filtro por categoría — vanilla JS (no necesita hidratación de framework)
-  const filterBtns = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
-  const productoCards = document.querySelectorAll<HTMLElement>('.producto-card');
-  const countNumber = document.getElementById('count-number');
-  const noResults = document.getElementById('no-results');
-  const grid = document.getElementById('productos-grid');
+{!errorMessage && productos.length > 0 && (
+  <script>
+    // Subcategory filtering via data-subcategorias attribute and
+    // the 'subcategory-select' CustomEvent from CategoriasMenu/SubcategoriasList.
+    let activeSubSlug: string | null = null;
 
-  filterBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const filter = btn.dataset.filter || 'all';
+    const grid = document.getElementById('productos-grid');
+    const countNumber = document.getElementById('count-number');
+    const noResults = document.getElementById('no-results');
+    const verTodosBtn = document.getElementById('ver-todos-btn');
+    const activeFilterBadge = document.getElementById('active-filter-badge');
+    const activeFilterName = document.getElementById('active-filter-name');
 
-      // Actualizar botones activos
-      filterBtns.forEach((b) => {
-        b.classList.remove('active', 'bg-azul', 'text-white', 'shadow-md', 'shadow-azul/20');
-        b.classList.add('bg-gris-claro', 'text-gray-600');
-      });
-      btn.classList.add('active', 'bg-azul', 'text-white', 'shadow-md', 'shadow-azul/20');
-      btn.classList.remove('bg-gris-claro', 'text-gray-600');
-
-      // Filtrar tarjetas
+    function applyFilter(slug: string | null) {
+      activeSubSlug = slug;
       let visibleCount = 0;
-      productoCards.forEach((card) => {
-        const cat = card.dataset.categoria || '';
-        const matches = filter === 'all' || cat === filter;
+
+      document.querySelectorAll<HTMLElement>('[data-subcategorias]').forEach((card) => {
+        const subs = (card.dataset.subcategorias || '').split(' ').filter(Boolean);
+        const matches = !slug || subs.includes(slug);
         card.style.display = matches ? '' : 'none';
         if (matches) visibleCount++;
       });
 
-      // Actualizar contador
+      // Update count
       if (countNumber) {
         countNumber.textContent = String(visibleCount);
       }
 
-      // Mostrar/ocultar "sin resultados"
+      // Show/hide "no results"
       if (noResults && grid) {
         noResults.classList.toggle('hidden', visibleCount > 0);
         grid.classList.toggle('hidden', visibleCount === 0);
       }
-    });
-  });
-</script>
+
+      // Show/hide "Ver todos" button
+      if (verTodosBtn) {
+        verTodosBtn.classList.toggle('hidden', !slug);
+      }
+
+      // Show/hide active filter badge
+      if (activeFilterBadge && activeFilterName) {
+        if (slug) {
+          activeFilterBadge.classList.remove('hidden');
+          // Find the subcategoria name from the clicked button
+          const btn = document.querySelector<HTMLElement>(`[data-subcategoria-slug="${slug}"]`);
+          activeFilterName.textContent = btn?.dataset.subcategoriaName || slug;
+        } else {
+          activeFilterBadge.classList.add('hidden');
+        }
+      }
+    }
+
+    // Listen for subcategory-select events from CategoriasMenu/SubcategoriasList
+    window.addEventListener('subcategory-select', ((e: CustomEvent) => {
+      const { slug } = e.detail || {};
+      applyFilter(slug || null);
+    }) as EventListener);
+
+    // "Ver todos" button — reset filter
+    verTodosBtn?.addEventListener('click', () => applyFilter(null));
+  </script>
+)}
