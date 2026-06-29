@@ -1,4 +1,4 @@
-import type { ProductoStrapi, StrapiResponse } from "./strapi-types";
+import type { ProductoStrapi, StrapiResponse, CategoriaNode, SubcategoriaNode } from "./strapi-types";
 
 import config from '../strapi-config.json';
 const STRAPI_URL = config.strapiUrl || 'http://localhost:1337';
@@ -153,4 +153,151 @@ export async function fetchTodosProductos(): Promise<ProductoStrapi[]> {
   } catch {
     return [];
   }
+}
+
+// ─── New catalog fetchers (catalog-ui-redesign) ────────────────────
+
+export async function getCategorias(): Promise<CategoriaNode[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_URL}/api/categorias?filters[activo][$eq]=true&populate=subcategorias&sort=orden:asc`,
+    );
+    if (!response.ok) return [];
+    const json = await response.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getSubcategorias(): Promise<SubcategoriaNode[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_URL}/api/subcategorias?filters[activo][$eq]=true&sort=orden:asc`,
+    );
+    if (!response.ok) return [];
+    const json = await response.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getProductosBySubcategoria(
+  subSlug: string,
+): Promise<ProductoStrapi[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_URL}/api/productos?filters[subcategorias][slug][$eq]=${subSlug}&filters[activo][$eq]=true&populate[subcategorias][populate][categoria]=true&populate[imagenes]=true&populate[imagen]=true&pagination[pageSize]=100&sort=nombre:asc`,
+    );
+    if (!response.ok) return [];
+    const json = await response.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+export async function getDestacados(
+  limit: number = 4,
+): Promise<ProductoStrapi[]> {
+  try {
+    const response = await fetch(
+      `${STRAPI_URL}/api/productos?filters[destacado][$eq]=true&filters[activo][$eq]=true&populate[imagenes]=true&populate[imagen]=true&pagination[pageSize]=${limit}&sort=nombre:asc`,
+    );
+    if (!response.ok) return [];
+    const json = await response.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
+}
+
+/**
+ * Converts Strapi v5 richtext blocks to an HTML string.
+ * Strips dangerous tags to prevent XSS.
+ */
+export function renderBlocks(blocks: unknown): string {
+  if (!Array.isArray(blocks)) return "";
+
+  const BLOCK_RENDERERS: Record<string, (node: any) => string> = {
+    paragraph: (node: any) => {
+      const text = renderInline(node.children);
+      return `<p>${text}</p>`;
+    },
+    heading: (node: any) => {
+      const level = Math.min(Math.max(node.level || 1, 1), 6);
+      const text = renderInline(node.children);
+      return `<h${level}>${text}</h${level}>`;
+    },
+    list: (node: any) => {
+      const tag = node.format === "ordered" ? "ol" : "ul";
+      const items = (node.children || [])
+        .map((item: any) => {
+          const text = renderInline(
+            item.children?.flatMap((c: any) =>
+              c.type === "list" ? c.children || [] : [c],
+            ) || [],
+          );
+          return `<li>${text}</li>`;
+        })
+        .join("");
+      return `<${tag}>${items}</${tag}>`;
+    },
+    quote: (node: any) => {
+      const text = renderInline(node.children);
+      return `<blockquote>${text}</blockquote>`;
+    },
+    code: (node: any) => {
+      const text = (node.children || [])
+        .map((c: any) => escapeHtml(c.text || ""))
+        .join("\n");
+      return `<pre><code>${text}</code></pre>`;
+    },
+    image: (node: any) => {
+      const img = node.image || {};
+      const url = escapeHtml(img.url || "");
+      const alt = escapeHtml(img.alternativeText || img.name || "");
+      return `<img src="${url}" alt="${alt}" loading="lazy" />`;
+    },
+  };
+
+  function renderInline(children: any[]): string {
+    if (!children) return "";
+    return children
+      .map((child: any) => {
+        if (child.type === "text") {
+          let text = escapeHtml(child.text || "");
+          if (child.bold) text = `<strong>${text}</strong>`;
+          if (child.italic) text = `<em>${text}</em>`;
+          if (child.underline) text = `<u>${text}</u>`;
+          if (child.strikethrough) text = `<s>${text}</s>`;
+          if (child.code) text = `<code>${text}</code>`;
+          return text;
+        }
+        if (child.type === "link") {
+          const url = escapeHtml(child.url || "");
+          const text = renderInline(child.children || []);
+          return `<a href="${url}" target="_blank" rel="noopener">${text}</a>`;
+        }
+        return "";
+      })
+      .join("");
+  }
+
+  return blocks
+    .map((block: any) => {
+      const renderer = BLOCK_RENDERERS[block.type];
+      return renderer ? renderer(block) : "";
+    })
+    .join("\n");
+}
+
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
