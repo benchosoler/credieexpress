@@ -288,7 +288,106 @@ async function seedProductos(strapi) {
   strapi.log.info(`Seed completado: ${productos.length} productos creados.`);
 }
 
+async function migrateTaxonomia(strapi) {
+  const PARENTS = [
+    { nombre: 'Electrodomésticos',        slug: 'electrodomesticos',        orden: 1 },
+    { nombre: 'Artículos del Hogar',      slug: 'articulos-del-hogar',      orden: 2 },
+    { nombre: 'Artículos Gastronómicos',  slug: 'articulos-gastronomicos',  orden: 3 },
+  ];
+
+  const MAPPING = {
+    'Balanzas':              { parent: 'articulos-gastronomicos', sub: 'balanzas' },
+    'Cortadoras de fiambre': { parent: 'articulos-gastronomicos', sub: 'cortadoras-de-fiambre' },
+    'Heladeras':             { parent: 'electrodomesticos',        sub: 'heladeras' },
+    'Freezers':              { parent: 'electrodomesticos',        sub: 'freezers' },
+    'Estanterías':           { parent: 'articulos-del-hogar',      sub: 'estanterias' },
+    'Góndolas':              { parent: 'articulos-del-hogar',      sub: 'gondolas' },
+    'Accesorios':            { parent: 'articulos-del-hogar',      sub: 'accesorios' },
+    'Otros':                 { parent: 'articulos-del-hogar',      sub: 'otros' },
+  };
+
+  strapi.log.info('Iniciando migración de taxonomía…');
+
+  // Phase 1: upsert parent categories
+  for (const p of PARENTS) {
+    try {
+      const result = await strapi.documents('api::categoria.categoria').findMany({
+        filters: { slug: p.slug },
+      });
+      const existing = Array.isArray(result) ? result[0] : (result?.results?.[0] || null);
+      if (!existing) {
+        await strapi.documents('api::categoria.categoria').create({
+          data: p,
+        });
+        strapi.log.info(`Categoría creada: ${p.nombre}`);
+      }
+    } catch (e) {
+      strapi.log.warn(`Error creando categoría ${p.nombre}: ${e.message}`);
+    }
+  }
+
+  // Phase 2: upsert subcategories and link products
+  for (const [legacyEnum, { parent, sub }] of Object.entries(MAPPING)) {
+    try {
+      const catRes = await strapi.documents('api::categoria.categoria').findMany({
+        filters: { slug: parent },
+      });
+      const catDoc = Array.isArray(catRes) ? catRes[0] : (catRes?.results?.[0] || null);
+      if (!catDoc) {
+        strapi.log.warn(`Categoría padre ${parent} no encontrada para ${legacyEnum}`);
+        continue;
+      }
+
+      const subRes = await strapi.documents('api::subcategoria.subcategoria').findMany({
+        filters: { slug: sub },
+      });
+      let subDoc = Array.isArray(subRes) ? subRes[0] : (subRes?.results?.[0] || null);
+
+      if (!subDoc) {
+        subDoc = await strapi.documents('api::subcategoria.subcategoria').create({
+          data: {
+            nombre: legacyEnum,
+            slug: sub,
+            categoria: { connect: [catDoc.documentId] },
+          },
+        });
+        strapi.log.info(`Subcategoría creada: ${legacyEnum}`);
+      }
+
+      // Phase 3: link products that still have empty subcategorias
+      const response = await strapi.documents('api::producto.producto').findMany({
+        filters: { categoria: legacyEnum },
+        populate: { subcategorias: true },
+      });
+      const prods = Array.isArray(response) ? response : (response?.results || []);
+
+      strapi.log.info(`Migración: ${legacyEnum} → ${prods.length} productos`);
+
+      for (const prod of prods) {
+        if (!prod.subcategorias || prod.subcategorias.length === 0) {
+          try {
+            await strapi.documents('api::producto.producto').update({
+              documentId: prod.documentId,
+              data: {
+                subcategorias: { connect: [subDoc.documentId] },
+              },
+            });
+            strapi.log.info(`Producto ${prod.documentId} vinculado a ${sub}`);
+          } catch (e) {
+            strapi.log.warn(`Producto ${prod.documentId}: ${e.message}`);
+          }
+        }
+      }
+    } catch (e) {
+      strapi.log.warn(`Error procesando ${legacyEnum}: ${e.message}`);
+    }
+  }
+
+  strapi.log.info('Migración de taxonomía completada.');
+}
+
 module.exports = async ({ strapi }) => {
   await setupPublicPermissions(strapi);
   await seedProductos(strapi);
+  await migrateTaxonomia(strapi);
 };
