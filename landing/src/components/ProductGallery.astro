@@ -153,9 +153,8 @@ const galleryId = `gallery-${Math.random().toString(36).slice(2, 9)}`;
       });
 
       // Update aria-labels for current slide context
-      const liveRegion = slidesContainer;
-      liveRegion.setAttribute('aria-atomic', 'false');
-      liveRegion.setAttribute('aria-atomic', 'true');
+      slidesContainer!.setAttribute('aria-atomic', 'false');
+      slidesContainer!.setAttribute('aria-atomic', 'true');
     }
 
     prevBtn?.addEventListener('click', () => goTo(current - 1));
