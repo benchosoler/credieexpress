@@ -16,6 +16,10 @@ async function setupPublicPermissions(strapi) {
     'api::producto.producto.categorias',
     'plugin::upload.content-api.find',
     'plugin::upload.content-api.findOne',
+    'api::categoria.categoria.find',
+    'api::categoria.categoria.findOne',
+    'api::subcategoria.subcategoria.find',
+    'api::subcategoria.subcategoria.findOne',
   ];
 
   for (const action of actionsToEnable) {
