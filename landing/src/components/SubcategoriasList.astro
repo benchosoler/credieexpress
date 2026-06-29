@@ -1,0 +1,49 @@
+---
+import type { SubcategoriaNode } from "../lib/strapi-types";
+
+interface Props {
+  subcategorias: SubcategoriaNode[];
+  activeSlug?: string;
+}
+
+const { subcategorias, activeSlug } = Astro.props;
+
+if (!subcategorias || subcategorias.length === 0) {
+  return new Response(null, { status: 200 });
+}
+---
+
+<ul class="subcategorias-list space-y-1">
+  {subcategorias.map((sub) => (
+    <li>
+      <button
+        type="button"
+        class={`subcategoria-btn w-full text-left px-4 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+          activeSlug === sub.slug
+            ? "bg-azul text-white shadow-sm"
+            : "bg-white/60 text-gray-600 hover:bg-azul/10 hover:text-azul"
+        }`}
+        data-subcategoria-slug={sub.slug}
+        data-subcategoria-name={sub.nombre}
+        aria-pressed={activeSlug === sub.slug ? "true" : "false"}
+      >
+        {sub.nombre}
+      </button>
+    </li>
+  ))}
+</ul>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.subcategoria-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const slug = btn.dataset.subcategoriaSlug;
+      const name = btn.dataset.subcategoriaName;
+      window.dispatchEvent(
+        new CustomEvent('subcategory-select', {
+          detail: { slug, name },
+          bubbles: true,
+        })
+      );
+    });
+  });
+</script>
