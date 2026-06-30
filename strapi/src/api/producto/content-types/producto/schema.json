@@ -8,7 +8,7 @@
     "description": "Catálogo de productos CrediExpress con financiación"
   },
   "options": {
-    "draftAndPublish": true
+    "draftAndPublish": false
   },
   "pluginOptions": {},
   "attributes": {

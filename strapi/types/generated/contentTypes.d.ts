@@ -482,7 +482,7 @@ export interface ApiProductoProducto extends Struct.CollectionTypeSchema {
     singularName: 'producto';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     activo: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;

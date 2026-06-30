@@ -390,4 +390,81 @@ module.exports = async ({ strapi }) => {
   await setupPublicPermissions(strapi);
   await seedProductos(strapi);
   await migrateTaxonomia(strapi);
+  await linkMissingProducts(strapi);
 };
+
+// Idempotent fallback: link ALL products to the subcategoria matching their
+// legacy `categoria` enum, regardless of current state. Strapi v5's M2M
+// `connect` is idempotent — adding the same relation twice is a no-op.
+async function linkMissingProducts(strapi) {
+  const MAPPING = {
+    'Balanzas':              'balanzas',
+    'Cortadoras de fiambre': 'cortadoras-de-fiambre',
+    'Heladeras':             'heladeras',
+    'Freezers':              'freezers',
+    'Estanterías':           'estanterias',
+    'Góndolas':              'gondolas',
+    'Accesorios':            'accesorios',
+    'Otros':                 'otros',
+  };
+
+  strapi.log.info('Vinculando productos a subcategorías (forzar)…');
+
+  // Use pagination explicitly because Document Service findMany has a default
+  // page size that can leave products unprocessed.
+  const allProds = [];
+  let page = 1;
+  const pageSize = 100;
+  while (true) {
+    const result = await strapi.documents('api::producto.producto').findMany({
+      page,
+      pageSize,
+    });
+    if (!Array.isArray(result) || result.length === 0) break;
+    allProds.push(...result);
+    if (result.length < pageSize) break;
+    page++;
+  }
+  strapi.log.info(`  Total productos encontrados: ${allProds.length}`);
+
+  // Build subcategoria cache
+  const subCache = new Map();
+  for (const [legacy, subSlug] of Object.entries(MAPPING)) {
+    const subRes = await strapi.documents('api::subcategoria.subcategoria').findMany({
+      filters: { slug: subSlug },
+    });
+    const subDoc = Array.isArray(subRes) ? subRes[0] : null;
+    if (subDoc) subCache.set(legacy, subDoc);
+  }
+  strapi.log.info(`  Cache de subcategorías: ${subCache.size} entradas`);
+
+  let ok = 0;
+  let fail = 0;
+  let unmapped = 0;
+
+  for (const prod of allProds) {
+    const subDoc = subCache.get(prod.categoria);
+    if (!subDoc) {
+      unmapped++;
+      continue;
+    }
+    try {
+      // Try the Strapi v5 Document Service syntax for setting relations
+      await strapi.documents('api::producto.producto').update({
+        documentId: prod.documentId,
+        data: { subcategorias: [subDoc.documentId] },
+      });
+      ok++;
+    } catch (e) {
+      strapi.log.warn(`  ✗ ${prod.nombre} (${prod.documentId}): ${e.message}`);
+      fail++;
+    }
+  }
+
+  strapi.log.info(
+    `linkMissingProducts: ${ok} OK, ${fail} fallaron, ${unmapped} sin mapeo (de ${allProds.length} total).`
+  );
+}
+
+// (module.exports at line 389)
+
