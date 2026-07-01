@@ -174,7 +174,6 @@ try {
     function applyFilter(slug: string | null) {
       activeSubSlug = slug;
       let visibleCount = 0;
-
       document.querySelectorAll<HTMLElement>('[data-subcategorias]').forEach((card) => {
         const subs = (card.dataset.subcategorias || '').split(' ').filter(Boolean);
         const matches = !slug || subs.includes(slug);

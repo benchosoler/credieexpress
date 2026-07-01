@@ -63,7 +63,7 @@ if (!subcategorias || subcategorias.length === 0) {
       btn.addEventListener('click', () => {
         const slug = btn.dataset.subcategoriaSlug;
         const name = btn.dataset.subcategoriaName;
-        window.dispatchEvent(
+window.dispatchEvent(
           new CustomEvent('subcategory-select', {
             detail: { slug, name },
             bubbles: true,
