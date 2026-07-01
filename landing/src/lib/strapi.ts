@@ -86,7 +86,14 @@ export function getImageUrl(imagen: ProductoStrapi["imagen"]): string {
 
   if (!url) return "";
 
+  // External URLs (Wikimedia, etc.) — return as-is
   if (url.startsWith("http")) return url;
+
+  // Relative URLs (e.g. /uploads/...) — return as-is so the browser requests
+  // them from the landing origin. The Astro dev server proxies /uploads/* to
+  // Strapi, so this works regardless of where the user accesses the page from
+  // (Tailscale IP, localhost, production domain, etc.).
+  if (url.startsWith("/")) return url;
 
   return `${STRAPI_URL}${url}`;
 }

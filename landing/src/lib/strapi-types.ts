@@ -58,6 +58,7 @@ export interface ProductoStrapi {
   imagenes: StrapiImagen[];
   subcategorias: SubcategoriaNode[];
   fichaTecnica: string | null;
+  imagenUrl: string | null;
   destacado: boolean;
   activo: boolean;
   publishedAt: string;

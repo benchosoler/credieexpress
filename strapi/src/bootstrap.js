@@ -67,6 +67,18 @@ async function setupPublicPermissions(strapi) {
   }
 }
 
+// Image URL per subcategoria. Used to populate producto.imagenUrl during seed.
+const IMAGEN_POR_CATEGORIA = {
+  'Balanzas':              '/uploads/products/balanza-comercial.png',
+  'Freezers':              '/uploads/products/freezer-1.jpg',
+  'Cortadoras de fiambre': '/uploads/products/slicer-prosciutto.jpg',
+  'Heladeras':             '/uploads/products/heladera.svg',
+  'Estanterías':           '/uploads/products/estanteria.svg',
+  'Góndolas':              '/uploads/products/gondola.svg',
+  'Accesorios':            '/uploads/products/accesorio.svg',
+  'Otros':                 '/uploads/products/accesorio.svg',
+};
+
 async function seedProductos(strapi) {
   const count = await strapi.query('api::producto.producto').count();
 
@@ -279,8 +291,12 @@ async function seedProductos(strapi) {
   ];
 
   for (const producto of productos) {
+    const dataWithImage = {
+      ...producto,
+      imagenUrl: IMAGEN_POR_CATEGORIA[producto.categoria] || null,
+    };
     await strapi.documents('api::producto.producto').create({
-      data: producto,
+      data: dataWithImage,
       status: 'published',
     });
   }

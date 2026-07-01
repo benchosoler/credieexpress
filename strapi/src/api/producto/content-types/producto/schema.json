@@ -63,6 +63,10 @@
     "fichaTecnica": {
       "type": "richtext"
     },
+    "imagenUrl": {
+      "type": "string",
+      "description": "URL externa de la imagen. Usado como fallback cuando no hay imagen subida via media field."
+    },
     "destacado": {
       "type": "boolean",
       "default": false

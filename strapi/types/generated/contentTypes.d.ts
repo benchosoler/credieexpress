@@ -507,6 +507,7 @@ export interface ApiProductoProducto extends Struct.CollectionTypeSchema {
     fichaTecnica: Schema.Attribute.RichText;
     imagen: Schema.Attribute.Media<'images' | 'files'>;
     imagenes: Schema.Attribute.Media<'images', true>;
+    imagenUrl: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',

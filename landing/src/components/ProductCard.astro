@@ -12,10 +12,12 @@ const { producto, index = 0 } = Astro.props;
 const waLink = getWhatsAppLink(producto);
 const precio = formatPrecio(producto.precio);
 
-// Build images array: prefer imagenes, fall back to imagen
+// Build images array: prefer imagenes, fall back to imagen, then imagenUrl
 const images = (producto.imagenes && producto.imagenes.length > 0)
   ? producto.imagenes
-  : (producto.imagen ? [producto.imagen] : []);
+  : (producto.imagen
+      ? [producto.imagen]
+      : (producto.imagenUrl ? [{ url: producto.imagenUrl }] : []));
 
 // Primary subcategory name for badge (use first linked subcategoria)
 const primarySub = producto.subcategorias?.[0]?.nombre ?? null;

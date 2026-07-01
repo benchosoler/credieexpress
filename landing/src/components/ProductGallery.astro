@@ -16,7 +16,11 @@ function getImageUrl(img: StrapiImagen | null): string {
   if (!img) return "";
   const url = img.formats?.medium?.url || img.formats?.small?.url || img.url;
   if (!url) return "";
+  // External URLs (Wikimedia, etc.) — return as-is
   if (url.startsWith("http")) return url;
+  // Relative URLs (e.g. /uploads/...) — return as-is. The Astro dev server
+  // proxies /uploads/* to Strapi, so this works regardless of access origin.
+  if (url.startsWith("/")) return url;
   return `${STRAPI_URL}${url}`;
 }
 
