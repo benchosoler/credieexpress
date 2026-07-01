@@ -104,7 +104,7 @@ try {
         )}
 
         {/* ─── 3. Product Grid with subcategory filter ─── */}
-        <div class="animate-on-scroll">
+        <div class="animate-on-scroll" id="productos-grid-anchor">
           <div class="flex items-center justify-between mb-6 flex-wrap gap-3">
             <h3 class="font-display font-bold text-2xl text-gray-900">
               Todos los productos
@@ -206,6 +206,15 @@ try {
           activeFilterName.textContent = btn?.dataset.subcategoriaName || slug;
         } else {
           activeFilterBadge.classList.add('hidden');
+        }
+      }
+
+      // Scroll the products grid into view so the user sees the filtered
+      // results without having to scroll down manually.
+      if (slug) {
+        const anchor = document.getElementById('productos-grid-anchor');
+        if (anchor) {
+          anchor.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }
     }
