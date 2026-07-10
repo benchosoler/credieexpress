@@ -2,9 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Navbar from "../components/Navbar.astro";
 import Hero from "../components/Hero.astro";
-import PorQueElegirnos from "../components/PorQueElegirnos.astro";
-import ComoFunciona from "../components/ComoFunciona.astro";
-import Contacto from "../components/Contacto.astro";
+import InfoEmpresa from "../components/InfoEmpresa.astro";
 import Footer from "../components/Footer.astro";
 import WhatsAppFloat from "../components/WhatsAppFloat.astro";
 import ProductCard from "../components/ProductCard.astro";
@@ -34,13 +32,10 @@ try {
   <!-- 1. Hero — impacto inmediato -->
   <Hero />
 
-  <!-- 2. Por qué elegirnos — sección principal diferenciadora -->
-  <PorQueElegirnos />
+  <!-- 2. Info de la empresa — acordeón con toda la información agrupada -->
+  <InfoEmpresa />
 
-  <!-- 3. Cómo funciona — 3 pasos simples -->
-  <ComoFunciona />
-
-  <!-- 4. Productos destacados con CTA al catálogo -->
+  <!-- 3. Productos destacados con CTA al catálogo -->
   <section id="productos-destacados" class="py-24 bg-gris-claro">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Header de sección -->
@@ -65,7 +60,7 @@ try {
         productosDestacados.length > 0 ? (
           <div>
             {/* <!-- Grilla de productos destacados --> */}
-            <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-6 mb-12">
               {productosDestacados.map((producto, i) => (
                 <ProductCard producto={producto} index={i} />
               ))}
@@ -145,7 +140,7 @@ try {
     </div>
   </section>
 
-  <!-- 5. Categorías — navegación visual al catálogo filtrado -->
+  <!-- 4. Categorías — navegación visual al catálogo filtrado -->
   {categorias.length > 0 && (
     <section id="categorias" class="py-24 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -165,7 +160,7 @@ try {
             filtrado.
           </p>
         </div>
-        <CategoriasMenu categorias={categorias} mode="expand" subcategoryLinkBase="/catalogo" />
+        <CategoriasMenu categorias={categorias} linkBase="/catalogo" />
         <div class="text-center mt-12 animate-on-scroll">
           <a
             href="/catalogo"
@@ -190,9 +185,6 @@ try {
       </div>
     </section>
   )}
-
-  <!-- 5. Contacto — WhatsApp directo -->
-  <Contacto />
 
   <!-- Footer -->
   <Footer />

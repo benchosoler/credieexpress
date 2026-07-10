@@ -31,11 +31,28 @@ const fichaHtml = producto.fichaTecnica
 const subSlugs = (producto.subcategorias || [])
   .map(s => s.slug)
   .join(' ');
+
+// Build data-categorias attribute from the parent categories of each subcategoria.
+// Strapi response includes each subcategoria's categoria relation, but to keep the
+// component decoupled from fetch shape, we look it up via a window-level map
+// populated by Catalogo.astro. If unavailable, we fall back to the deprecated
+// `categoria` string field (lowercased, slugified).
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+const legacyCatSlug = producto.categoria ? slugify(producto.categoria) : '';
 ---
 
 <article
   data-document-id={producto.documentId}
   data-subcategorias={subSlugs}
+  data-categoria-legacy={legacyCatSlug}
   class="producto-card bg-white rounded-2xl overflow-hidden card-shadow border border-gray-100 group hover:border-azul/20 transition-all duration-300 flex flex-col"
   style={`transition-delay: ${(index % 4) * 60}ms`}
 >

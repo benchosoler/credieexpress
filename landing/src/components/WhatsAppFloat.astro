@@ -8,13 +8,13 @@ const WA_MSG = encodeURIComponent(
 const WA_LINK = `https://wa.me/${WA_NUMBER}?text=${WA_MSG}`;
 ---
 
-<!-- Botón flotante WhatsApp — sticky en pantalla -->
+<!-- Botón flotante WhatsApp — aparece al hacer scroll -->
 <a
   href={WA_LINK}
   target="_blank"
   rel="noopener noreferrer"
   id="wa-float-btn"
-  class="fixed bottom-6 right-6 z-40 flex items-center gap-3 bg-verde text-white px-5 py-3.5 rounded-full shadow-xl shadow-verde/40 hover:shadow-2xl hover:shadow-verde/50 hover:-translate-y-1 transition-all duration-300 group"
+  class="wa-float fixed bottom-6 right-6 z-40 flex items-center gap-3 bg-verde text-white px-5 py-3.5 rounded-full shadow-xl shadow-verde/40 hover:shadow-2xl hover:shadow-verde/50 hover:-translate-y-1 transition-all duration-300 ease-out group"
   aria-label="Contactar por WhatsApp - 11-6466-5339"
 >
   <!-- Ícono WhatsApp -->
@@ -44,3 +44,35 @@ const WA_LINK = `https://wa.me/${WA_NUMBER}?text=${WA_MSG}`;
     <span class="w-2 h-2 bg-verde rounded-full relative"></span>
   </span>
 </a>
+
+<style>
+  /* Estado inicial: oculto abajo, sin opacidad ni interacción */
+  .wa-float {
+    opacity: 0;
+    transform: translateY(24px) scale(0.85);
+    pointer-events: none;
+  }
+  /* Estado visible: se eleva y aparece con leve rebote */
+  .wa-float.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+  }
+</style>
+
+<script>
+  // Mostrar el botón flotante de WhatsApp solo cuando el usuario hace scroll
+  const waBtn = document.getElementById("wa-float-btn");
+  const SCROLL_THRESHOLD = 50;
+
+  const toggleWaButton = (): void => {
+    if (!waBtn) return;
+    const scrolled = window.scrollY > SCROLL_THRESHOLD;
+    waBtn.classList.toggle("is-visible", scrolled);
+  };
+
+  // Estado inicial (por si la página carga con scroll restaurado)
+  toggleWaButton();
+
+  window.addEventListener("scroll", toggleWaButton, { passive: true });
+</script>

@@ -1,0 +1,401 @@
+---
+// InfoEmpresa — Acordeón con toda la información institucional agrupada
+// Reemplaza las secciones separadas: Por qué elegirnos, Cómo funciona, Contacto
+// + agrega Sistema de pagos como sección dedicada
+
+const WA_NUMBER = "5491164665339";
+const WA_NUMBER_DISPLAY = "11-6466-5339";
+const WA_MSG = encodeURIComponent(
+  "Hola! Quiero consultar sobre sus productos y planes de financiación.",
+);
+const WA_LINK = `https://wa.me/${WA_NUMBER}?text=${WA_MSG}`;
+
+interface AccordionItem {
+  id: string;
+  icon: string;
+  title: string;
+  subtitle: string;
+}
+
+const items: AccordionItem[] = [
+  {
+    id: "por-que-elegirnos",
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    title: "Por qué elegirnos",
+    subtitle: "Nuestros valores y lo que nos diferencia",
+  },
+  {
+    id: "como-funciona",
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>`,
+    title: "Cómo funciona",
+    subtitle: "Tres pasos simples para equipar tu comercio",
+  },
+  {
+    id: "sistema-pagos",
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`,
+    title: "Sistema de pagos",
+    subtitle: "Planes de cuotas sin letras chicas",
+  },
+  {
+    id: "contacto",
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>`,
+    title: "Contacto",
+    subtitle: "Hablá con nosotros por WhatsApp",
+  },
+];
+
+const features = [
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 11h.01M12 11h.01M15 11h.01M4 19h16a2 2 0 002-2V7a2 2 0 00-2-2H4a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>`,
+    title: "Cuotas 100% personalizadas",
+    description: "Armamos el plan de cuotas según tu capacidad real de pago — semanales o diarias. No hay un plan fijo: nos adaptamos a vos.",
+    accent: "azul" as const,
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`,
+    title: "Trato cercano y personalizado",
+    description: "No sos un número más. Cada cliente recibe atención directa, sin intermediarios, con respuestas rápidas y un vínculo de confianza.",
+    accent: "verde" as const,
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    title: "Postventa real y seguimiento",
+    description: "Después de la compra, te contactamos para saber si todo está bien. Si hay algún problema, te acompañamos a resolverlo.",
+    accent: "azul" as const,
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`,
+    title: "Servicio técnico rápido",
+    description: "Trabajamos con técnicos de confianza que resuelven problemas en horas, no en semanas. Sin esperar al servicio oficial.",
+    accent: "verde" as const,
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>`,
+    title: "Cambios y devoluciones",
+    description: "Cuando es posible, gestionamos cambios y devoluciones. Queremos que estés satisfecho con tu compra, siempre.",
+    accent: "azul" as const,
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    title: "+10 años de experiencia",
+    description: "Más de una década en el rubro nos da el conocimiento para asesorarte en lo que realmente necesita tu comercio.",
+    accent: "verde" as const,
+  },
+];
+
+const steps = [
+  {
+    number: "01",
+    title: "Elegís el producto",
+    description: "Explorá nuestro catálogo de equipamiento para comercios y encontrá lo que necesitás: balanzas, heladeras, freezers, estanterías y más.",
+  },
+  {
+    number: "02",
+    title: "Armamos tu plan",
+    description: "Según tu capacidad de pago, diseñamos juntos el plan de cuotas ideal — semanales o diarias — sin letras chicas ni sorpresas.",
+  },
+  {
+    number: "03",
+    title: "Recibís y listo",
+    description: "Coordinamos la entrega y te acompañamos post-compra. Si hay algún problema, el servicio técnico actúa rápido. Simple y sin vueltas.",
+  },
+];
+
+const paymentMethods = [
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`,
+    title: "Cuotas diarias",
+    desc: "Pagá un pequeño monto cada día. Ideal si manejás efectivo diario en tu comercio y querés que el pago sea imperceptible.",
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>`,
+    title: "Cuotas semanales",
+    desc: "Un pago por semana que se ajusta a tu flujo de caja. La opción más elegida por nuestros clientes.",
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>`,
+    title: "Plan a tu medida",
+    desc: "No hay moldes. Definimos juntos la frecuencia y el monto que mejor se adapte a la realidad de tu negocio.",
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>`,
+    title: "Sin letras chicas",
+    desc: "Lo que acordamos al principio es lo que pagás. Sin costos ocultos, sin sorpresas, sin letras chicas.",
+  },
+];
+---
+
+<section id="info-empresa" class="py-16 bg-white">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Header -->
+    <div class="text-center mb-10 animate-on-scroll">
+      <span class="inline-block bg-azul/10 text-azul px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+        Conocenos
+      </span>
+      <h2 class="font-display text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
+        Todo sobre <span class="text-gradient">CREDIEXPRESS</span>
+      </h2>
+      <p class="text-gray-500 text-sm">
+        Hacé click en cada sección para conocer más sobre nosotros
+      </p>
+    </div>
+
+    <!-- Acordeón -->
+    <div class="space-y-3" id="accordion">
+      {
+        items.map((item, i) => (
+          <div
+            id={item.id}
+            class="accordion-item bg-white rounded-2xl border border-gray-200 overflow-hidden transition-all duration-300 hover:border-azul/30 card-shadow"
+          >
+            <!-- Header del acordeón -->
+            <button
+              class="accordion-trigger w-full flex items-center gap-4 px-5 sm:px-6 py-4 text-left transition-colors duration-200 hover:bg-gris-claro"
+              data-target={`accordion-panel-${item.id}`}
+              aria-expanded="false"
+              aria-controls={`accordion-panel-${item.id}`}
+            >
+              <!-- Ícono -->
+              <div class="w-10 h-10 rounded-xl bg-azul/10 text-azul flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:bg-azul group-hover:text-white">
+                <span set:html={item.icon} />
+              </div>
+
+              <!-- Título y subtítulo -->
+              <div class="flex-1 min-w-0">
+                <h3 class="font-display font-bold text-gray-900 text-base sm:text-lg">
+                  {item.title}
+                </h3>
+                <p class="text-gray-500 text-xs sm:text-sm truncate">
+                  {item.subtitle}
+                </p>
+              </div>
+
+              <!-- Chevron -->
+              <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0 transition-transform duration-300 accordion-chevron">
+                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                </svg>
+              </div>
+            </button>
+
+            <!-- Panel de contenido -->
+            <div
+              id={`accordion-panel-${item.id}`}
+              class="accordion-panel hidden"
+              role="region"
+              aria-labelledby={item.id}
+            >
+              <div class="px-5 sm:px-6 pb-6 pt-0 border-t border-gray-100">
+
+                <!-- ========== POR QUÉ ELEGIRNOS ========== -->
+                {item.id === "por-que-elegirnos" && (
+                  <div class="pt-5">
+                    <p class="text-gray-600 text-sm mb-5">
+                      No somos una financiera más. Somos el aliado de tu comercio: te conocemos, te acompañamos y te ayudamos a crecer con equipamiento de calidad.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      {features.map((feature) => (
+                        <div class="flex gap-3 p-3 rounded-xl bg-gris-claro hover:bg-white hover:shadow-sm transition-all duration-200 border border-transparent hover:border-gray-200">
+                          <div class={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
+                            feature.accent === "azul"
+                              ? "bg-azul/10 text-azul"
+                              : "bg-verde/10 text-verde"
+                          }`}>
+                            <span set:html={feature.icon} />
+                          </div>
+                          <div>
+                            <h4 class="font-semibold text-gray-900 text-sm mb-0.5">{feature.title}</h4>
+                            <p class="text-gray-500 text-xs leading-relaxed">{feature.description}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <!-- Banner de refuerzo -->
+                    <div class="mt-6 gradient-brand rounded-2xl p-6 text-white text-center relative overflow-hidden">
+                      <div class="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+                        <div class="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-white/10"></div>
+                        <div class="absolute -bottom-10 -left-10 w-32 h-32 rounded-full bg-white/10"></div>
+                      </div>
+                      <div class="relative">
+                        <h4 class="font-display font-bold text-xl mb-2">Tu comercio merece lo mejor</h4>
+                        <p class="text-white/85 text-sm mb-4">Consultá hoy y te armamos un plan de cuotas sin compromiso.</p>
+                        <a
+                          href={WA_LINK}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center gap-2 bg-white text-azul px-6 py-2.5 rounded-xl font-semibold text-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-200"
+                        >
+                          <svg class="w-4 h-4 text-verde" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                          Hablar con un asesor
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                <!-- ========== CÓMO FUNCIONA ========== -->
+                {item.id === "como-funciona" && (
+                  <div class="pt-5">
+                    <p class="text-gray-600 text-sm mb-6">
+                      En tres pasos simples, podés tener el equipamiento que tu comercio necesita.
+                    </p>
+                    <div class="grid sm:grid-cols-3 gap-5">
+                      {steps.map((step, si) => (
+                        <div class="text-center relative">
+                          <div class={`w-14 h-14 rounded-2xl flex items-center justify-center mx-auto mb-3 shadow-md ${
+                            si === 0 ? "bg-azul text-white"
+                            : si === 1 ? "bg-gradient-to-br from-azul to-verde text-white"
+                            : "bg-verde text-white"
+                          }`}>
+                            <span class="font-display font-bold text-lg">{step.number}</span>
+                          </div>
+                          <h4 class="font-display font-bold text-gray-900 mb-1.5">{step.title}</h4>
+                          <p class="text-gray-500 text-xs leading-relaxed">{step.description}</p>
+                        </div>
+                      ))}
+                    </div>
+                    <div class="mt-6 text-center">
+                      <a
+                        href="/catalogo"
+                        class="inline-flex items-center gap-2 bg-azul text-white px-6 py-3 rounded-xl font-semibold text-sm hover:bg-azul-dark transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5"
+                      >
+                        Ver productos disponibles
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+                      </a>
+                    </div>
+                  </div>
+                )}
+
+                <!-- ========== SISTEMA DE PAGOS ========== -->
+                {item.id === "sistema-pagos" && (
+                  <div class="pt-5">
+                    <p class="text-gray-600 text-sm mb-5">
+                      Diseñamos cada plan de pagos a medida. No importa el monto ni la frecuencia: armamos juntos la mejor opción para vos.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      {paymentMethods.map((pm) => (
+                        <div class="flex gap-3 p-4 rounded-xl bg-gris-claro border border-transparent hover:border-verde/20 hover:shadow-sm transition-all duration-200">
+                          <div class="w-10 h-10 rounded-xl bg-verde/10 text-verde flex items-center justify-center flex-shrink-0">
+                            <span set:html={pm.icon} />
+                          </div>
+                          <div>
+                            <h4 class="font-semibold text-gray-900 text-sm mb-1">{pm.title}</h4>
+                            <p class="text-gray-500 text-xs leading-relaxed">{pm.desc}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <!-- Destacado -->
+                    <div class="mt-5 bg-gradient-to-r from-verde/5 to-azul/5 rounded-2xl p-5 text-center border border-verde/10">
+                      <div class="flex items-center justify-center gap-2 text-verde font-display font-bold text-xl mb-1">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/></svg>
+                        Sin interés oculto
+                      </div>
+                      <p class="text-gray-500 text-sm">Lo que acordamos al principio es lo que pagás. Siempre.</p>
+                    </div>
+                  </div>
+                )}
+
+                <!-- ========== CONTACTO ========== -->
+                {item.id === "contacto" && (
+                  <div class="pt-5">
+                    <div class="text-center">
+                      <div class="w-16 h-16 bg-verde/10 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-verde" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                      </div>
+
+                      <h3 class="font-display font-bold text-2xl text-gray-900 mb-2">Hablemos hoy</h3>
+                      <p class="text-gray-600 text-sm max-w-md mx-auto mb-4">
+                        Contanos qué necesitás para tu comercio y te armamos un plan de cuotas adaptado a tu realidad. Sin vueltas, sin letras chicas.
+                      </p>
+
+                      <!-- Número -->
+                      <a
+                        href={WA_LINK}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="inline-flex items-center gap-2 text-verde font-display font-bold text-2xl hover:text-verde-dark transition-colors mb-5"
+                      >
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>
+                        {WA_NUMBER_DISPLAY}
+                      </a>
+
+                      <!-- Botón -->
+                      <div>
+                        <a
+                          href={WA_LINK}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center gap-3 bg-verde text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-verde-dark transition-all duration-200 hover:shadow-xl hover:shadow-verde/30 hover:-translate-y-0.5"
+                        >
+                          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                          Escribirnos por WhatsApp
+                        </a>
+                      </div>
+                      <p class="mt-4 text-xs text-gray-400">Respondemos a la brevedad • Lunes a Sábado</p>
+                    </div>
+                  </div>
+                )}
+
+              </div>
+            </div>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>
+
+<script>
+  // Accordion behavior — vanilla JS, no hydration needed
+  function togglePanel(trigger) {
+    const targetId = trigger.dataset.target;
+    const panel = document.getElementById(targetId);
+    const chevron = trigger.querySelector(".accordion-chevron");
+    const isOpen = !panel?.classList.contains("hidden");
+
+    panel?.classList.toggle("hidden");
+    chevron?.classList.toggle("rotate-180", !isOpen);
+    trigger.setAttribute("aria-expanded", String(!isOpen));
+  }
+
+  function openPanelById(sectionId) {
+    const trigger = document.querySelector(
+      `.accordion-trigger[data-target="accordion-panel-${sectionId}"]`
+    );
+    const panel = document.getElementById(`accordion-panel-${sectionId}`);
+    const chevron = trigger?.querySelector(".accordion-chevron");
+
+    // Only open if currently closed
+    if (panel?.classList.contains("hidden")) {
+      panel.classList.remove("hidden");
+      chevron?.classList.add("rotate-180");
+      trigger?.setAttribute("aria-expanded", "true");
+    }
+  }
+
+  function initAccordion() {
+    const triggers = document.querySelectorAll(".accordion-trigger");
+
+    triggers.forEach((trigger) => {
+      trigger.addEventListener("click", () => togglePanel(trigger));
+    });
+
+    // Auto-open section if URL hash matches an accordion item
+    const hash = window.location.hash.replace("#", "");
+    if (hash) {
+      // Small delay so scroll lands first, then expand
+      setTimeout(() => openPanelById(hash), 100);
+    }
+
+    // Listen for hash changes (e.g. clicking another navbar link)
+    window.addEventListener("hashchange", () => {
+      const newHash = window.location.hash.replace("#", "");
+      if (newHash) openPanelById(newHash);
+    });
+  }
+
+  document.addEventListener("DOMContentLoaded", initAccordion);
+</script>
