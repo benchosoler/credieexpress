@@ -430,6 +430,49 @@ export interface AdminUser extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiCategoriaCategoria extends Struct.CollectionTypeSchema {
+  collectionName: 'categorias';
+  info: {
+    displayName: 'Categoria';
+    pluralName: 'categorias';
+    singularName: 'categoria';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    activo: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    imagenRef: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 200;
+      }>;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::categoria.categoria'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
+    orden: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'nombre'>;
+    subcategorias: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::subcategoria.subcategoria'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiProductoProducto extends Struct.CollectionTypeSchema {
   collectionName: 'productos';
   info: {
@@ -439,7 +482,7 @@ export interface ApiProductoProducto extends Struct.CollectionTypeSchema {
     singularName: 'producto';
   };
   options: {
-    draftAndPublish: true;
+    draftAndPublish: false;
   };
   attributes: {
     activo: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
@@ -461,7 +504,10 @@ export interface ApiProductoProducto extends Struct.CollectionTypeSchema {
       Schema.Attribute.Private;
     descripcion: Schema.Attribute.Text;
     destacado: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
+    fichaTecnica: Schema.Attribute.RichText;
     imagen: Schema.Attribute.Media<'images' | 'files'>;
+    imagenes: Schema.Attribute.Media<'images', true>;
+    imagenUrl: Schema.Attribute.String;
     locale: Schema.Attribute.String & Schema.Attribute.Private;
     localizations: Schema.Attribute.Relation<
       'oneToMany',
@@ -480,6 +526,54 @@ export interface ApiProductoProducto extends Struct.CollectionTypeSchema {
         },
         number
       >;
+    publishedAt: Schema.Attribute.DateTime;
+    slug: Schema.Attribute.UID<'nombre'>;
+    subcategorias: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::subcategoria.subcategoria'
+    >;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
+export interface ApiSubcategoriaSubcategoria
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'subcategorias';
+  info: {
+    displayName: 'Subcategoria';
+    pluralName: 'subcategorias';
+    singularName: 'subcategoria';
+  };
+  options: {
+    draftAndPublish: false;
+  };
+  attributes: {
+    activo: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<true>;
+    categoria: Schema.Attribute.Relation<
+      'manyToOne',
+      'api::categoria.categoria'
+    >;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::subcategoria.subcategoria'
+    > &
+      Schema.Attribute.Private;
+    nombre: Schema.Attribute.String &
+      Schema.Attribute.Required &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 80;
+      }>;
+    orden: Schema.Attribute.Integer & Schema.Attribute.DefaultTo<0>;
+    productos: Schema.Attribute.Relation<
+      'manyToMany',
+      'api::producto.producto'
+    >;
     publishedAt: Schema.Attribute.DateTime;
     slug: Schema.Attribute.UID<'nombre'>;
     updatedAt: Schema.Attribute.DateTime;
@@ -999,7 +1093,9 @@ declare module '@strapi/strapi' {
       'admin::transfer-token': AdminTransferToken;
       'admin::transfer-token-permission': AdminTransferTokenPermission;
       'admin::user': AdminUser;
+      'api::categoria.categoria': ApiCategoriaCategoria;
       'api::producto.producto': ApiProductoProducto;
+      'api::subcategoria.subcategoria': ApiSubcategoriaSubcategoria;
       'plugin::content-releases.release': PluginContentReleasesRelease;
       'plugin::content-releases.release-action': PluginContentReleasesReleaseAction;
       'plugin::i18n.locale': PluginI18NLocale;

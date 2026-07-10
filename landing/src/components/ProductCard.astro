@@ -1,6 +1,7 @@
 ---
 import type { ProductoStrapi } from "../lib/strapi-types";
-import { getImageUrl, formatPrecio, getWhatsAppLink } from "../lib/strapi";
+import { formatPrecio, getWhatsAppLink, renderBlocks } from "../lib/strapi";
+import ProductGallery from "./ProductGallery.astro";
 
 interface Props {
   producto: ProductoStrapi;
@@ -8,85 +9,111 @@ interface Props {
 }
 
 const { producto, index = 0 } = Astro.props;
-const imgUrl = getImageUrl(producto.imagen);
 const waLink = getWhatsAppLink(producto);
 const precio = formatPrecio(producto.precio);
+
+// Build images array: prefer imagenes, fall back to imagen, then imagenUrl
+const images = (producto.imagenes && producto.imagenes.length > 0)
+  ? producto.imagenes
+  : (producto.imagen
+      ? [producto.imagen]
+      : (producto.imagenUrl ? [{ url: producto.imagenUrl }] : []));
+
+// Primary subcategory name for badge (use first linked subcategoria)
+const primarySub = producto.subcategorias?.[0]?.nombre ?? null;
+
+// Ficha técnica: parse blocks if present
+const fichaHtml = producto.fichaTecnica
+  ? renderBlocks(JSON.parse(producto.fichaTecnica))
+  : null;
+
+// Build data-subcategorias attribute (space-separated slugs for filtering)
+const subSlugs = (producto.subcategorias || [])
+  .map(s => s.slug)
+  .join(' ');
+
+// Build data-categorias attribute from the parent categories of each subcategoria.
+// Strapi response includes each subcategoria's categoria relation, but to keep the
+// component decoupled from fetch shape, we look it up via a window-level map
+// populated by Catalogo.astro. If unavailable, we fall back to the deprecated
+// `categoria` string field (lowercased, slugified).
+function slugify(s: string): string {
+  return s
+    .toLowerCase()
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "");
+}
+
+const legacyCatSlug = producto.categoria ? slugify(producto.categoria) : '';
 ---
 
 <article
   data-document-id={producto.documentId}
+  data-subcategorias={subSlugs}
+  data-categoria-legacy={legacyCatSlug}
   class="producto-card bg-white rounded-2xl overflow-hidden card-shadow border border-gray-100 group hover:border-azul/20 transition-all duration-300 flex flex-col"
   style={`transition-delay: ${(index % 4) * 60}ms`}
 >
-  <div
-    class="relative aspect-[4/3] bg-gris-claro overflow-hidden flex-shrink-0"
-  >
-    {
-      imgUrl ? (
-        <img
-          src={imgUrl}
-          alt={producto.imagen?.alternativeText || producto.nombre}
-          class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-          loading="lazy"
-        />
-      ) : (
-        <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-300">
-          <svg
-            class="w-12 h-12"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="1.5"
-              d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"
-            />
-          </svg>
-          <span class="text-xs font-medium">Sin imagen</span>
-        </div>
-      )
-    }
+  <div class="relative aspect-[4/3] bg-gris-claro overflow-hidden flex-shrink-0">
+    <ProductGallery images={images} alt={producto.nombre} priority={index < 4} />
 
-    {
-      producto.categoria && (
-        <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-azul px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-          {producto.categoria}
-        </div>
-      )
-    }
+    {primarySub && (
+      <div class="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-azul px-3 py-1 rounded-full text-xs font-semibold shadow-sm z-10">
+        {primarySub}
+      </div>
+    )}
 
-    {
-      producto.destacado && (
-        <div class="absolute top-3 right-3 bg-verde text-white px-3 py-1 rounded-full text-xs font-semibold shadow-sm">
-          Destacado
-        </div>
-      )
-    }
+    {producto.destacado && (
+      <div class="absolute top-3 right-3 bg-verde text-white px-3 py-1 rounded-full text-xs font-semibold shadow-sm z-10">
+        Destacado
+      </div>
+    )}
   </div>
 
   <div class="p-5 flex flex-col flex-1">
-    <h3
-      class="font-display font-bold text-gray-900 text-base leading-tight mb-2 line-clamp-2"
-    >
+    <h3 class="font-display font-bold text-gray-900 text-base leading-tight mb-2 line-clamp-2">
       {producto.nombre}
     </h3>
 
-    {
-      producto.descripcion && (
-        <p class="text-gray-500 text-xs leading-relaxed mb-3 line-clamp-2 flex-1">
-          {producto.descripcion}
-        </p>
-      )
-    }
+    {producto.descripcion && (
+      <p class="text-gray-500 text-xs leading-relaxed mb-1 line-clamp-2">
+        {producto.descripcion}
+      </p>
+    )}
+
+    <!-- Ficha Técnica toggle — always shown, with a fallback when content is missing -->
+    <details class="ficha-tecnica mb-3 group/details">
+      <summary class="cursor-pointer text-xs font-semibold text-azul hover:text-azul-dark transition-colors select-none py-1 flex items-center gap-1">
+        <svg class="w-3.5 h-3.5 transition-transform group-open/details:rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+        </svg>
+        <span class="ficha-label-collapsed">VER FICHA TÉCNICA</span>
+        <span class="ficha-label-expanded hidden">OCULTAR FICHA TÉCNICA</span>
+      </summary>
+      <div class="ficha-content mt-2 p-3 bg-gris-claro rounded-lg text-xs text-gray-600 leading-relaxed prose-a:text-azul prose-a:underline [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_h1]:text-sm [&_h1]:font-bold [&_h2]:text-sm [&_h2]:font-bold [&_h3]:text-xs [&_h3]:font-bold [&_blockquote]:border-l-2 [&_blockquote]:border-azul/30 [&_blockquote]:pl-3 [&_blockquote]:italic [&_img]:rounded-lg [&_img]:max-w-full">
+        {fichaHtml ? (
+          <div set:html={fichaHtml} />
+        ) : (
+          <p class="text-gray-400 italic">
+            La información técnica detallada (medidas, potencia, materiales, etc.)
+            se sumará próximamente. Si la necesitás ahora, consultanos por
+            <a
+              href={waLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-semibold not-italic"
+            >WhatsApp</a>.
+          </p>
+        )}
+      </div>
+    </details>
 
     <div class="mt-auto pt-3 border-t border-gray-100">
-      <div
-        class={`text-lg font-bold mb-3 ${
-          producto.precio ? "text-azul" : "text-gray-400 text-sm"
-        }`}
-      >
+      <div class={`text-lg font-bold mb-3 ${
+        producto.precio ? "text-azul" : "text-gray-400 text-sm"
+      }`}>
         {precio}
       </div>
 
@@ -97,17 +124,28 @@ const precio = formatPrecio(producto.precio);
         class="flex items-center justify-center gap-2 w-full bg-verde text-white py-2.5 rounded-xl text-sm font-semibold hover:bg-verde-dark transition-all duration-200 hover:shadow-md hover:shadow-verde/20"
         aria-label={`Consultar por WhatsApp: ${producto.nombre}`}
       >
-        <svg
-          class="w-4 h-4 flex-shrink-0"
-          fill="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"
-          ></path>
+        <svg class="w-4 h-4 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"></path>
         </svg>
         Consultar precio y cuotas
       </a>
     </div>
   </div>
 </article>
+
+<script>
+  // Toggle labels for ficha técnica (VER / OCULTAR)
+  document.querySelectorAll<HTMLDetailsElement>('.ficha-tecnica').forEach((details) => {
+    details.addEventListener('toggle', () => {
+      const collapsed = details.querySelector<HTMLElement>('.ficha-label-collapsed');
+      const expanded = details.querySelector<HTMLElement>('.ficha-label-expanded');
+      if (details.open) {
+        collapsed?.classList.add('hidden');
+        expanded?.classList.remove('hidden');
+      } else {
+        collapsed?.classList.remove('hidden');
+        expanded?.classList.add('hidden');
+      }
+    });
+  });
+</script>

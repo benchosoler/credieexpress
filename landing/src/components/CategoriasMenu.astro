@@ -1,0 +1,226 @@
+---
+// CategoriasMenu — Cards de categoría con subcategorías siempre visibles.
+// Las subcategorías son links directos a /catalogo?subcategoria={slug} —
+// no hay panel colapsable, no hay hover-to-open. Cero fricción.
+import type { CategoriaNode } from "../lib/strapi-types";
+import SubcategoriasList from "./SubcategoriasList.astro";
+
+import electrodomesticosImg from "../assets/categorias/electrodomesticos.svg";
+import hogarImg from "../assets/categorias/articulos-del-hogar.svg";
+import gastronomicosImg from "../assets/categorias/articulos-gastronomicos.svg";
+
+interface Props {
+  categorias: CategoriaNode[];
+  /** Slug de la subcategoría activa (resaltado en cada card). */
+  activeSubSlug?: string;
+  /** Slug de la categoría activa (resaltado como borde). */
+  activeCatSlug?: string;
+  /**
+   * Link base para cada subcategoría. Default: "/catalogo".
+   * Las cards siempre navegan a `${linkBase}?categoria=${slug}` y los
+   * rows a `${linkBase}?subcategoria=${sub.slug}`.
+   */
+  linkBase?: string;
+  /** Máximo de subcategorías visibles por card antes de colapsar. Default: 5. */
+  maxVisibleSubs?: number;
+}
+
+const {
+  categorias,
+  activeSubSlug,
+  activeCatSlug,
+  linkBase = "/catalogo",
+  maxVisibleSubs = 5,
+} = Astro.props;
+
+const PLACEHOLDER_MAP: Record<string, ImageMetadata> = {
+  "electrodomesticos": electrodomesticosImg,
+  "articulos-del-hogar": hogarImg,
+  "articulos-gastronomicos": gastronomicosImg,
+};
+
+// Paleta de acento por categoría (monograma, gradiente, ring, texto).
+// Determinístico por slug → estable entre renders.
+const CAT_PALETTE = [
+  {
+    monogram: "bg-azul",
+    text: "text-azul",
+    ring: "ring-azul/40",
+    border: "border-azul",
+    chipBg: "bg-azul/10",
+    chipText: "text-azul",
+  },
+  {
+    monogram: "bg-verde",
+    text: "text-verde-dark",
+    ring: "ring-verde/40",
+    border: "border-verde",
+    chipBg: "bg-verde/10",
+    chipText: "text-verde-dark",
+  },
+  {
+    monogram: "bg-turquesa",
+    text: "text-turquesa-dark",
+    ring: "ring-turquesa/40",
+    border: "border-turquesa",
+    chipBg: "bg-turquesa/10",
+    chipText: "text-turquesa-dark",
+  },
+  {
+    monogram: "bg-cyan",
+    text: "text-cyan-dark",
+    ring: "ring-cyan/40",
+    border: "border-cyan",
+    chipBg: "bg-cyan/10",
+    chipText: "text-cyan-dark",
+  },
+] as const;
+
+function pickCatColor(slug: string) {
+  let h = 0;
+  for (let i = 0; i < slug.length; i++) {
+    h = (h * 31 + slug.charCodeAt(i)) | 0;
+  }
+  return CAT_PALETTE[Math.abs(h) % CAT_PALETTE.length];
+}
+
+function activeSubCount(cat: CategoriaNode): number {
+  if (!cat.subcategorias) return 0;
+  return cat.subcategorias.filter((s) => s.activo).length;
+}
+
+function getMonogram(nombre: string): string {
+  const first = nombre.trim().charAt(0);
+  return first.toUpperCase() || "?";
+}
+---
+
+<div class="categorias-menu grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+  {
+    categorias.map((cat) => {
+      const subCount = activeSubCount(cat);
+      const placeholder = PLACEHOLDER_MAP[cat.slug];
+      const accent = pickCatColor(cat.slug);
+      const monogram = getMonogram(cat.nombre);
+      const isActiveCat = activeCatSlug === cat.slug;
+      const activeSubs = cat.subcategorias?.filter((s) => s.activo) ?? [];
+
+      return (
+        <article
+          class:list={[
+            "categoria-tile group relative bg-white rounded-2xl overflow-hidden border transition-all duration-300 hover:shadow-xl hover:-translate-y-1",
+            isActiveCat
+              ? `${accent.border} shadow-lg ring-1 ${accent.ring}`
+              : "border-gray-200 hover:border-gray-300",
+          ]}
+          data-categoria-slug={cat.slug}
+          data-categoria-nombre={cat.nombre}
+        >
+          {/* ─── Header: imagen + monograma + contador ─── */}
+          <a
+            href={`${linkBase}?categoria=${cat.slug}`}
+            class="block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-azul focus-visible:ring-offset-2"
+            aria-label={`Ver todos los productos de la categoría ${cat.nombre}`}
+          >
+            <div class="cat-hero relative aspect-[5/3] bg-gris-claro overflow-hidden">
+              {placeholder ? (
+                <img
+                  src={placeholder.src}
+                  alt={cat.nombre}
+                  class="w-full h-full object-cover opacity-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-500"
+                  loading="lazy"
+                  width={placeholder.width}
+                  height={placeholder.height}
+                />
+              ) : (
+                <div class="w-full h-full flex flex-col items-center justify-center gap-2 text-gray-300">
+                  <svg
+                    class="w-10 h-10"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="1.5"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    />
+                  </svg>
+                  <span class="text-xs font-medium">Sin imagen</span>
+                </div>
+              )}
+
+              {/* Brand accent stripe — top of image */}
+              <div class="absolute top-0 left-0 right-0 h-1 gradient-brand opacity-90" />
+
+              {/* Monogram badge — top-left */}
+              <div
+                class:list={[
+                  "absolute top-3 left-3 w-11 h-11 rounded-xl ring-2 ring-white/80 shadow-md flex items-center justify-center text-white font-display font-bold text-lg",
+                  accent.monogram,
+                ]}
+              >
+                {monogram}
+              </div>
+
+              {/* Navigate arrow — top-right */}
+              <div class="absolute top-3 right-3 w-10 h-10 rounded-xl bg-white/95 shadow-md flex items-center justify-center group-hover:bg-white group-hover:scale-110 transition-all duration-300">
+                <svg
+                  class:list={["w-4 h-4", accent.text]}
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M17 8l4 4m0 0l-4 4m4-4H3"
+                  />
+                </svg>
+              </div>
+
+              {/* Bottom overlay: title + subcount */}
+              <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent pt-12 pb-3.5 px-4">
+                <h3 class="font-display font-bold text-white text-lg sm:text-xl leading-tight drop-shadow">
+                  {cat.nombre}
+                </h3>
+              </div>
+            </div>
+          </a>
+
+          {/* ─── Body: contador + subcategorías siempre visibles ─── */}
+          <div class="p-4 sm:p-5 space-y-3.5">
+            {/* Contador de subcategorías */}
+            <div
+              class:list={[
+                "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider",
+                accent.chipBg,
+                accent.chipText,
+              ]}
+            >
+              <span class="w-1.5 h-1.5 rounded-full bg-current" />
+              {subCount} subcategoría{subCount !== 1 ? "s" : ""}
+            </div>
+
+            {/* Subcategorías: siempre visibles (no colapsan) */}
+            {activeSubs.length > 0 ? (
+              <SubcategoriasList
+                subcategorias={activeSubs}
+                parentSlug={cat.slug}
+                linkBase={linkBase}
+                maxVisible={maxVisibleSubs}
+                activeSlug={activeSubSlug}
+              />
+            ) : (
+              <p class="text-xs text-gray-400 italic">
+                Próximamente más rubros en esta categoría.
+              </p>
+            )}
+          </div>
+        </article>
+      );
+    })
+  }
+</div>

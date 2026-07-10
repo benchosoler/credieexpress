@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fef3c7"/>
+      <stop offset="1" stop-color="#fde68a"/>
+    </linearGradient>
+    <linearGradient id="rail" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#fbbf24"/>
+      <stop offset="1" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <!-- Floor shadow -->
+  <ellipse cx="400" cy="555" rx="320" ry="18" fill="#000" opacity="0.12"/>
+  <!-- Top sign header -->
+  <rect x="100" y="40" width="600" height="55" rx="8" fill="#1E90FF"/>
+  <rect x="100" y="40" width="600" height="55" rx="8" fill="none" stroke="#0c4a6e" stroke-width="2"/>
+  <text x="400" y="76" text-anchor="middle" fill="#fff" font-family="Arial, sans-serif" font-size="22" font-weight="700">GÓNDOLA CENTRAL</text>
+  <!-- Back panels (island shape) -->
+  <polygon points="180,100 400,80 620,100 620,120 400,100 180,120" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <polygon points="180,520 400,540 620,520 620,500 400,520 180,500" fill="#e2e8f0" stroke="#94a3b8" stroke-width="2"/>
+  <!-- Top header rail -->
+  <rect x="170" y="95" width="460" height="14" fill="url(#rail)" stroke="#92400e" stroke-width="1"/>
+  <!-- Bottom base rail -->
+  <rect x="170" y="500" width="460" height="14" fill="url(#rail)" stroke="#92400e" stroke-width="1"/>
+  <!-- Vertical posts -->
+  <rect x="178" y="100" width="6" height="410" fill="#94a3b8"/>
+  <rect x="616" y="100" width="6" height="410" fill="#94a3b8"/>
+  <!-- 4 shelves across -->
+  <rect x="178" y="180" width="444" height="10" fill="url(#rail)"/>
+  <rect x="178" y="270" width="444" height="10" fill="url(#rail)"/>
+  <rect x="178" y="360" width="444" height="10" fill="url(#rail)"/>
+  <rect x="178" y="450" width="444" height="10" fill="url(#rail)"/>
+  <!-- Products on shelves (4 shelves x 8 products) -->
+  <!-- Top shelf -->
+  <rect x="200" y="130" width="38" height="50" fill="#dc2626" opacity="0.85"/>
+  <rect x="246" y="125" width="42" height="55" fill="#1E90FF" opacity="0.85"/>
+  <rect x="296" y="130" width="40" height="50" fill="#00C853" opacity="0.85"/>
+  <rect x="344" y="125" width="42" height="55" fill="#fbbf24" opacity="0.85"/>
+  <rect x="394" y="130" width="40" height="50" fill="#7c3aed" opacity="0.85"/>
+  <rect x="442" y="125" width="42" height="55" fill="#ea580c" opacity="0.85"/>
+  <rect x="492" y="130" width="40" height="50" fill="#0891b2" opacity="0.85"/>
+  <rect x="540" y="125" width="42" height="55" fill="#1E90FF" opacity="0.85"/>
+  <rect x="590" y="130" width="28" height="50" fill="#dc2626" opacity="0.85"/>
+  <!-- 2nd shelf -->
+  <rect x="198" y="222" width="42" height="48" fill="#00C853" opacity="0.85"/>
+  <rect x="248" y="220" width="40" height="50" fill="#7c3aed" opacity="0.85"/>
+  <rect x="296" y="222" width="42" height="48" fill="#fbbf24" opacity="0.85"/>
+  <rect x="346" y="220" width="40" height="50" fill="#dc2626" opacity="0.85"/>
+  <rect x="394" y="222" width="42" height="48" fill="#1E90FF" opacity="0.85"/>
+  <rect x="444" y="220" width="40" height="50" fill="#0891b2" opacity="0.85"/>
+  <rect x="492" y="222" width="42" height="48" fill="#ea580c" opacity="0.85"/>
+  <rect x="542" y="220" width="40" height="50" fill="#00C853" opacity="0.85"/>
+  <rect x="590" y="222" width="28" height="48" fill="#7c3aed" opacity="0.85"/>
+  <!-- 3rd shelf -->
+  <rect x="200" y="312" width="40" height="48" fill="#dc2626" opacity="0.85"/>
+  <rect x="248" y="310" width="42" height="50" fill="#0891b2" opacity="0.85"/>
+  <rect x="298" y="312" width="40" height="48" fill="#ea580c" opacity="0.85"/>
+  <rect x="346" y="310" width="42" height="50" fill="#1E90FF" opacity="0.85"/>
+  <rect x="396" y="312" width="40" height="48" fill="#7c3aed" opacity="0.85"/>
+  <rect x="444" y="310" width="42" height="50" fill="#fbbf24" opacity="0.85"/>
+  <rect x="494" y="312" width="40" height="48" fill="#dc2626" opacity="0.85"/>
+  <rect x="542" y="310" width="42" height="50" fill="#00C853" opacity="0.85"/>
+  <rect x="590" y="312" width="28" height="48" fill="#1E90FF" opacity="0.85"/>
+  <!-- 4th shelf -->
+  <rect x="198" y="402" width="42" height="48" fill="#1E90FF" opacity="0.85"/>
+  <rect x="248" y="400" width="40" height="50" fill="#7c3aed" opacity="0.85"/>
+  <rect x="296" y="402" width="42" height="48" fill="#dc2626" opacity="0.85"/>
+  <rect x="346" y="400" width="40" height="50" fill="#ea580c" opacity="0.85"/>
+  <rect x="394" y="402" width="42" height="48" fill="#0891b2" opacity="0.85"/>
+  <rect x="444" y="400" width="40" height="50" fill="#00C853" opacity="0.85"/>
+  <rect x="492" y="402" width="42" height="48" fill="#fbbf24" opacity="0.85"/>
+  <rect x="542" y="400" width="40" height="50" fill="#dc2626" opacity="0.85"/>
+  <rect x="590" y="402" width="28" height="48" fill="#7c3aed" opacity="0.85"/>
+  <!-- Price tags hanging -->
+  <rect x="230" y="105" width="40" height="14" fill="#fbbf24" stroke="#92400e" stroke-width="1"/>
+  <text x="250" y="115" text-anchor="middle" fill="#000" font-family="Arial" font-size="10" font-weight="700">$99</text>
+  <rect x="430" y="105" width="40" height="14" fill="#fbbf24" stroke="#92400e" stroke-width="1"/>
+  <text x="450" y="115" text-anchor="middle" fill="#000" font-family="Arial" font-size="10" font-weight="700">$79</text>
+  <!-- Title -->
+  <text x="400" y="585" text-anchor="middle" fill="#92400e" font-family="Arial, sans-serif" font-size="16" font-weight="700">Góndola Central</text>
+</svg>

@@ -76,6 +76,53 @@
 }
 ```
 
+### Nueva Taxonomía (Catálogo Visual — 2026-06)
+Se implementó una jerarquía de 2 niveles con Categoria → Subcategoria:
+
+**Strapi Content-Types nuevos:**
+- `Categoria`: nombre, slug, imagenRef (ruta a `/src/assets/categorias/`), orden, activo
+- `Subcategoria`: nombre, slug, categoria (FK), orden, activo
+- Relación: Producto ↔ Subcategoria (many-to-many)
+
+**Campos nuevos en Producto:**
+- `imagenes`: media multiple (hasta 5 en UI, sin límite en Strapi)
+- `fichaTecnica`: richtext (bloques JSON)
+- `subcategorias`: manyToMany relación con Subcategoria
+
+**Campos deprecados (mantenidos por compatibilidad):**
+- `categoria` (enum) → reemplazado por subcategorias
+- `imagen` (single) → reemplazado por imagenes (multiple)
+
+**Migración (bootstrap.js):**
+- Ejecuta `migrateTaxonomia()` antes del seed
+- Crea 3 categorías (Electrodomésticos, Artículos del Hogar, Artículos Gastronómicos)
+- Crea 8 subcategorías mapeadas de los valores del enum legacy
+- Vincula cada Producto a su Subcategoria correspondiente
+- Idempotente: `findFirst` antes de `create`, `!subcategorias?.length` antes de link
+
+**Componentes Astro nuevos:**
+- `ProductGallery.astro` — carrusel vanilla JS multi-imagen (a11y, keyboard nav, dots)
+- `CategoriasMenu.astro` — tiles visuales por categoría con expansión inline
+- `SubcategoriasList.astro` — lista de subcategorías con CustomEvent para filtrado
+
+**Componentes Astro modificados:**
+- `Catalogo.astro` — orquestador: 2 fetches paralelos → Categorías + Grid de productos (Destacados eliminado por feedback del cliente)
+- `ProductCard.astro` — usa ProductGallery + toggle ficha técnica (details/summary)
+
+**Fetchers nuevos en strapi.ts:**
+- `getCategorias()` → `/api/categorias?populate=subcategorias`
+- `getProductosBySubcategoria(slug)` → filtro por subcategorias.slug
+- `renderBlocks(blocks)` → convierte Strapi richtext JSON a HTML sanitizado
+
+**Flujo de datos:**
+```
+Strapi :1338 → Catalogo.astro (2 fetch en build time) → CategoriasMenu → SubcategoriasList
+                   ↓                                        ↓
+              ProductCard ← ProductGallery              CustomEvent('subcategory-select')
+                   ↓                                        ↓
+              Ficha Técnica (details)                 Filtro grid (data-subcategorias)
+```
+
 ### Notas Importantes
 - **Variantes:** Se cargan como productos distintos dentro de la misma categoría
   - Ej: "Balanza A - Modelo Premium", "Balanza A - Modelo Standard"
@@ -158,6 +205,25 @@ PUBLIC_STRAPI_URL=http://localhost:1337
 STRAPI_API_TOKEN=token_aqui (si es necesario autenticación)
 ```
 
+### Comandos de Desarrollo (actualizado 2026-06)
+
+```bash
+# Strapi (desarrollo local con nuevos content-types)
+cd strapi && PORT=1338 npm run develop
+
+# Landing (Astro dev con HMR)
+cd landing && npm run dev -- --port 4323
+
+# Verificar tipos TypeScript
+cd landing && npx astro check
+
+# Strapi (Docker production)
+docker compose up -d strapi    # puerto 1337
+
+# Landing (Docker production)
+docker compose up -d landing   # puerto 3003 → 4321
+```
+
 ### Integración Strapi - API
 - **Endpoint:** `GET /api/productos?populate=imagen`
 - **Formato respuesta:** REST JSON
@@ -231,10 +297,12 @@ STRAPI_API_TOKEN=token_aqui (si es necesario autenticación)
 2. ✅ Configurar ambiente local
 3. ✅ Diseñar y maquetar landing
 4. ✅ Integrar catálogo con API
-5. ✅ Testing completo
-6. ✅ Deploy a Strapi Cloud
-7. ✅ Configurar dominio final
-8. ✅ Capacitación al cliente para gestionar productos en Strapi
+5. ✅ Catálogo visual: categorías + subcategorías + galería + ficha técnica (2026-06)
+6. 🔲 Rebuildear Strapi Docker con nuevos schemas
+7. 🔲 Cargar imágenes reales para categorías y productos
+8. 🔲 Testing en producción (Strapi Cloud)
+9. 🔲 Configurar dominio final
+10. 🔲 Capacitación al cliente para gestionar productos en Strapi
 
 ---
 
@@ -247,6 +315,6 @@ STRAPI_API_TOKEN=token_aqui (si es necesario autenticación)
 
 ---
 
-**Última actualización:** Mayo 2026
-**Estado:** En desarrollo
+**Última actualización:** Junio 2026
+**Estado:** Catálogo visual implementado — pendiente deploy a Strapi Cloud con nuevos schemas
 **Responsable:** Benicio (Desarrollador)
