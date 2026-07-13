@@ -52,7 +52,7 @@ export async function fetchProductoBySlug(
   slug: string,
 ): Promise<ProductoStrapi | null> {
   const response = await fetch(
-    `${STRAPI_URL}/api/productos?filters[slug][$eq]=${slug}&populate[imagenes]=true&populate[subcategorias]=true&populate[fichaTecnica]=true&populate[imagen]=true`,
+    `${STRAPI_URL}/api/productos?filters[slug][$eq]=${slug}&populate[imagenes]=true&populate[subcategorias]=true&populate[imagen]=true`,
   );
 
   if (!response.ok) return null;
