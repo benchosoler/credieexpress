@@ -2,8 +2,10 @@
 import RevistaLayout from "../layouts/RevistaLayout.astro";
 import { fetchTodosProductos, fetchCategorias } from "../lib/strapi";
 
-let productos = [];
-let categorias = [];
+import type { ProductoStrapi } from "../lib/strapi-types";
+
+let productos: ProductoStrapi[] = [];
+let categorias: string[] = [];
 
 try {
   const [prodRes, catRes] = await Promise.all([

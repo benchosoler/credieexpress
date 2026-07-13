@@ -350,8 +350,9 @@ const paymentMethods = [
 
 <script>
   // Accordion behavior — vanilla JS, no hydration needed
-  function togglePanel(trigger) {
-    const targetId = trigger.dataset.target;
+  function togglePanel(trigger: Element) {
+    const targetId = (trigger as HTMLElement).dataset.target;
+    if (!targetId) return;
     const panel = document.getElementById(targetId);
     const chevron = trigger.querySelector(".accordion-chevron");
     const isOpen = !panel?.classList.contains("hidden");
@@ -361,7 +362,7 @@ const paymentMethods = [
     trigger.setAttribute("aria-expanded", String(!isOpen));
   }
 
-  function openPanelById(sectionId) {
+  function openPanelById(sectionId: string) {
     const trigger = document.querySelector(
       `.accordion-trigger[data-target="accordion-panel-${sectionId}"]`
     );
