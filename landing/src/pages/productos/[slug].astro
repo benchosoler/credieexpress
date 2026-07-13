@@ -144,13 +144,6 @@ const pageDescription = producto.descripcion
             {precio}
           </div>
 
-          <!-- Description -->
-          {producto.descripcion && (
-            <p class="text-gray-600 leading-relaxed">
-              {producto.descripcion}
-            </p>
-          )}
-
           <!-- WhatsApp CTA -->
           <a
             href={waLink}
@@ -164,22 +157,42 @@ const pageDescription = producto.descripcion
             </svg>
             Consultar precio y cuotas
           </a>
-
-          <!-- Ficha técnica -->
-          {fichaHtml && (
-            <div class="mt-2">
-              <h2 class="font-display text-xl font-bold text-gray-900 mb-4">
-                Ficha técnica
-              </h2>
-              <div
-                class="prose prose-sm max-w-none text-gray-600 [&_ul]:list-disc [&_ul]:pl-4 [&_ol]:list-decimal [&_ol]:pl-4 [&_h1]:text-lg [&_h1]:font-bold [&_h2]:text-base [&_h2]:font-bold [&_h3]:text-sm [&_h3]:font-bold [&_blockquote]:border-l-2 [&_blockquote]:border-azul/30 [&_blockquote]:pl-3 [&_blockquote]:italic [&_img]:rounded-lg [&_img]:max-w-full [&_p]:mb-2"
-                set:html={fichaHtml}
-              />
-            </div>
-          )}
         </div>
       </div>
     </section>
+
+    <!-- Description — full-width dedicated section -->
+    {producto.descripcion && (
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div class="border-t border-gray-200 pt-10">
+          <h2 class="font-display text-2xl font-bold text-gray-900 mb-6">
+            Descripción del producto
+          </h2>
+          <div class="prose prose-lg max-w-3xl text-gray-700 leading-relaxed">
+            {producto.descripcion.split("\n").filter((p: string) => p.trim()).map((parrafo: string) => (
+              <p class="mb-4">{parrafo.trim()}</p>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- Ficha técnica — full-width section -->
+    {fichaHtml && (
+      <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-12">
+        <div class={!producto.descripcion ? "border-t border-gray-200 pt-10" : ""}>
+          <h2 class="font-display text-2xl font-bold text-gray-900 mb-6">
+            Ficha técnica
+          </h2>
+          <div class="max-w-3xl">
+            <div
+              class="prose prose-base max-w-none text-gray-700 bg-gris-claro rounded-2xl p-6 sm:p-8 [&_ul]:list-disc [&_ul]:pl-5 [&_ol]:list-decimal [&_ol]:pl-5 [&_li]:mb-1.5 [&_h3]:text-base [&_h3]:font-bold [&_h3]:text-gray-900 [&_h3]:mt-4 [&_h3]:first:mt-0 [&_blockquote]:border-l-3 [&_blockquote]:border-azul/40 [&_blockquote]:pl-4 [&_blockquote]:italic [&_img]:rounded-lg [&_img]:max-w-full [&_p]:mb-2"
+              set:html={fichaHtml}
+            />
+          </div>
+        </div>
+      </section>
+    )}
 
     <!-- Related products -->
     {relacionados.length > 0 && (
