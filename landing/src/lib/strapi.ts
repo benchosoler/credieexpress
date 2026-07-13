@@ -52,7 +52,7 @@ export async function fetchProductoBySlug(
   slug: string,
 ): Promise<ProductoStrapi | null> {
   const response = await fetch(
-    `${STRAPI_URL}/api/productos?filters[slug][$eq]=${slug}&populate=imagen`,
+    `${STRAPI_URL}/api/productos?filters[slug][$eq]=${slug}&populate[imagenes]=true&populate[subcategorias]=true&populate[fichaTecnica]=true&populate[imagen]=true`,
   );
 
   if (!response.ok) return null;
@@ -192,10 +192,11 @@ export async function getSubcategorias(): Promise<SubcategoriaNode[]> {
 
 export async function getProductosBySubcategoria(
   subSlug: string,
+  limit?: number,
 ): Promise<ProductoStrapi[]> {
   try {
     const response = await fetch(
-      `${STRAPI_URL}/api/productos?filters[subcategorias][slug][$eq]=${subSlug}&filters[activo][$eq]=true&populate[subcategorias][populate][categoria]=true&populate[imagenes]=true&populate[imagen]=true&pagination[pageSize]=100&sort=nombre:asc`,
+      `${STRAPI_URL}/api/productos?filters[subcategorias][slug][$eq]=${subSlug}&filters[activo][$eq]=true&populate[subcategorias][populate][categoria]=true&populate[imagenes]=true&populate[imagen]=true&pagination[pageSize]=${limit ?? 100}&sort=nombre:asc`,
     );
     if (!response.ok) return [];
     const json = await response.json();
