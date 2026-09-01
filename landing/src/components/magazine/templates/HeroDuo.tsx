@@ -189,7 +189,7 @@ export default function HeroDuo({
   };
 
   return (
-    <div className="w-[595px] h-[842px] relative bg-white flex flex-col font-['DM_Sans',system-ui,sans-serif]">
+    <div className="w-full h-full relative bg-white flex flex-col font-['DM_Sans',system-ui,sans-serif]">
       <svg
         className="absolute inset-0 w-full h-full pointer-events-none z-0"
         viewBox="0 0 595 842"

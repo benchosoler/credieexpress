@@ -242,8 +242,8 @@ export default function FullFeature({
 
       <style>{`
         .template-full-feature {
-          width: 595px;
-          height: 842px;
+          width: 100%;
+          height: 100%;
           position: relative;
           background: white;
           display: flex;

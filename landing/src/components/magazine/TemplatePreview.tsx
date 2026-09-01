@@ -1,6 +1,7 @@
-import React, { useRef } from "react";
+import React from "react";
 import type { ProductoStrapi } from "../../lib/strapi-types";
 import type { MagazinePage, TemplateDefinition } from "./types";
+import MagazineSheet from "./MagazineSheet";
 import HeroDuo from "./templates/HeroDuo";
 import AsymmetricTrio from "./templates/AsymmetricTrio";
 import FullFeature from "./templates/FullFeature";
@@ -52,20 +53,14 @@ export default function TemplatePreview({
   onStartAssigning,
   pages,
 }: TemplatePreviewProps) {
-  const previewRef = useRef<HTMLDivElement>(null);
-
   const TemplateComponent = TEMPLATES[page.templateType];
 
   if (!TemplateComponent) return null;
 
   return (
     <div className="flex justify-center w-full">
-      <div className="transform-origin-top-center">
-        <div
-          ref={previewRef}
-          className="w-[595px] h-[842px] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] rounded-lg relative overflow-hidden"
-          id={`magazine-page-${page.id}`}
-        >
+      <div className="sheet-zoom">
+        <MagazineSheet id={page.id}>
           <TemplateComponent
             page={page}
             selectedProductos={selectedProductos}
@@ -74,7 +69,7 @@ export default function TemplatePreview({
             onStartAssigning={onStartAssigning}
             pages={pages}
           />
-        </div>
+        </MagazineSheet>
       </div>
     </div>
   );
