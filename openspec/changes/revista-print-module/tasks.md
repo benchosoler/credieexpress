@@ -81,15 +81,15 @@ Branch order (linear, satisfies all dependencies): tracker ← PR0 ← PR1 ← P
 
 ## PR 4 — `grid4`, `grid6`, footer QR
 
-- [ ] 4.1 Modify `types.ts`: add `grid4`/`grid6` to `TemplateType` and `TEMPLATE_DEFINITIONS` with slot definitions (additive) — *Additive Template Registry*
-- [ ] 4.2 Create `templates/Grid4.tsx`: 2x2, equal fr tracks both axes, 4 `MagazineCard` slots (~90x126mm) — *grid4 Layout*
-- [ ] 4.3 Create `templates/Grid6.tsx`: 2x3, 6 `MagazineCard` slots (~90x82mm), description enabled — *grid6 Layout, descripcionCorta present/empty scenarios*
-- [ ] 4.4 Wire the footer QR into `MagazineSheet.tsx`: exactly one per sheet, encoding the catalog URL, never per-card — *One QR Per Sheet In Shared Footer*
-- [ ] 4.5 Resolve QR origin from `import.meta.env.PUBLIC_SITE_URL` with hardcoded fallback `https://crediexpress.com.ar`
-- [ ] 4.6 Manual: adding `grid4`/`grid6` does not change `dynamicQuad`'s `1.2fr 1fr` track sizing — *Adding grid4/grid6 does not change dynamicQuad*
-- [ ] 4.7 Manual: product with empty `descripcionCorta` and empty `descripcion` in a `grid6` cell renders no text and no reserved blank block — *Both descripcionCorta and descripcion empty*
-- [ ] 4.8 Manual: sheet with any template/product count shows exactly one footer QR, none inside a card
-- [ ] 4.9 Run `npm run check`, `npm run lint`, `npm run build --prefix landing`
+- [x] 4.1 Modify `types.ts`: add `grid4`/`grid6` to `TemplateType` and `TEMPLATE_DEFINITIONS` with slot definitions (additive) — *Additive Template Registry*
+- [x] 4.2 Create `templates/Grid4.tsx`: 2x2, equal fr tracks both axes, 4 `MagazineCard` slots (~90x126mm) — *grid4 Layout*
+- [x] 4.3 Create `templates/Grid6.tsx`: 2x3, 6 `MagazineCard` slots (~90x82mm), description enabled — *grid6 Layout, descripcionCorta present/empty scenarios*. `MagazineCard` gained an optional `descriptionLines` override (default unchanged) so grid6's wider text column renders 3 lines at 9pt instead of the base 2-line clamp.
+- [x] 4.4 Wire the footer QR into `MagazineSheet.tsx`: exactly one per sheet, encoding the catalog URL, never per-card — *One QR Per Sheet In Shared Footer*. Rendered directly by `MagazineSheet` (not a caller-supplied render prop), so no template can render zero, duplicate, or per-card QR placeholders.
+- [x] 4.5 Resolve QR origin from `import.meta.env.PUBLIC_SITE_URL` with hardcoded fallback `https://crediexpress.com.ar` — added `PUBLIC_SITE_URL?: string` to `ImportMetaEnv` in `env.d.ts`.
+- [ ] 4.6 Manual: adding `grid4`/`grid6` does not change `dynamicQuad`'s `1.2fr 1fr` track sizing — *Adding grid4/grid6 does not change dynamicQuad* — **VERIFIED STATICALLY**: `git diff` of `DynamicQuad.tsx` against the PR3 baseline is empty (zero changes); full manual render is still browser-only, not run in this environment.
+- [ ] 4.7 Manual: product with empty `descripcionCorta` and empty `descripcion` in a `grid6` cell renders no text and no reserved blank block — *Both descripcionCorta and descripcion empty* — **VERIFIED STATICALLY**: `shortDescription()` returns `""` in this case and `MagazineCard` only renders `<p className="magazine-card-desc">` when `description` is truthy (`{description && <p ...>}`), so no block is reserved; live browser render not performed in this environment.
+- [ ] 4.8 Manual: sheet with any template/product count shows exactly one footer QR, none inside a card — **VERIFIED STATICALLY**: the QR markup lives only in `MagazineSheet.tsx`'s own JSX (not inside `MagazineCard.tsx` or any template), and every template routes through the same `MagazineSheet`; live browser render not performed in this environment.
+- [x] 4.9 Run `npm run check`, `npm run lint`, `npm run build --prefix landing` — **PARTIAL**: `npm run check` (0 errors, 0 warnings, 27 hints across 46 files) and `npm run build` both pass. `npm run lint` intentionally NOT run — it is `eslint --fix` and mutates the working tree (per explicit environment instruction). Used `npx eslint <changed files>` (no `--fix`) instead: 2 pre-existing errors found (`TemplatePreview.tsx` unused `templateDef`, `env.d.ts` triple-slash-reference), both confirmed present before this change via `git stash`; zero new issues introduced by PR4.
 
 ## PR 5 — Editor fixes
 
