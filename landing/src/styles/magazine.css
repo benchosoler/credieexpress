@@ -348,6 +348,15 @@
   margin: 3.53mm 0 2.12mm;
 }
 
+/* Decorative accent bar rendered below the feature title. */
+.magazine-sheet .magazine-card-title-line {
+  width: 21.18mm; /* 60px */
+  height: 1.06mm; /* 3px */
+  background: linear-gradient(90deg, var(--brand-turquesa), var(--brand-cyan));
+  margin: 0 auto 4.24mm; /* 12px */
+  border-radius: 0.71mm; /* 2px */
+}
+
 .magazine-sheet .magazine-card--feature .magazine-card-desc {
   font-size: 10pt;
   color: #64748b;
@@ -382,4 +391,17 @@
 
 .magazine-sheet .magazine-card--feature .magazine-card-empty-label {
   font-size: 10pt;
+}
+
+/*
+ * Feature variant's empty state occupies a whole A4 page, so it gets its
+ * own icon-above-label layout (matching the original fullFeature design)
+ * instead of the plain single-line label the smaller card variant uses.
+ */
+.magazine-sheet .magazine-card--feature .magazine-card-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4.24mm; /* 12px */
+  color: #cbd5e1;
 }

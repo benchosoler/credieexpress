@@ -121,6 +121,39 @@ export default function FullFeature({
           variant="feature"
           descriptionMode="full"
           showCategoria
+          removeIconSize={16}
+          titleAccent={<div className="magazine-card-title-line" />}
+          shippingIcon={
+            <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
+              <path
+                d="M1 6h4l1-3h4v6H2V6z"
+                stroke="var(--brand-verde)"
+                strokeWidth="1"
+                strokeLinejoin="round"
+              />
+              <circle cx="3.5" cy="9" r="1" fill="var(--brand-verde)" />
+              <circle cx="8.5" cy="9" r="1" fill="var(--brand-verde)" />
+            </svg>
+          }
+          emptyIcon={
+            <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+              <rect
+                x="4"
+                y="4"
+                width="24"
+                height="24"
+                rx="4"
+                stroke="#CBD5E1"
+                strokeWidth="1.5"
+              />
+              <circle cx="12" cy="14" r="2" fill="#CBD5E1" />
+              <path
+                d="M4 24l6-6 4 4 4-4 10 10"
+                stroke="#CBD5E1"
+                strokeWidth="1.5"
+              />
+            </svg>
+          }
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}

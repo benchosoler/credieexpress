@@ -1,4 +1,4 @@
-import type { DragEvent } from "react";
+import type { DragEvent, ReactNode } from "react";
 import type { ProductoStrapi } from "../../lib/strapi-types";
 import type { TemplateSlot } from "./types";
 import { getImageUrl, formatPrecio } from "../../lib/strapi";
@@ -21,6 +21,19 @@ interface MagazineCardProps {
   descriptionMode?: "short" | "full";
   /** `feature` variant only: shows the product's `categoria` as a badge. */
   showCategoria?: boolean;
+  /** Decorative accent rendered directly under the title (e.g.
+   * `fullFeature`'s gradient underline bar). Renders nothing when
+   * omitted — templates that don't need one simply don't pass it. */
+  titleAccent?: ReactNode;
+  /** Icon rendered before the "Envio incluido" text. Renders nothing
+   * when omitted. */
+  shippingIcon?: ReactNode;
+  /** Icon rendered above the empty-state label. Renders nothing when
+   * omitted. */
+  emptyIcon?: ReactNode;
+  /** Pixel size of the remove-button icon; the button itself scales via
+   * CSS per variant/density. Defaults to 14 (the card-variant size). */
+  removeIconSize?: number;
   onDrop: (e: DragEvent, slotId: string) => void;
   onDragOver: (e: DragEvent, slotId: string) => void;
   onDragLeave: () => void;
@@ -48,6 +61,10 @@ export default function MagazineCard({
   variant = "card",
   descriptionMode = "short",
   showCategoria = false,
+  titleAccent,
+  shippingIcon,
+  emptyIcon,
+  removeIconSize = 14,
   onDrop,
   onDragOver,
   onDragLeave,
@@ -96,11 +113,15 @@ export default function MagazineCard({
               <span className="magazine-card-badge">{producto.categoria}</span>
             )}
             <h3 className="magazine-card-title">{producto.nombre}</h3>
+            {titleAccent}
             {description && <p className="magazine-card-desc">{description}</p>}
             <div className="magazine-card-price">
               {formatPrecio(producto.precio)}
             </div>
-            <div className="magazine-card-shipping">Envio incluido</div>
+            <div className="magazine-card-shipping">
+              {shippingIcon}
+              Envio incluido
+            </div>
           </div>
           <button
             className="magazine-card-remove no-print"
@@ -110,7 +131,12 @@ export default function MagazineCard({
             }}
             title="Quitar producto"
           >
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <svg
+              width={removeIconSize}
+              height={removeIconSize}
+              viewBox="0 0 14 14"
+              fill="none"
+            >
               <path
                 d="M3 3l8 8M11 3l-8 8"
                 stroke="currentColor"
@@ -122,6 +148,7 @@ export default function MagazineCard({
         </div>
       ) : (
         <div className="magazine-card-empty">
+          {emptyIcon}
           <span className="magazine-card-empty-label">
             {isAssigning ? "Click para colocar" : label}
           </span>
