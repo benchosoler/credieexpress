@@ -154,7 +154,7 @@ export default function ProductSelector({
                       onStartAssigning?.(producto.documentId);
                     }
                   }}
-                  draggable={isInMagazine}
+                  draggable
                   onDragStart={(e) => {
                     e.dataTransfer.setData("text/plain", producto.documentId);
                     e.dataTransfer.effectAllowed = "copy";
