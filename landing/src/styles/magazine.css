@@ -75,3 +75,311 @@
   width: var(--chrome-footer);
   height: var(--chrome-footer);
 }
+
+/*
+ * Shared template chrome: the "CE / CREDIEXPRESS" header and the address
+ * footer are byte-identical across templates today. Consolidating them
+ * here (instead of leaving one copy per template `<style>` block) is the
+ * `.gradient-brand` dedup requested for PR2 — every template using these
+ * classes shares one gradient declaration instead of five.
+ */
+.magazine-sheet .gradient-brand {
+  background: linear-gradient(135deg, var(--brand-azul), var(--brand-verde));
+}
+
+.magazine-sheet .template-header {
+  padding: 9.88mm 12.71mm 4.24mm; /* 28px 36px 12px */
+  position: relative;
+  z-index: 1;
+}
+
+.magazine-sheet .header-brand {
+  display: flex;
+  align-items: center;
+  gap: 2.82mm; /* 8px */
+}
+
+.magazine-sheet .brand-initials {
+  width: 8.47mm; /* 24px */
+  height: 8.47mm;
+  border-radius: 1.76mm; /* 5px */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-size: 9pt;
+  font-weight: 700;
+  font-family: "Syne", sans-serif;
+}
+
+.magazine-sheet .brand-name {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 13pt;
+  color: var(--brand-negro);
+  letter-spacing: 0.35mm; /* 1px */
+}
+
+.magazine-sheet .header-line {
+  height: 0.71mm; /* 2px */
+  background: linear-gradient(90deg, var(--brand-turquesa), transparent);
+  margin-top: 2.82mm; /* 8px */
+}
+
+.magazine-sheet .template-footer {
+  padding: 4.24mm 12.71mm 7.06mm; /* 12px 36px 20px */
+  display: flex;
+  justify-content: space-between;
+  font-size: 8pt; /* TYPE_PT.meta */
+  color: #94a3b8;
+  letter-spacing: 0.18mm; /* 0.5px */
+  position: relative;
+  z-index: 1;
+}
+
+/*
+ * MagazineCard (product cell), shared by every template through
+ * `MagazineCard.tsx`. Font sizes come from `TYPE_PT` — the previous
+ * per-template values diverged (11px vs 10px title, 8px vs 7px
+ * description), which is the verified cross-template restyle defect this
+ * consolidation fixes. Spacing values are legacy px converted to mm via
+ * `LEGACY_PX_TO_MM` (see sheet.ts).
+ */
+.magazine-sheet .magazine-card {
+  border-radius: 2.82mm; /* 8px */
+  position: relative;
+  transition: all 0.2s;
+  height: 100%;
+}
+
+.magazine-sheet .magazine-card.is-filled {
+  background: transparent;
+}
+
+.magazine-sheet .magazine-card.is-empty {
+  border: 0.53mm dashed var(--brand-gris-medio);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.magazine-sheet .magazine-card.is-assigning {
+  border-color: var(--brand-turquesa);
+  border-style: solid;
+  background: rgba(0, 180, 216, 0.06);
+  animation: magazine-card-pulse 1.5s infinite;
+}
+
+@keyframes magazine-card-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0.71mm rgba(0, 180, 216, 0.15);
+  }
+  50% {
+    box-shadow: 0 0 0 1.41mm rgba(0, 180, 216, 0.08);
+  }
+}
+
+.magazine-sheet .magazine-card.is-drag-over {
+  border-color: var(--brand-turquesa);
+  background: rgba(0, 180, 216, 0.04);
+}
+
+.magazine-sheet .magazine-card-content {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 4.24mm; /* 12px */
+  position: relative;
+}
+
+.magazine-sheet .magazine-card-image-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  min-height: 0;
+}
+
+.magazine-sheet .magazine-card-image {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+}
+
+.magazine-sheet .magazine-card-placeholder {
+  color: #cbd5e1;
+  font-size: 10pt;
+}
+
+.magazine-sheet .magazine-card-text {
+  padding-top: 2.12mm; /* 6px */
+}
+
+.magazine-sheet .magazine-card-title {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 11pt; /* TYPE_PT.productTitle */
+  color: var(--brand-negro);
+  margin: 0 0 1.06mm;
+  padding-bottom: 1.06mm;
+  border-bottom: 0.71mm solid var(--brand-turquesa);
+  display: inline-block;
+  line-height: 1.2;
+}
+
+.magazine-sheet .magazine-card-desc {
+  font-size: 9pt; /* TYPE_PT.description = MIN_BODY_PT */
+  color: #64748b;
+  margin: 1.06mm 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.magazine-sheet .magazine-card-price {
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 12pt; /* TYPE_PT.price */
+  color: var(--brand-turquesa);
+  margin-top: 1.41mm;
+}
+
+.magazine-sheet .magazine-card-shipping {
+  font-size: 8pt; /* TYPE_PT.meta */
+  color: var(--brand-verde);
+  font-weight: 600;
+  letter-spacing: 0.11mm; /* 0.3px */
+  margin-top: 0.71mm;
+}
+
+.magazine-sheet .magazine-card-remove {
+  position: absolute;
+  top: 2.12mm; /* 6px */
+  right: 2.12mm;
+  background: rgba(255, 255, 255, 0.9);
+  border: 0.35mm solid var(--brand-gris-medio);
+  border-radius: 50%;
+  width: 7.76mm; /* 22px */
+  height: 7.76mm;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #94a3b8;
+  transition: all 0.15s;
+  opacity: 0;
+}
+
+.magazine-sheet .magazine-card-content:hover .magazine-card-remove {
+  opacity: 1;
+}
+
+.magazine-sheet .magazine-card-remove:hover {
+  background: #ef4444;
+  border-color: #ef4444;
+  color: white;
+}
+
+.magazine-sheet .magazine-card-empty-label {
+  font-size: 8pt;
+  color: #cbd5e1;
+  font-weight: 500;
+}
+
+.magazine-sheet .magazine-card.is-assigning .magazine-card-empty-label {
+  color: var(--brand-turquesa);
+  font-weight: 600;
+}
+
+.magazine-sheet .magazine-card-badge {
+  display: inline-block;
+  padding: 1.06mm 4.24mm; /* 3px 12px */
+  background: rgba(0, 180, 216, 0.08);
+  color: var(--brand-turquesa);
+  font-size: 8pt;
+  font-weight: 600;
+  border-radius: 4.24mm; /* 12px */
+  letter-spacing: 0.18mm; /* 0.5px */
+  text-transform: uppercase;
+}
+
+/*
+ * `feature` variant: fullFeature's large single-cell layout — image on
+ * top, centered text below, no reserved text-height card frame.
+ */
+.magazine-sheet .magazine-card--feature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.magazine-sheet .magazine-card--feature.is-empty {
+  border: 0.71mm dashed var(--brand-gris-medio);
+  border-radius: 4.24mm; /* 12px */
+  margin: 4.24mm 12.71mm; /* 12px 36px */
+  cursor: pointer;
+}
+
+.magazine-sheet .magazine-card--feature .magazine-card-content {
+  padding: 0;
+  align-items: center;
+  text-align: center;
+}
+
+.magazine-sheet .magazine-card--feature .magazine-card-image-wrap {
+  width: 100%;
+}
+
+.magazine-sheet .magazine-card--feature .magazine-card-text {
+  padding-top: 5.65mm; /* 16px */
+  padding-bottom: 2.82mm; /* 8px */
+}
+
+.magazine-sheet .magazine-card--feature .magazine-card-title {
+  display: block;
+  border-bottom: none;
+  font-size: 22pt;
+  font-weight: 800;
+  margin: 3.53mm 0 2.12mm;
+}
+
+.magazine-sheet .magazine-card--feature .magazine-card-desc {
+  font-size: 10pt;
+  color: #64748b;
+  line-height: 1.6;
+  max-width: 141.18mm; /* 400px */
+  margin: 0 auto 4.24mm;
+  display: block;
+  -webkit-line-clamp: unset;
+}
+
+.magazine-sheet .magazine-card--feature .magazine-card-price {
+  font-size: 28pt;
+  font-weight: 800;
+  margin-bottom: 2.12mm;
+}
+
+.magazine-sheet .magazine-card--feature .magazine-card-shipping {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.12mm; /* 6px */
+  font-size: 9pt;
+  margin-top: 0;
+}
+
+.magazine-sheet .magazine-card--feature .magazine-card-remove {
+  top: 4.24mm; /* 12px */
+  right: 4.24mm;
+  width: 9.88mm; /* 28px */
+  height: 9.88mm;
+}
+
+.magazine-sheet .magazine-card--feature .magazine-card-empty-label {
+  font-size: 10pt;
+}
