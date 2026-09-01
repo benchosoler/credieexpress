@@ -5,7 +5,9 @@ export type TemplateType =
   | "asymmetricTrio"
   | "fullFeature"
   | "dynamicQuad"
-  | "showcase";
+  | "showcase"
+  | "grid4"
+  | "grid6";
 
 export interface TemplateSlot {
   id: string;
@@ -73,6 +75,30 @@ export const TEMPLATE_DEFINITIONS: TemplateDefinition[] = [
       { id: "corner1", label: "Esquina 1", size: "small" },
       { id: "corner2", label: "Esquina 2", size: "small" },
       { id: "corner3", label: "Esquina 3", size: "small" },
+    ],
+  },
+  {
+    type: "grid4",
+    name: "Grilla 4",
+    description: "4 productos en grilla 2x2 de celdas iguales",
+    slots: [
+      { id: "cell1", label: "Celda 1", size: "medium" },
+      { id: "cell2", label: "Celda 2", size: "medium" },
+      { id: "cell3", label: "Celda 3", size: "medium" },
+      { id: "cell4", label: "Celda 4", size: "medium" },
+    ],
+  },
+  {
+    type: "grid6",
+    name: "Grilla 6",
+    description: "6 productos en grilla 2x3",
+    slots: [
+      { id: "cell1", label: "Celda 1", size: "small" },
+      { id: "cell2", label: "Celda 2", size: "small" },
+      { id: "cell3", label: "Celda 3", size: "small" },
+      { id: "cell4", label: "Celda 4", size: "small" },
+      { id: "cell5", label: "Celda 5", size: "small" },
+      { id: "cell6", label: "Celda 6", size: "small" },
     ],
   },
 ];
