@@ -405,3 +405,77 @@
   gap: 4.24mm; /* 12px */
   color: #cbd5e1;
 }
+
+/*
+ * `corner` variant: `showcase`'s three corner slots — a compact name+price
+ * row with a small thumbnail, no description, no shipping note. Before
+ * this retrofit these slots had no CSS at all anywhere in the codebase
+ * (verified: no `.corner-*` rule existed outside the dead
+ * `.corner-empty-label` selector), so they rendered as unstyled browser
+ * default blocks. This gives them real, sheet-scoped styling for the
+ * first time instead of reproducing that pre-existing defect.
+ */
+.magazine-sheet .magazine-card--corner {
+  display: flex;
+  align-items: center;
+  border-radius: 2.82mm; /* 8px */
+}
+
+.magazine-sheet .magazine-card--corner.is-empty {
+  border: 0.53mm dashed var(--brand-gris-medio);
+  padding: 2.82mm; /* 8px */
+  justify-content: center;
+  cursor: pointer;
+}
+
+.magazine-sheet .magazine-card--corner .magazine-card-content {
+  flex-direction: row;
+  align-items: center;
+  gap: 2.12mm; /* 6px */
+  padding: 1.41mm; /* 4px */
+  height: auto;
+  width: 100%;
+}
+
+.magazine-sheet .magazine-card--corner .magazine-card-image-wrap {
+  flex: none;
+  width: 12.71mm; /* 36px */
+  height: 12.71mm;
+}
+
+.magazine-sheet .magazine-card--corner .magazine-card-placeholder {
+  font-size: 8pt;
+}
+
+.magazine-sheet .magazine-card--corner .magazine-card-text {
+  padding-top: 0;
+  min-width: 0;
+  flex: 1;
+}
+
+.magazine-sheet .magazine-card--corner .magazine-card-title {
+  display: block;
+  font-size: 8pt; /* TYPE_PT.meta — a compact label, not body text */
+  border-bottom: none;
+  padding-bottom: 0;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.magazine-sheet .magazine-card--corner .magazine-card-price {
+  font-size: 9pt;
+  margin-top: 0.71mm; /* 2px */
+}
+
+.magazine-sheet .magazine-card--corner .magazine-card-remove {
+  width: 5.29mm; /* 15px */
+  height: 5.29mm;
+  top: 1.41mm; /* 4px */
+  right: 1.41mm;
+}
+
+.magazine-sheet .magazine-card--corner .magazine-card-empty-label {
+  font-size: 8pt;
+}
