@@ -503,6 +503,10 @@ export interface ApiProductoProducto extends Struct.CollectionTypeSchema {
     createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
       Schema.Attribute.Private;
     descripcion: Schema.Attribute.Text;
+    descripcionCorta: Schema.Attribute.String &
+      Schema.Attribute.SetMinMaxLength<{
+        maxLength: 160;
+      }>;
     destacado: Schema.Attribute.Boolean & Schema.Attribute.DefaultTo<false>;
     fichaTecnica: Schema.Attribute.RichText;
     imagen: Schema.Attribute.Media<'images' | 'files'>;
