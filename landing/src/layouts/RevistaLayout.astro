@@ -1,6 +1,8 @@
 ---
 import type { ProductoStrapi } from "../lib/strapi-types";
 import MagazineBuilder from "../components/magazine/MagazineBuilder";
+import "../styles/magazine.css";
+import "../styles/magazine-print.css";
 
 interface Props {
   productos: ProductoStrapi[];
@@ -44,7 +46,7 @@ const { productos, categorias } = Astro.props;
     </style>
   </head>
   <body>
-    <nav class="revista-nav">
+    <nav class="revista-nav no-print">
       <div class="nav-inner">
         <a href="/" class="nav-back">
           <svg width="20" height="20" viewBox="0 0 20 20" fill="none">

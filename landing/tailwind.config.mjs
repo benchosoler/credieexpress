@@ -1,3 +1,30 @@
+import plugin from "tailwindcss/plugin";
+
+/**
+ * Emits every `theme('colors')` entry as a `--brand-*` CSS custom
+ * property on `:root`. Templates use raw `<style>` blocks that Tailwind
+ * classes cannot reach; this gives them the same brand palette without
+ * duplicating hex literals. `tailwind.config.mjs` stays the single color
+ * definition — utilities and opacity modifiers (e.g. `shadow-azul/30`)
+ * keep working unchanged.
+ */
+const brandTokensPlugin = plugin(({ addBase, theme }) => {
+  const colors = theme("colors");
+  const vars = {};
+  for (const [name, value] of Object.entries(colors)) {
+    if (typeof value === "string") {
+      vars[`--brand-${name}`] = value;
+    } else if (value && typeof value === "object") {
+      for (const [shade, shadeValue] of Object.entries(value)) {
+        if (typeof shadeValue !== "string") continue;
+        const suffix = shade === "DEFAULT" ? "" : `-${shade}`;
+        vars[`--brand-${name}${suffix}`] = shadeValue;
+      }
+    }
+  }
+  addBase({ ":root": vars });
+});
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: ["./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}"],
@@ -61,5 +88,5 @@ export default {
       },
     },
   },
-  plugins: [],
+  plugins: [brandTokensPlugin],
 };

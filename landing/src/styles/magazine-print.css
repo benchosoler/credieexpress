@@ -1,0 +1,55 @@
+/*
+ * Print stylesheet for /revista.
+ *
+ * `@page` uses the symbolic `A4` keyword and a literal `0` margin — no
+ * number here duplicates `sheet.ts`'s mm constants.
+ */
+@page {
+  size: A4;
+  margin: 0;
+}
+
+@media print {
+  :root {
+    --magazine-zoom: 1;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .magazine-root,
+  .magazine-shell,
+  .magazine-canvas {
+    height: auto;
+    overflow: visible;
+    display: block;
+    margin: 0;
+    padding: 0;
+    gap: 0;
+  }
+
+  .sheet-zoom {
+    transform: none;
+    margin: 0;
+  }
+
+  .magazine-sheet-holder {
+    break-after: page;
+    break-inside: avoid;
+  }
+
+  .magazine-sheet-holder:last-child {
+    break-after: auto;
+  }
+
+  .magazine-sheet {
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}

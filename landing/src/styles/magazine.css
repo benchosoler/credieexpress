@@ -1,0 +1,77 @@
+/*
+ * Shared magazine sheet primitives, scoped under `.magazine-sheet`.
+ *
+ * Verified defect (design.md D4): template `<style>` blocks are unscoped
+ * global CSS, so the last-mounted template silently restyles every other
+ * sheet on the page (e.g. `.slot-title` at 11px in one template, 10px in
+ * another). Every shared rule added here MUST stay scoped under
+ * `.magazine-sheet` so two templates sharing a class name never collide.
+ *
+ * Geometry values come from CSS custom properties published by
+ * `sheet.ts` (`sheetCssVars()`) — this file contains no hardcoded mm/px
+ * sheet dimensions.
+ */
+
+.magazine-sheet-holder {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.sheet-zoom {
+  transform: scale(var(--magazine-zoom, 1));
+  transform-origin: top center;
+  margin-bottom: calc((var(--magazine-zoom, 1) - 1) * var(--sheet-h));
+}
+
+.magazine-sheet {
+  position: relative;
+  width: var(--sheet-w);
+  height: var(--sheet-h);
+  background: #ffffff;
+  overflow: hidden;
+  box-shadow:
+    0 4px 24px rgba(0, 0, 0, 0.08),
+    0 1px 4px rgba(0, 0, 0, 0.04);
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.magazine-sheet-decor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.magazine-sheet-header {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--chrome-header);
+  pointer-events: none;
+}
+
+.magazine-sheet-content {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.magazine-sheet-footer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--chrome-footer);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 var(--chrome-side);
+  pointer-events: none;
+}
+
+.magazine-sheet-footer-qr {
+  width: var(--chrome-footer);
+  height: var(--chrome-footer);
+}
