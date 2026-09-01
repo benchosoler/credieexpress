@@ -13,11 +13,33 @@ interface MagazineBuilderProps {
 }
 
 const STORAGE_KEY = "crediexpress-magazine-builder";
+// Screen zoom is UI-only state. It lives under its own localStorage key so
+// no print or export path can ever read it from `pages`.
+const ZOOM_STORAGE_KEY = "crediexpress-magazine-ui-zoom";
+const ZOOM_STEPS = [0.5, 0.75, 1, 1.5] as const;
+const DEFAULT_ZOOM: (typeof ZOOM_STEPS)[number] = 0.75;
+
+const VALID_TEMPLATE_TYPES = new Set(TEMPLATE_DEFINITIONS.map((d) => d.type));
+
+/** Unrecognized persisted template types fall back to heroDuo instead of
+ * failing to render (e.g. a template removed after localStorage was
+ * written). */
+function sanitizePages(pages: MagazinePage[]): MagazinePage[] {
+  return pages.map((p) =>
+    VALID_TEMPLATE_TYPES.has(p.templateType)
+      ? p
+      : { ...p, templateType: "heroDuo" as TemplateType },
+  );
+}
 
 function loadState(): { pages: MagazinePage[]; selectedIds: string[] } | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return JSON.parse(raw);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed?.pages) parsed.pages = sanitizePages(parsed.pages);
+      return parsed;
+    }
   } catch {}
   return null;
 }
@@ -25,6 +47,23 @@ function loadState(): { pages: MagazinePage[]; selectedIds: string[] } | null {
 function saveState(pages: MagazinePage[], selectedIds: string[]) {
   try {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({ pages, selectedIds }));
+  } catch {}
+}
+
+function loadZoom(): (typeof ZOOM_STEPS)[number] {
+  try {
+    const raw = localStorage.getItem(ZOOM_STORAGE_KEY);
+    const parsed = raw ? Number(raw) : NaN;
+    if ((ZOOM_STEPS as readonly number[]).includes(parsed)) {
+      return parsed as (typeof ZOOM_STEPS)[number];
+    }
+  } catch {}
+  return DEFAULT_ZOOM;
+}
+
+function saveZoom(zoom: number) {
+  try {
+    localStorage.setItem(ZOOM_STORAGE_KEY, String(zoom));
   } catch {}
 }
 
@@ -80,6 +119,10 @@ export default function MagazineBuilder({
   );
 
   const [isExporting, setIsExporting] = useState(false);
+
+  const [zoom, setZoom] = useState<(typeof ZOOM_STEPS)[number]>(() =>
+    loadZoom(),
+  );
 
   const selectedProductos = productos.filter((p) =>
     selectedIds.includes(p.documentId),
@@ -162,14 +205,14 @@ export default function MagazineBuilder({
   const handleExport = useCallback(async () => {
     setIsExporting(true);
     try {
-      await generatePDF(pages, productos);
+      await generatePDF(pages);
     } catch (e) {
       console.error("Error generating PDF:", e);
       alert("Error al generar el PDF. Revisa la consola para mas detalles.");
     } finally {
       setIsExporting(false);
     }
-  }, [pages, productos]);
+  }, [pages]);
 
   const assigningProduct = assigningProductId
     ? productos.find((p) => p.documentId === assigningProductId)
@@ -178,6 +221,10 @@ export default function MagazineBuilder({
   React.useEffect(() => {
     saveState(pages, selectedIds);
   }, [pages, selectedIds]);
+
+  React.useEffect(() => {
+    saveZoom(zoom);
+  }, [zoom]);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -190,8 +237,8 @@ export default function MagazineBuilder({
   }, [assigningProductId, cancelAssigning]);
 
   return (
-    <div className="mt-14 h-[calc(100vh-3.5rem)] flex flex-col bg-[#F0F2F5] font-['DM_Sans',system-ui,sans-serif]">
-      <div className="flex items-center justify-between px-5 py-2.5 bg-white border-b border-[#E8EDF2] min-h-[52px] gap-4">
+    <div className="magazine-root mt-14 h-[calc(100vh-3.5rem)] flex flex-col bg-[#F0F2F5] font-['DM_Sans',system-ui,sans-serif]">
+      <div className="no-print flex items-center justify-between px-5 py-2.5 bg-white border-b border-[#E8EDF2] min-h-[52px] gap-4">
         <div className="flex-1 min-w-0">
           <PageManager
             pages={pages}
@@ -220,6 +267,27 @@ export default function MagazineBuilder({
               : ""}{" "}
             en revista
           </span>
+          <div
+            className="flex items-center gap-1 bg-[#F7F8FA] border border-[#E8EDF2] rounded-lg p-0.5"
+            role="group"
+            aria-label="Zoom de vista previa"
+          >
+            {ZOOM_STEPS.map((step) => (
+              <button
+                key={step}
+                type="button"
+                onClick={() => setZoom(step)}
+                aria-pressed={zoom === step}
+                className={`px-2 py-1 rounded-md text-[0.72rem] font-bold cursor-pointer transition-all ${
+                  zoom === step
+                    ? "bg-white text-[#1A202C] shadow-sm"
+                    : "bg-transparent text-[#94A3B8] hover:text-[#4A5568]"
+                }`}
+              >
+                {Math.round(step * 100)}%
+              </button>
+            ))}
+          </div>
           <button
             onClick={() => {
               localStorage.removeItem(STORAGE_KEY);
@@ -275,8 +343,8 @@ export default function MagazineBuilder({
         </div>
       </div>
 
-      <div className="flex flex-1 overflow-hidden">
-        <div className="w-80 flex-shrink-0 border-r border-[#E8EDF2] bg-white overflow-y-auto">
+      <div className="magazine-shell flex flex-1 overflow-hidden">
+        <div className="no-print w-80 flex-shrink-0 border-r border-[#E8EDF2] bg-white overflow-y-auto">
           <ProductSelector
             productos={productos}
             categorias={categorias}
@@ -289,7 +357,7 @@ export default function MagazineBuilder({
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden bg-[#F0F2F5]">
-          <div className="px-6 py-3 bg-white border-b border-[#E8EDF2] flex items-center justify-between flex-shrink-0">
+          <div className="no-print px-6 py-3 bg-white border-b border-[#E8EDF2] flex items-center justify-between flex-shrink-0">
             <h2 className="font-['Syne',sans-serif] text-base font-bold text-[#1A202C] m-0">
               Vista previa
             </h2>
@@ -325,13 +393,19 @@ export default function MagazineBuilder({
             </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto overflow-x-hidden p-8 flex flex-col justify-start items-center gap-8">
+          <div
+            className="magazine-canvas flex-1 overflow-y-auto overflow-x-hidden p-8 flex flex-col justify-start items-center gap-8"
+            style={{ "--magazine-zoom": zoom } as React.CSSProperties}
+          >
             {pages.map((page) => {
               const pageDef = TEMPLATE_DEFINITIONS.find(
                 (d) => d.type === page.templateType,
               )!;
               return (
-                <div key={page.id} className="relative">
+                <div
+                  key={page.id}
+                  className="magazine-sheet-holder relative w-full"
+                >
                   <TemplatePreview
                     page={page}
                     templateDef={pageDef}
