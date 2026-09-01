@@ -4,8 +4,6 @@ import type { ProductoStrapi } from "../../lib/strapi-types";
 interface ProductSelectorProps {
   productos: ProductoStrapi[];
   categorias: string[];
-  selectedIds: string[];
-  onToggle: (docId: string) => void;
   assigningId?: string | null;
   onStartAssigning?: (docId: string | null) => void;
   pages?: any[];
@@ -23,8 +21,6 @@ function getImageUrl(producto: ProductoStrapi): string {
 export default function ProductSelector({
   productos,
   categorias,
-  selectedIds,
-  onToggle,
   assigningId,
   onStartAssigning,
   pages = [],

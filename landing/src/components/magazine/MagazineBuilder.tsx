@@ -32,7 +32,10 @@ function sanitizePages(pages: MagazinePage[]): MagazinePage[] {
   );
 }
 
-function loadState(): { pages: MagazinePage[]; selectedIds: string[] } | null {
+/** `selectedIds` may still be present in a payload saved by an older build
+ * that tracked it — it is ignored on read rather than rejected, so an old
+ * payload restores cleanly instead of crashing. */
+function loadState(): { pages: MagazinePage[] } | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
@@ -44,9 +47,9 @@ function loadState(): { pages: MagazinePage[]; selectedIds: string[] } | null {
   return null;
 }
 
-function saveState(pages: MagazinePage[], selectedIds: string[]) {
+function saveState(pages: MagazinePage[]) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify({ pages, selectedIds }));
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ pages }));
   } catch {}
 }
 
@@ -110,10 +113,6 @@ export default function MagazineBuilder({
     ];
   });
 
-  const [selectedIds, setSelectedIds] = useState<string[]>(() => {
-    return saved.current?.selectedIds || [];
-  });
-
   const [assigningProductId, setAssigningProductId] = useState<string | null>(
     null,
   );
@@ -123,19 +122,6 @@ export default function MagazineBuilder({
   const [zoom, setZoom] = useState<(typeof ZOOM_STEPS)[number]>(() =>
     loadZoom(),
   );
-
-  const selectedProductos = productos.filter((p) =>
-    selectedIds.includes(p.documentId),
-  );
-
-  const toggleProduct = useCallback((docId: string) => {
-    setSelectedIds((prev) => {
-      const next = prev.includes(docId)
-        ? prev.filter((id) => id !== docId)
-        : [...prev, docId];
-      return next;
-    });
-  }, []);
 
   const startAssigning = useCallback((docId: string | null) => {
     setAssigningProductId(docId);
@@ -219,8 +205,8 @@ export default function MagazineBuilder({
     : null;
 
   React.useEffect(() => {
-    saveState(pages, selectedIds);
-  }, [pages, selectedIds]);
+    saveState(pages);
+  }, [pages]);
 
   React.useEffect(() => {
     saveZoom(zoom);
@@ -348,8 +334,6 @@ export default function MagazineBuilder({
           <ProductSelector
             productos={productos}
             categorias={categorias}
-            selectedIds={selectedIds}
-            onToggle={toggleProduct}
             assigningId={assigningProductId}
             onStartAssigning={startAssigning}
             pages={pages}
