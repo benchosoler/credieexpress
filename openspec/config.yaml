@@ -1,0 +1,37 @@
+schema: spec-driven
+
+context: |
+  Tech stack: monorepo — strapi/ (Strapi v5.44, Node) + landing/ (Astro 5.17 static,
+    React 19.2 islands, Tailwind 3.4, TypeScript 5.9).
+  Architecture: Astro pages fetch Strapi at build time via landing/src/lib/strapi.ts;
+    interactive surfaces are React islands (client:only) under landing/src/components/.
+  Design tokens: landing/tailwind.config.mjs (azul, verde, turquesa, cyan, negro, gris;
+    fonts sans=DM Sans, display=Syne). No CSS custom properties.
+  Testing: no test runner configured in either subproject.
+  Style: TypeScript strict, Tailwind utility classes, no CSS-in-JS.
+
+rules:
+  proposal:
+    - Include a rollback plan for risky changes
+    - State explicit non-goals
+  specs:
+    - Use Given/When/Then for scenarios
+    - Use RFC 2119 keywords (MUST, SHALL, SHOULD, MAY)
+  design:
+    - Document architecture decisions with rationale
+    - Prefer reuse of landing/src/lib and existing components over duplication
+  tasks:
+    - Group by phase, use hierarchical numbering
+    - Keep tasks completable in one session
+  apply:
+    guidelines:
+      - Follow existing code patterns
+      - Artifacts and code comments in English
+    tdd: false
+    test_command: ""
+  verify:
+    test_command: ""
+    build_command: "npm run build --prefix landing"
+    coverage_threshold: 0
+  archive:
+    - Warn before merging destructive deltas
