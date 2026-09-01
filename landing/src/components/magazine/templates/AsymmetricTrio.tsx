@@ -258,7 +258,9 @@ export default function AsymmetricTrio({
             onRemove={handleRemove}
             isDragOver={dragOverSlot === "bottomRight"}
             onClick={() => handleSlotClick("bottomRight")}
-            isAssigning={assigningProductId !== null && !page.slots["bottomRight"]}
+            isAssigning={
+              assigningProductId !== null && !page.slots["bottomRight"]
+            }
           />
         </div>
       </div>

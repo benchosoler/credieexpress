@@ -154,7 +154,9 @@ const hasMore = hidden.length > 0;
             <span
               class:list={[
                 "w-7 h-7 rounded-lg flex items-center justify-center flex-shrink-0 transition-colors duration-200",
-                isActive ? "bg-azul/20" : "bg-gray-100 group-hover/row:bg-gray-200",
+                isActive
+                  ? "bg-azul/20"
+                  : "bg-gray-100 group-hover/row:bg-gray-200",
               ]}
               set:html={iconSvg}
               aria-hidden="true"

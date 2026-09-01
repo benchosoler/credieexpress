@@ -273,7 +273,9 @@ export default function DynamicQuad({
             onRemove={handleRemove}
             isDragOver={dragOverSlot === "bottomLeft"}
             onClick={() => handleSlotClick("bottomLeft")}
-            isAssigning={assigningProductId !== null && !page.slots["bottomLeft"]}
+            isAssigning={
+              assigningProductId !== null && !page.slots["bottomLeft"]
+            }
           />
         </div>
         <div className="quad-br">
@@ -287,7 +289,9 @@ export default function DynamicQuad({
             onRemove={handleRemove}
             isDragOver={dragOverSlot === "bottomRight"}
             onClick={() => handleSlotClick("bottomRight")}
-            isAssigning={assigningProductId !== null && !page.slots["bottomRight"]}
+            isAssigning={
+              assigningProductId !== null && !page.slots["bottomRight"]
+            }
           />
         </div>
       </div>

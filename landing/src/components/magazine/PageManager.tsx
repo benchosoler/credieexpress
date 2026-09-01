@@ -25,7 +25,11 @@ export default function PageManager({
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (showTemplatePicker && !target.closest(".template-picker") && !target.closest(".tab-change-btn")) {
+      if (
+        showTemplatePicker &&
+        !target.closest(".template-picker") &&
+        !target.closest(".tab-change-btn")
+      ) {
         setShowTemplatePicker(null);
       }
       if (showAddDropdown && !target.closest(".add-page-wrapper")) {
@@ -34,13 +38,17 @@ export default function PageManager({
     };
     if (showTemplatePicker || showAddDropdown) {
       document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
+      return () =>
+        document.removeEventListener("mousedown", handleClickOutside);
     }
   }, [showTemplatePicker, showAddDropdown]);
 
   return (
     <div className="flex items-center font-['DM_Sans',sans-serif]">
-      <div className="flex items-center gap-1 overflow-x-auto pb-[2px] overflow-visible" style={{ overflow: 'visible' }}>
+      <div
+        className="flex items-center gap-1 overflow-x-auto pb-[2px] overflow-visible"
+        style={{ overflow: "visible" }}
+      >
         {pages.map((page, idx) => {
           const def = TEMPLATE_DEFINITIONS.find(
             (d) => d.type === page.templateType,
@@ -127,15 +135,19 @@ export default function PageManager({
                   {TEMPLATE_DEFINITIONS.map((def) => (
                     <div
                       key={def.type}
-                      className={`p-2.5 rounded-lg cursor-pointer flex flex-col gap-[0.1rem] transition-colors hover:bg-[#F7F8FA] ${page.templateType === def.type ? 'bg-cyan-DEFAULT/8' : ''}`}
+                      className={`p-2.5 rounded-lg cursor-pointer flex flex-col gap-[0.1rem] transition-colors hover:bg-[#F7F8FA] ${page.templateType === def.type ? "bg-cyan-DEFAULT/8" : ""}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         onChangeTemplate(page.id, def.type);
                         setShowTemplatePicker(null);
                       }}
                     >
-                      <span className="text-[0.78rem] font-bold text-[#1A202C]">{def.name}</span>
-                      <span className="text-[0.68rem] text-[#94A3B8]">{def.description}</span>
+                      <span className="text-[0.78rem] font-bold text-[#1A202C]">
+                        {def.name}
+                      </span>
+                      <span className="text-[0.68rem] text-[#94A3B8]">
+                        {def.description}
+                      </span>
                     </div>
                   ))}
                 </div>
@@ -145,7 +157,7 @@ export default function PageManager({
         })}
 
         <div className="relative ml-1">
-          <button 
+          <button
             className="flex items-center gap-1 px-2.5 py-1.5 border border-dashed border-[#CBD5E1] rounded-lg bg-transparent cursor-pointer text-[0.78rem] text-[#94A3B8] font-['DM_Sans',sans-serif] transition-all whitespace-nowrap hover:border-cyan-DEFAULT hover:text-cyan-DEFAULT"
             onClick={() => setShowAddDropdown(!showAddDropdown)}
           >
@@ -170,8 +182,12 @@ export default function PageManager({
                     setShowAddDropdown(false);
                   }}
                 >
-                  <span className="text-[0.78rem] font-bold text-[#1A202C]">{def.name}</span>
-                  <span className="text-[0.68rem] text-[#94A3B8]">{def.description}</span>
+                  <span className="text-[0.78rem] font-bold text-[#1A202C]">
+                    {def.name}
+                  </span>
+                  <span className="text-[0.68rem] text-[#94A3B8]">
+                    {def.description}
+                  </span>
                 </div>
               ))}
             </div>

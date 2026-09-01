@@ -4,7 +4,7 @@ import type { MagazinePage } from "./types";
 
 export async function generatePDF(
   pages: MagazinePage[],
-  allProductos: any[]
+  allProductos: any[],
 ): Promise<void> {
   const now = new Date();
   const monthNames = [

@@ -61,7 +61,11 @@ export default function TemplatePreview({
   return (
     <div className="flex justify-center w-full">
       <div className="transform-origin-top-center">
-        <div ref={previewRef} className="w-[595px] h-[842px] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] rounded-lg relative overflow-hidden" id={`magazine-page-${page.id}`}>
+        <div
+          ref={previewRef}
+          className="w-[595px] h-[842px] bg-white shadow-[0_4px_24px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] rounded-lg relative overflow-hidden"
+          id={`magazine-page-${page.id}`}
+        >
           <TemplateComponent
             page={page}
             selectedProductos={selectedProductos}

@@ -47,7 +47,9 @@ export default function ProductSelector({
   return (
     <div className="flex flex-col h-full font-['DM_Sans',sans-serif]">
       <div className="px-4 pb-2.5 pt-4 flex items-center justify-between border-b border-[#F0F2F5]">
-        <h3 className="font-['Syne',sans-serif] text-[0.95rem] font-bold m-0 text-[#1A202C]">Productos</h3>
+        <h3 className="font-['Syne',sans-serif] text-[0.95rem] font-bold m-0 text-[#1A202C]">
+          Productos
+        </h3>
         <span className="bg-[#F0F2F5] text-[#4A5568] text-[0.72rem] font-bold px-2 py-[0.15rem] rounded-[10px]">
           {productos.length}
         </span>
@@ -55,7 +57,13 @@ export default function ProductSelector({
 
       <div className="px-3 py-2.5 flex flex-col gap-1.5 border-b border-[#F0F2F5]">
         <div className="relative flex items-center">
-          <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="absolute left-2.5 pointer-events-none">
+          <svg
+            width="14"
+            height="14"
+            viewBox="0 0 14 14"
+            fill="none"
+            className="absolute left-2.5 pointer-events-none"
+          >
             <circle cx="6" cy="6" r="4.5" stroke="#94A3B8" strokeWidth="1.5" />
             <path
               d="M9.5 9.5L12.5 12.5"
@@ -95,7 +103,13 @@ export default function ProductSelector({
           <>
             {assigningId && (
               <div className="flex items-center gap-2 px-3 py-2.5 mx-2 my-2 bg-cyan-DEFAULT/8 border border-cyan-DEFAULT rounded-lg text-[#007A8C] text-[0.78rem]">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" className="flex-shrink-0">
+                <svg
+                  width="16"
+                  height="16"
+                  viewBox="0 0 16 16"
+                  fill="none"
+                  className="flex-shrink-0"
+                >
                   <path
                     d="M8 3v10M3 8h10"
                     stroke="currentColor"
@@ -104,7 +118,10 @@ export default function ProductSelector({
                   />
                 </svg>
                 <span className="flex-1 font-medium">
-                  Click en un espacio vacío para colocar <strong>{filtered.find(p => p.documentId === assigningId)?.nombre}</strong>
+                  Click en un espacio vacío para colocar{" "}
+                  <strong>
+                    {filtered.find((p) => p.documentId === assigningId)?.nombre}
+                  </strong>
                 </span>
                 <button
                   onClick={() => onStartAssigning?.(null)}
@@ -118,19 +135,20 @@ export default function ProductSelector({
               const isAssigning = assigningId === producto.documentId;
               const isInMagazine = pages.some((page) =>
                 Object.values(page.slots || {}).some(
-                  (slot) => slot && (slot as any).documentId === producto.documentId
-                )
+                  (slot) =>
+                    slot && (slot as any).documentId === producto.documentId,
+                ),
               );
               const imgUrl = getImageUrl(producto);
               return (
                 <div
                   key={producto.documentId}
                   className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-all border-[3px] border-transparent mb-1 select-none ${
-                    isAssigning 
-                      ? 'border-cyan-DEFAULT shadow-[0_0_0_3px_rgba(0,180,216,0.15)] animate-[pulse_1.5s_infinite]' 
-                      : isInMagazine 
-                        ? 'border-cyan-DEFAULT bg-cyan-DEFAULT/4' 
-                        : 'hover:bg-[#F7F8FA]'
+                    isAssigning
+                      ? "border-cyan-DEFAULT shadow-[0_0_0_3px_rgba(0,180,216,0.15)] animate-[pulse_1.5s_infinite]"
+                      : isInMagazine
+                        ? "border-cyan-DEFAULT bg-cyan-DEFAULT/4"
+                        : "hover:bg-[#F7F8FA]"
                   }`}
                   onClick={(e) => {
                     e.stopPropagation();
@@ -148,7 +166,11 @@ export default function ProductSelector({
                 >
                   <div className="w-12 h-12 rounded-lg overflow-hidden bg-[#F0F2F5] flex-shrink-0 relative flex items-center justify-center">
                     {imgUrl ? (
-                      <img src={imgUrl} alt={producto.nombre} className="w-full h-full object-cover" />
+                      <img
+                        src={imgUrl}
+                        alt={producto.nombre}
+                        className="w-full h-full object-cover"
+                      />
                     ) : (
                       <div className="no-image">
                         <svg
@@ -195,9 +217,13 @@ export default function ProductSelector({
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <span className="block text-[0.85rem] truncate">{producto.nombre}</span>
+                    <span className="block text-[0.85rem] truncate">
+                      {producto.nombre}
+                    </span>
                     {producto.categoria && (
-                      <span className="block text-[0.75rem] text-[#64748B]">{producto.categoria}</span>
+                      <span className="block text-[0.75rem] text-[#64748B]">
+                        {producto.categoria}
+                      </span>
                     )}
                     {producto.precio && (
                       <span className="block text-[0.75rem] text-[#00B4D8] font-semibold">

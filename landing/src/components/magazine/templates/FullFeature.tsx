@@ -227,7 +227,9 @@ export default function FullFeature({
               />
             </svg>
             <span className="featured-empty-label">
-              {assigningProductId ? "Click para colocar" : "Arrastra un producto aqui"}
+              {assigningProductId
+                ? "Click para colocar"
+                : "Arrastra un producto aqui"}
             </span>
           </div>
         )}

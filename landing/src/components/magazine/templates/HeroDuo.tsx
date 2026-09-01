@@ -36,10 +36,12 @@ function ProductSlot({
   return (
     <div
       className={`rounded-lg relative transition-all h-full ${
-        isDragOver ? 'border-cyan-DEFAULT bg-cyan-DEFAULT/4' : 
-        producto ? 'bg-transparent' : 
-        'border-[1.5px] border-dashed border-[#E8EDF2] flex items-center justify-center'
-      } ${isAssigning ? '!border-cyan-DEFAULT !border-solid bg-cyan-DEFAULT/6 animate-[pulse-border_1.5s_infinite] cursor-pointer hover:bg-cyan-DEFAULT/10' : ''}`}
+        isDragOver
+          ? "border-cyan-DEFAULT bg-cyan-DEFAULT/4"
+          : producto
+            ? "bg-transparent"
+            : "border-[1.5px] border-dashed border-[#E8EDF2] flex items-center justify-center"
+      } ${isAssigning ? "!border-cyan-DEFAULT !border-solid bg-cyan-DEFAULT/6 animate-[pulse-border_1.5s_infinite] cursor-pointer hover:bg-cyan-DEFAULT/10" : ""}`}
       onDrop={(e) => onDrop(e, slotId)}
       onDragOver={(e) => onDragOver(e, slotId)}
       onDragLeave={onDragLeave}
@@ -80,7 +82,9 @@ function ProductSlot({
                 }).format(producto.precio)}
               </div>
             )}
-            <div className="text-[7px] text-[#00C853] font-bold tracking-[0.3px] mt-0.5">Envio incluido</div>
+            <div className="text-[7px] text-[#00C853] font-bold tracking-[0.3px] mt-0.5">
+              Envio incluido
+            </div>
           </div>
           <button
             className="absolute top-[6px] right-[6px] bg-white/90 border border-[#E8EDF2] rounded-full w-[22px] h-[22px] flex items-center justify-center cursor-pointer text-[#94A3B8] transition-all opacity-0 hover:bg-[#EF4444] hover:border-[#EF4444] hover:text-white"
@@ -102,7 +106,9 @@ function ProductSlot({
         </div>
       ) : (
         <div className="pointer-events-none flex items-center justify-center">
-          <span className={`text-[9px] ${isAssigning ? 'text-cyan-DEFAULT font-bold' : 'text-[#CBD5E1] font-medium'}`}>
+          <span
+            className={`text-[9px] ${isAssigning ? "text-cyan-DEFAULT font-bold" : "text-[#CBD5E1] font-medium"}`}
+          >
             {isAssigning ? "Click para colocar" : label}
           </span>
         </div>
@@ -154,12 +160,19 @@ export default function HeroDuo({
   };
 
   const handleSlotClick = (slotId: string) => {
-    console.log('Slot clicked:', slotId, 'assigningProductId:', assigningProductId, 'slot value:', page.slots[slotId]);
+    console.log(
+      "Slot clicked:",
+      slotId,
+      "assigningProductId:",
+      assigningProductId,
+      "slot value:",
+      page.slots[slotId],
+    );
     if (assigningProductId && !page.slots[slotId]) {
       const producto = selectedProductos.find(
         (p) => p.documentId === assigningProductId,
       );
-      console.log('Found producto:', producto);
+      console.log("Found producto:", producto);
       if (producto) {
         // Remover de otras ubicaciones si ya está en la revista
         pages.forEach((p) => {
@@ -177,7 +190,11 @@ export default function HeroDuo({
 
   return (
     <div className="w-[595px] h-[842px] relative bg-white flex flex-col font-['DM_Sans',system-ui,sans-serif]">
-      <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" viewBox="0 0 595 842" fill="none">
+      <svg
+        className="absolute inset-0 w-full h-full pointer-events-none z-0"
+        viewBox="0 0 595 842"
+        fill="none"
+      >
         <rect width="595" height="842" fill="white" />
         <circle cx="520" cy="80" r="120" fill="#00B4D8" opacity="0.04" />
         <circle cx="520" cy="80" r="80" fill="#00B4D8" opacity="0.03" />
@@ -252,8 +269,12 @@ export default function HeroDuo({
 
       <div className="px-9 pt-7 pb-3 relative z-10">
         <div className="flex items-center gap-2">
-          <span className="w-6 h-6 bg-gradient-to-br from-[#1E90FF] to-[#00C853] rounded flex items-center justify-center text-white text-[9px] font-bold font-['Syne',sans-serif]">CE</span>
-          <span className="font-['Syne',sans-serif] font-bold text-[13px] text-[#1A1A2E] tracking-[1px]">CREDIEXPRESS</span>
+          <span className="w-6 h-6 bg-gradient-to-br from-[#1E90FF] to-[#00C853] rounded flex items-center justify-center text-white text-[9px] font-bold font-['Syne',sans-serif]">
+            CE
+          </span>
+          <span className="font-['Syne',sans-serif] font-bold text-[13px] text-[#1A1A2E] tracking-[1px]">
+            CREDIEXPRESS
+          </span>
         </div>
         <div className="h-[2px] bg-gradient-to-r from-cyan-DEFAULT to-transparent mt-2"></div>
       </div>

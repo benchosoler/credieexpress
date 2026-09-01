@@ -141,50 +141,48 @@ try {
   </section>
 
   <!-- 4. Categorías — navegación visual al catálogo filtrado -->
-  {categorias.length > 0 && (
-    <section id="categorias" class="py-24 bg-white">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="text-center max-w-3xl mx-auto mb-12 animate-on-scroll">
-          <span
-            class="inline-block bg-azul/10 text-azul px-4 py-1.5 rounded-full text-sm font-semibold mb-4"
-          >
-            Explorá por categoría
-          </span>
-          <h2
-            class="font-display text-4xl sm:text-5xl font-bold text-gray-900 mb-4"
-          >
-            Nuestras categorías
-          </h2>
-          <p class="text-lg text-gray-600">
-            Hacé click en una categoría para ver sus rubros y entrá al catálogo
-            filtrado.
-          </p>
-        </div>
-        <CategoriasMenu categorias={categorias} linkBase="/catalogo" />
-        <div class="text-center mt-12 animate-on-scroll">
-          <a
-            href="/catalogo"
-            class="inline-flex items-center gap-2 text-azul font-semibold hover:underline"
-          >
-            Ver catálogo completo
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+  {
+    categorias.length > 0 && (
+      <section id="categorias" class="py-24 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="text-center max-w-3xl mx-auto mb-12 animate-on-scroll">
+            <span class="inline-block bg-azul/10 text-azul px-4 py-1.5 rounded-full text-sm font-semibold mb-4">
+              Explorá por categoría
+            </span>
+            <h2 class="font-display text-4xl sm:text-5xl font-bold text-gray-900 mb-4">
+              Nuestras categorías
+            </h2>
+            <p class="text-lg text-gray-600">
+              Hacé click en una categoría para ver sus rubros y entrá al
+              catálogo filtrado.
+            </p>
+          </div>
+          <CategoriasMenu categorias={categorias} linkBase="/catalogo" />
+          <div class="text-center mt-12 animate-on-scroll">
+            <a
+              href="/catalogo"
+              class="inline-flex items-center gap-2 text-azul font-semibold hover:underline"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
-          </a>
+              Ver catálogo completo
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                />
+              </svg>
+            </a>
+          </div>
         </div>
-      </div>
-    </section>
-  )}
+      </section>
+    )
+  }
 
   <!-- Footer -->
   <Footer />

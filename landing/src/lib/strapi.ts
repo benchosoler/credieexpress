@@ -1,7 +1,12 @@
-import type { ProductoStrapi, StrapiResponse, CategoriaNode, SubcategoriaNode } from "./strapi-types";
+import type {
+  ProductoStrapi,
+  StrapiResponse,
+  CategoriaNode,
+  SubcategoriaNode,
+} from "./strapi-types";
 
-import config from '../strapi-config.json';
-const STRAPI_URL = config.strapiUrl || 'http://localhost:1337';
+import config from "../strapi-config.json";
+const STRAPI_URL = config.strapiUrl || "http://localhost:1337";
 
 interface FetchProductosParams {
   populate?: string;

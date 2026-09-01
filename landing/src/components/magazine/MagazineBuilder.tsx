@@ -31,14 +31,22 @@ function saveState(pages: MagazinePage[], selectedIds: string[]) {
 function genId(): string {
   // crypto.randomUUID exige secure context (https, localhost, 127.0.0.1).
   // En el dev server de Astro con --host se accede por IP y no está disponible.
-  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  ) {
     return crypto.randomUUID();
   }
-  if (typeof crypto !== "undefined" && typeof crypto.getRandomValues === "function") {
+  if (
+    typeof crypto !== "undefined" &&
+    typeof crypto.getRandomValues === "function"
+  ) {
     const bytes = crypto.getRandomValues(new Uint8Array(16));
     bytes[6] = (bytes[6] & 0x0f) | 0x40; // versión 4
     bytes[8] = (bytes[8] & 0x3f) | 0x80; // variante 10
-    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+    const hex = Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join(
+      "",
+    );
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20, 32)}`;
   }
   return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
@@ -104,15 +112,12 @@ export default function MagazineBuilder({
     setPages((prev) => [...prev, newPage]);
   }, []);
 
-  const removePage = useCallback(
-    (pageId: string) => {
-      setPages((prev) => {
-        if (prev.length <= 1) return prev;
-        return prev.filter((p) => p.id !== pageId);
-      });
-    },
-    [],
-  );
+  const removePage = useCallback((pageId: string) => {
+    setPages((prev) => {
+      if (prev.length <= 1) return prev;
+      return prev.filter((p) => p.id !== pageId);
+    });
+  }, []);
 
   const changeTemplate = useCallback(
     (pageId: string, templateType: TemplateType) => {
@@ -198,8 +203,22 @@ export default function MagazineBuilder({
         </div>
         <div className="flex items-center gap-4 flex-shrink-0">
           <span className="text-[0.8rem] text-[#4A5568] font-medium">
-            {pages.reduce((acc, page) => acc + Object.values(page.slots).filter((s) => s !== null).length, 0)} producto
-            {pages.reduce((acc, page) => acc + Object.values(page.slots).filter((s) => s !== null).length, 0) !== 1 ? "s" : ""} en revista
+            {pages.reduce(
+              (acc, page) =>
+                acc +
+                Object.values(page.slots).filter((s) => s !== null).length,
+              0,
+            )}{" "}
+            producto
+            {pages.reduce(
+              (acc, page) =>
+                acc +
+                Object.values(page.slots).filter((s) => s !== null).length,
+              0,
+            ) !== 1
+              ? "s"
+              : ""}{" "}
+            en revista
           </span>
           <button
             onClick={() => {
@@ -271,11 +290,19 @@ export default function MagazineBuilder({
 
         <div className="flex-1 flex flex-col overflow-hidden bg-[#F0F2F5]">
           <div className="px-6 py-3 bg-white border-b border-[#E8EDF2] flex items-center justify-between flex-shrink-0">
-            <h2 className="font-['Syne',sans-serif] text-base font-bold text-[#1A202C] m-0">Vista previa</h2>
+            <h2 className="font-['Syne',sans-serif] text-base font-bold text-[#1A202C] m-0">
+              Vista previa
+            </h2>
             <div className="preview-info">
               {assigningProduct ? (
                 <span className="flex items-center gap-1 text-[#007A8C] bg-cyan-DEFAULT/8 px-2.5 py-1.5 rounded font-medium text-[0.78rem]">
-                  <svg width="14" height="14" viewBox="0 0 14 14" fill="none" className="flex-shrink-0">
+                  <svg
+                    width="14"
+                    height="14"
+                    viewBox="0 0 14 14"
+                    fill="none"
+                    className="flex-shrink-0"
+                  >
                     <path
                       d="M7 2v10M2 7h10"
                       stroke="currentColor"
@@ -283,10 +310,17 @@ export default function MagazineBuilder({
                       strokeLinecap="round"
                     />
                   </svg>
-                  Colocando: <strong className="text-[#00606E]">{assigningProduct.nombre}</strong> — Click en cualquier espacio vacío o ESC para cancelar
+                  Colocando:{" "}
+                  <strong className="text-[#00606E]">
+                    {assigningProduct.nombre}
+                  </strong>{" "}
+                  — Click en cualquier espacio vacío o ESC para cancelar
                 </span>
               ) : (
-                <span className="text-[0.78rem] text-[#94A3B8]">Click en un producto para colocarlo en cualquier plantilla (productos en azul ya están en la revista)</span>
+                <span className="text-[0.78rem] text-[#94A3B8]">
+                  Click en un producto para colocarlo en cualquier plantilla
+                  (productos en azul ya están en la revista)
+                </span>
               )}
             </div>
           </div>

@@ -10,12 +10,12 @@ let categorias: string[] = [];
 try {
   const [prodRes, catRes] = await Promise.all([
     fetchTodosProductos(),
-    fetchCategorias()
+    fetchCategorias(),
   ]);
   productos = prodRes || [];
   categorias = catRes || [];
 } catch (error) {
-  console.warn('[Revista] No se pudo conectar a Strapi:', error);
+  console.warn("[Revista] No se pudo conectar a Strapi:", error);
 }
 ---
 
