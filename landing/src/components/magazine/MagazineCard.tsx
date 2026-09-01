@@ -41,6 +41,12 @@ interface MagazineCardProps {
   /** Pixel size of the remove-button icon; the button itself scales via
    * CSS per variant/density. Defaults to 14 (the card-variant size). */
   removeIconSize?: number;
+  /** Overrides the description's default `-webkit-line-clamp`. Omit to
+   * keep each variant's own CSS default (2 lines for `card`, unset for
+   * `feature`). `grid6`'s taller text column affords 3 legible lines at
+   * `TYPE_PT.description` — see design.md's `descripcionCorta` budget.
+   * Ignored by the `corner` variant, which never renders a description. */
+  descriptionLines?: number;
   onDrop: (e: DragEvent, slotId: string) => void;
   onDragOver: (e: DragEvent, slotId: string) => void;
   onDragLeave: () => void;
@@ -73,6 +79,7 @@ export default function MagazineCard({
   emptyIcon,
   imagePlaceholder,
   removeIconSize = 14,
+  descriptionLines,
   onDrop,
   onDragOver,
   onDragLeave,
@@ -126,7 +133,18 @@ export default function MagazineCard({
             )}
             <h3 className="magazine-card-title">{producto.nombre}</h3>
             {titleAccent}
-            {description && <p className="magazine-card-desc">{description}</p>}
+            {description && (
+              <p
+                className="magazine-card-desc"
+                style={
+                  descriptionLines !== undefined
+                    ? { WebkitLineClamp: descriptionLines }
+                    : undefined
+                }
+              >
+                {description}
+              </p>
+            )}
             <div className="magazine-card-price">
               {formatPrecio(producto.precio)}
             </div>

@@ -8,6 +8,7 @@ import FullFeature from "./templates/FullFeature";
 import DynamicQuad from "./templates/DynamicQuad";
 import Showcase from "./templates/Showcase";
 import Grid4 from "./templates/Grid4";
+import Grid6 from "./templates/Grid6";
 
 interface TemplatePreviewProps {
   page: MagazinePage;
@@ -44,6 +45,7 @@ const TEMPLATES: Record<
   dynamicQuad: DynamicQuad,
   showcase: Showcase,
   grid4: Grid4,
+  grid6: Grid6,
 };
 
 export default function TemplatePreview({
