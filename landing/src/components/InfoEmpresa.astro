@@ -37,6 +37,12 @@ const items: AccordionItem[] = [
     subtitle: "Planes de cuotas sin letras chicas",
   },
   {
+    id: "zonas-cobertura",
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>`,
+    title: "Zonas de cobertura",
+    subtitle: "Dónde entregamos y financiamos",
+  },
+  {
     id: "contacto",
     icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/></svg>`,
     title: "Contacto",
@@ -101,6 +107,24 @@ const steps = [
   },
 ];
 
+const requirements = [
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0v1a2 2 0 002 2h1"/></svg>`,
+    title: "DNI del titular del comercio",
+    description: "Frente y dorso, foto o escaneo legible.",
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>`,
+    title: "Servicio del domicilio particular",
+    description: "A nombre del titular, con dirección actual.",
+  },
+  {
+    icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/></svg>`,
+    title: "Servicio, factura o contrato del comercio",
+    description: "Comprobante a nombre del titular que acredite el local.",
+  },
+];
+
 const paymentMethods = [
   {
     icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>`,
@@ -121,6 +145,86 @@ const paymentMethods = [
     icon: `<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"/></svg>`,
     title: "Sin letras chicas",
     desc: "Lo que acordamos al principio es lo que pagás. Sin costos ocultos, sin sorpresas, sin letras chicas.",
+  },
+];
+
+const zones = [
+  {
+    code: "1",
+    name: "San Fernando",
+    coverage: "D/S",
+    localities: ["San Fernando", "Victoria", "Virreyes"],
+  },
+  {
+    code: "2",
+    name: "Tigre",
+    coverage: "D/S",
+    localities: [
+      "Tigre",
+      "Don Torcuato",
+      "General Pacheco",
+      "El Talar",
+      "Troncos del Talar",
+      "Benavídez",
+      "Ricardo Rojas",
+      "Dique Luján",
+      "Nordelta",
+      "Rincón de Milberg",
+    ],
+  },
+  {
+    code: "3",
+    name: "Escobar",
+    localities: [
+      "Belén de Escobar",
+      "Garín",
+      "Ing. Maschwitz",
+      "Matheu",
+      "Maquinista F. Savio",
+      "Loma Verde",
+    ],
+  },
+  {
+    code: "4",
+    name: "Pilar",
+    localities: [
+      "Del Viso",
+      "Fátima",
+      "La Lonja",
+      "Manzanares",
+      "Presidente Derqui",
+      "Manuel Alberti",
+      "Villa Rosa",
+      "Zelaya",
+    ],
+  },
+  {
+    code: "5",
+    name: "José C. Paz",
+    notes: [
+      "Todo hasta Ruta 234 (Av. Derqui)",
+      "No abarca Cuartel V",
+    ],
+  },
+  {
+    code: "6",
+    name: "Malvinas Argentinas",
+    coverage: "D/S",
+    localities: [
+      "Área El Triángulo",
+      "Grand Bourg",
+      "Ing. Adolfo Sourdeaux",
+      "Ing. Pablo Nogués",
+      "Los Polvorines",
+      "Tortuguitas",
+      "Villa de Mayo",
+      "Tierras Altas",
+    ],
+  },
+  {
+    code: "7",
+    name: "San Miguel",
+    localities: ["San Miguel", "Bella Vista"],
   },
 ];
 ---
@@ -255,6 +359,33 @@ const paymentMethods = [
                         </div>
                       ))}
                     </div>
+
+                    <!-- Requisitos básicos para acceder al crédito -->
+                    <div class="mt-8 pt-6 border-t border-gray-100">
+                      <div class="flex items-center gap-2 mb-4">
+                        <div class="w-8 h-8 rounded-lg bg-azul/10 text-azul flex items-center justify-center">
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                        </div>
+                        <h4 class="font-display font-bold text-gray-900 text-base">Requisitos básicos para acceder al crédito</h4>
+                      </div>
+                      <p class="text-gray-600 text-sm mb-4">
+                        Para evaluar tu solicitud, necesitamos la siguiente documentación:
+                      </p>
+                      <div class="grid sm:grid-cols-3 gap-3">
+                        {requirements.map((req) => (
+                          <div class="flex gap-3 p-3 rounded-xl bg-gris-claro border border-transparent hover:border-azul/20 hover:shadow-sm transition-all duration-200">
+                            <div class="w-9 h-9 rounded-lg bg-azul/10 text-azul flex items-center justify-center flex-shrink-0">
+                              <span set:html={req.icon} />
+                            </div>
+                            <div>
+                              <h5 class="font-semibold text-gray-900 text-xs mb-0.5 leading-snug">{req.title}</h5>
+                              <p class="text-gray-500 text-xs leading-relaxed">{req.description}</p>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
                     <div class="mt-6 text-center">
                       <a
                         href="/catalogo"
@@ -294,6 +425,68 @@ const paymentMethods = [
                         Sin interés oculto
                       </div>
                       <p class="text-gray-500 text-sm">Lo que acordamos al principio es lo que pagás. Siempre.</p>
+                    </div>
+                  </div>
+                )}
+
+                <!-- ========== ZONAS DE COBERTURA ========== -->
+                {item.id === "zonas-cobertura" && (
+                  <div class="pt-5">
+                    <p class="text-gray-600 text-sm mb-5">
+                      Estas son las zonas donde actualmente entregamos y otorgamos financiación.
+                    </p>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      {zones.map((zone) => (
+                        <div class="flex gap-3 p-4 rounded-xl bg-gris-claro border border-transparent hover:border-azul/20 hover:shadow-sm transition-all duration-200">
+                          <div class="w-10 h-10 rounded-xl bg-azul/10 text-azul flex items-center justify-center flex-shrink-0 font-display font-bold text-base">
+                            {zone.code}
+                          </div>
+                          <div class="flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-1">
+                              <h4 class="font-semibold text-gray-900 text-sm">{zone.name}</h4>
+                              {zone.coverage && (
+                                <span class="text-[10px] font-bold text-verde bg-verde/10 px-1.5 py-0.5 rounded uppercase tracking-wide">
+                                  {zone.coverage}
+                                </span>
+                              )}
+                            </div>
+                            {zone.localities && (
+                              <p class="text-gray-500 text-xs leading-relaxed">
+                                {zone.localities.join(" · ")}
+                              </p>
+                            )}
+                            {zone.notes && (
+                              <p class="text-gray-500 text-xs leading-relaxed">
+                                {zone.notes.join(" · ")}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <!-- Banner de refuerzo -->
+                    <div class="mt-5 bg-gradient-to-r from-verde/5 to-azul/5 rounded-2xl p-5 border border-verde/10">
+                      <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3">
+                          <div class="w-10 h-10 rounded-xl bg-verde/10 text-verde flex items-center justify-center flex-shrink-0">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                          </div>
+                          <p class="text-gray-700 text-sm font-medium">¿Tu zona no aparece en la lista?</p>
+                        </div>
+                        <a
+                          href={WA_LINK}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          class="inline-flex items-center gap-2 bg-verde text-white px-5 py-2.5 rounded-xl font-semibold text-sm hover:bg-verde-dark transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 whitespace-nowrap"
+                        >
+                          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347"/></svg>
+                          Consultanos por WhatsApp
+                        </a>
+                      </div>
                     </div>
                   </div>
                 )}
