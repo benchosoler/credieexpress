@@ -31,33 +31,33 @@ Branch order (linear, satisfies all dependencies): tracker ← PR0 ← PR1 ← P
 
 ## PR 0 — `descripcionCorta` schema + type
 
-- [ ] 0.1 Add `descripcionCorta` (`string`, `maxLength: 160`, nullable, optional) to `strapi/src/api/producto/content-types/producto/schema.json` — *Optional, Nullable Field*
-- [ ] 0.2 Restart the Strapi dev server so SQLite adds the nullable column (no migration script)
-- [ ] 0.3 Add `descripcionCorta: string | null` to `ProductoStrapi` in `landing/src/lib/strapi-types.ts` — *Field Surfaced Through API and Types*
-- [ ] 0.4 Manual: save an existing product in Strapi admin without setting `descripcionCorta` — *Existing product without descripcionCorta still saves*
-- [ ] 0.5 Manual: create a new product leaving `descripcionCorta` blank — *New product can omit descripcionCorta*
-- [ ] 0.6 Manual: set `descripcionCorta`, run `npm run build --prefix landing`, confirm the fetched product includes it (no `lib/strapi.ts`/`revista.astro` change needed — `fetchTodosProductos` has no `fields` allowlist) — *Field present in fetched product data*
-- [ ] 0.7 Run `npm run check --prefix landing`
+- [x] 0.1 Add `descripcionCorta` (`string`, `maxLength: 160`, nullable, optional) to `strapi/src/api/producto/content-types/producto/schema.json` — *Optional, Nullable Field*
+- [ ] 0.2 Restart the Strapi dev server so SQLite adds the nullable column (no migration script) — **MANUAL, not run**: no Strapi dev server is running in this environment; requires a human to restart it.
+- [x] 0.3 Add `descripcionCorta: string | null` to `ProductoStrapi` in `landing/src/lib/strapi-types.ts` — *Field Surfaced Through API and Types*
+- [ ] 0.4 Manual: save an existing product in Strapi admin without setting `descripcionCorta` — *Existing product without descripcionCorta still saves* — **MANUAL, not run**: requires the Strapi admin UI.
+- [ ] 0.5 Manual: create a new product leaving `descripcionCorta` blank — *New product can omit descripcionCorta* — **MANUAL, not run**: requires the Strapi admin UI.
+- [ ] 0.6 Manual: set `descripcionCorta`, run `npm run build --prefix landing`, confirm the fetched product includes it (no `lib/strapi.ts`/`revista.astro` change needed — `fetchTodosProductos` has no `fields` allowlist) — *Field present in fetched product data* — **MANUAL, not run**: requires a live Strapi instance with real data; `npm run build` alone (no Strapi running) was verified to succeed structurally in PR1, see below.
+- [x] 0.7 Run `npm run check --prefix landing` — 0 errors, 0 warnings, 50 hints.
 
 ## PR 1 — Sheet geometry, print stylesheet, zoom (native print works before any template retrofit)
 
-- [ ] 1.1 Create `landing/src/components/magazine/sheet.ts`: `SHEET`, `CHROME`, `BLEED`, `CROP_MARKS`, `LEGACY_PX_TO_MM`, `DECOR_VIEWBOX`, `TYPE_PT`, `MIN_BODY_PT`, `sheetCssVars()`
-- [ ] 1.2 Create `MagazineSheet.tsx`: mm-box frame consuming the vars, header, footer with QR placeholder slot, decor layer, `id="magazine-page-{id}"`
-- [ ] 1.3 Create `landing/src/styles/magazine.css`: shared rules scoped under `.magazine-sheet`
-- [ ] 1.4 Create `landing/src/styles/magazine-print.css` with `@page { size: A4; margin: 0 }` and the `@media print` block (zoom reset, `.no-print`, marker classes, `break-after: page`, `print-color-adjust: exact`) — *A4 Sheet Geometry, Admin Chrome Suppressed*
-- [ ] 1.5 Modify `RevistaLayout.astro`: import both stylesheets in frontmatter; add `.no-print` to `.revista-nav`
-- [ ] 1.6 Modify `tailwind.config.mjs`: add a plugin emitting `--brand-*` from `theme('colors')` via `addBase`
-- [ ] 1.7 Modify `MagazineBuilder.tsx`: zoom control (50/75/100/150%, default 75%) driving `.sheet-zoom { transform: scale(var(--magazine-zoom)) }`; persist under a separate `ui.zoom` key, never inside `pages`; add `.magazine-root`/`.magazine-shell`/`.magazine-canvas` marker classes and `.no-print` on toolbar/sidebar/preview header/remove buttons/zoom control
-- [ ] 1.8 Add unknown-persisted-template fallback to the `pages` restore path in `MagazineBuilder.tsx`: unrecognized `templateType` → `heroDuo`, no throw — *Unknown Persisted Template Fallback*
-- [ ] 1.9 Modify `TemplatePreview.tsx`: render through `MagazineSheet`; drop the fixed `595x842` wrapper and the dead `transform-origin-top-center` class
-- [ ] 1.10 Remove the five independent `595x842` declarations across templates/`TemplatePreview` (structural only; grid retrofit is PR2/3)
-- [ ] 1.11 Modify `pdfExport.ts`: derive width/height from `SHEET`; pin `--magazine-zoom: 1` before capture, restore after; `allowTaint: false`; remove unused `allProductos` param
-- [ ] 1.12 Manual: print at each zoom step (50/75/100/150%) — geometry identical at every step — *Screen Zoom Is Display-Only*
-- [ ] 1.13 Manual: print preview shows N pages for N sheets, no blank pages, no split sheet, no chrome — *One Physical Page Per Sheet, Admin Chrome Suppressed*
-- [ ] 1.14 Manual: print one sheet, measure with a physical ruler — 210x297mm — *A4 Sheet Geometry*
-- [ ] 1.15 Manual: sheet with background/gradient/decorative SVG prints matching on-screen, white base — *Color Fidelity*
-- [ ] 1.16 Manual: "Descargar PDF" on N sheets produces N A4 pages — *PDF Export Regression Guard*
-- [ ] 1.17 Run `npm run check`, `npm run lint`, `npm run build --prefix landing`
+- [x] 1.1 Create `landing/src/components/magazine/sheet.ts`: `SHEET`, `CHROME`, `BLEED`, `CROP_MARKS`, `LEGACY_PX_TO_MM`, `DECOR_VIEWBOX`, `TYPE_PT`, `MIN_BODY_PT`, `sheetCssVars()`
+- [x] 1.2 Create `MagazineSheet.tsx`: mm-box frame consuming the vars, header, footer with QR placeholder slot, decor layer, `id="magazine-page-{id}"` — footer/header are structural, pass-through, and empty in this slice (see Deviations in apply-progress)
+- [x] 1.3 Create `landing/src/styles/magazine.css`: shared rules scoped under `.magazine-sheet`
+- [x] 1.4 Create `landing/src/styles/magazine-print.css` with `@page { size: A4; margin: 0 }` and the `@media print` block (zoom reset, `.no-print`, marker classes, `break-after: page`, `print-color-adjust: exact`) — *A4 Sheet Geometry, Admin Chrome Suppressed*
+- [x] 1.5 Modify `RevistaLayout.astro`: import both stylesheets in frontmatter; add `.no-print` to `.revista-nav`
+- [x] 1.6 Modify `tailwind.config.mjs`: add a plugin emitting `--brand-*` from `theme('colors')` via `addBase`
+- [x] 1.7 Modify `MagazineBuilder.tsx`: zoom control (50/75/100/150%, default 75%) driving `.sheet-zoom { transform: scale(var(--magazine-zoom)) }`; persist under a separate `ui.zoom` key, never inside `pages`; add `.magazine-root`/`.magazine-shell`/`.magazine-canvas` marker classes and `.no-print` on toolbar/sidebar/preview header/zoom control — per-card remove buttons live inside each template (retrofit PR2/3), not touched here; see Deviations
+- [x] 1.8 Add unknown-persisted-template fallback to the `pages` restore path in `MagazineBuilder.tsx`: unrecognized `templateType` → `heroDuo`, no throw — *Unknown Persisted Template Fallback*
+- [x] 1.9 Modify `TemplatePreview.tsx`: render through `MagazineSheet`; drop the fixed `595x842` wrapper and the dead `transform-origin-top-center` class
+- [x] 1.10 Remove the five independent `595x842` declarations across templates/`TemplatePreview` (structural only; grid retrofit is PR2/3)
+- [x] 1.11 Modify `pdfExport.ts`: derive width/height from `SHEET`; pin `--magazine-zoom: 1` before capture, restore after; `allowTaint: false`; remove unused `allProductos` param
+- [ ] 1.12 Manual: print at each zoom step (50/75/100/150%) — geometry identical at every step — *Screen Zoom Is Display-Only* — **MANUAL, not run**: requires a browser print preview.
+- [ ] 1.13 Manual: print preview shows N pages for N sheets, no blank pages, no split sheet, no chrome — *One Physical Page Per Sheet, Admin Chrome Suppressed* — **MANUAL, not run**: requires a browser print preview.
+- [ ] 1.14 Manual: print one sheet, measure with a physical ruler — 210x297mm — *A4 Sheet Geometry* — **MANUAL, not run**: requires physical printing.
+- [ ] 1.15 Manual: sheet with background/gradient/decorative SVG prints matching on-screen, white base — *Color Fidelity* — **MANUAL, not run**: requires a browser print preview.
+- [ ] 1.16 Manual: "Descargar PDF" on N sheets produces N A4 pages — *PDF Export Regression Guard* — **MANUAL, not run**: requires a browser session with Strapi data.
+- [ ] 1.17 Run `npm run check`, `npm run lint`, `npm run build --prefix landing` — **PARTIAL**: `npm run check` (0 errors/0 warnings/49 hints) and `npm run build` both passed. `npm run lint` was intentionally NOT run — it is `eslint --fix` and mutates the working tree (per explicit environment instruction). Used `npx eslint <changed files>` (no `--fix`) instead: only pre-existing issues remain (5x `no-explicit-any` in template `handleSlotClick`, 1x pre-existing unused `selectedProductos`/`templateDef` in `MagazineBuilder.tsx`/`TemplatePreview.tsx`), all verified present before this change via `git stash`.
 
 ## PR 2 — `MagazineCard` + `useSlotDnd` + retrofit `heroDuo`, `asymmetricTrio`, `fullFeature`
 
