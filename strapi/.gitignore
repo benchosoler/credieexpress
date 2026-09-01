@@ -9,3 +9,6 @@ db.sqlite-shm
 db.sqlite-wal
 public/uploads/*
 !public/uploads/.gitkeep
+
+# Rewritten by Strapi update notifier on every boot
+.strapi-updater.json
