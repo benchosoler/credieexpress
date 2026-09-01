@@ -51,6 +51,7 @@ export interface ProductoStrapi {
   slug: string;
   precio: number | null;
   descripcion: string | null;
+  descripcionCorta: string | null;
   /** @deprecated use subcategorias relation. Maintained for migration compatibility. */
   categoria: string | null;
   /** @deprecated use imagenes (multiple). Maintained for migration compatibility. */

@@ -24,6 +24,11 @@
     "descripcion": {
       "type": "text"
     },
+    "descripcionCorta": {
+      "type": "string",
+      "maxLength": 160,
+      "description": "Descripcion breve para plantillas de revista con espacio reducido (grid4, grid6). Opcional; sin migracion de datos."
+    },
     "precio": {
       "type": "decimal",
       "min": 0
