@@ -148,23 +148,60 @@ export default function MagazineBuilder({
     });
   }, []);
 
+  /**
+   * Switching a sheet's template remaps its placed products by SLOT ORDER,
+   * not by slot id — slot ids never overlap between template types (e.g.
+   * `hero`/`secondary1`/`secondary2` vs `topLeft`/`topRight`), so matching
+   * by id silently dropped every product on every switch. When the target
+   * template has fewer slots than the source has filled, the user is
+   * warned with the exact drop count and must confirm before anything
+   * changes; cancelling leaves the original template and all products
+   * untouched.
+   */
   const changeTemplate = useCallback(
     (pageId: string, templateType: TemplateType) => {
-      const def = TEMPLATE_DEFINITIONS.find((d) => d.type === templateType)!;
+      const page = pages.find((p) => p.id === pageId);
+      if (!page) return;
+
+      const targetDef = TEMPLATE_DEFINITIONS.find(
+        (d) => d.type === templateType,
+      )!;
+      const sourceDef = TEMPLATE_DEFINITIONS.find(
+        (d) => d.type === page.templateType,
+      )!;
+
+      const filledInOrder = sourceDef.slots
+        .map((s) => page.slots[s.id])
+        .filter((producto): producto is ProductoStrapi => producto != null);
+
+      const droppedCount = Math.max(
+        0,
+        filledInOrder.length - targetDef.slots.length,
+      );
+
+      if (droppedCount > 0) {
+        const confirmed = window.confirm(
+          `Cambiar a "${targetDef.name}" tiene menos espacios: se perderá${
+            droppedCount === 1 ? "" : "n"
+          } ${droppedCount} producto${droppedCount === 1 ? "" : "s"}. ¿Continuar?`,
+        );
+        if (!confirmed) return;
+      }
+
+      const newSlots: MagazinePage["slots"] = Object.fromEntries(
+        targetDef.slots.map((slot, idx) => [
+          slot.id,
+          filledInOrder[idx] ?? null,
+        ]),
+      );
+
       setPages((prev) =>
-        prev.map((p) => {
-          if (p.id !== pageId) return p;
-          return {
-            ...p,
-            templateType,
-            slots: Object.fromEntries(
-              def.slots.map((s) => [s.id, p.slots[s.id] ?? null]),
-            ),
-          };
-        }),
+        prev.map((p) =>
+          p.id === pageId ? { ...p, templateType, slots: newSlots } : p,
+        ),
       );
     },
-    [],
+    [pages],
   );
 
   const assignProduct = useCallback(
