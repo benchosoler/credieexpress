@@ -345,9 +345,9 @@ export default function MagazineBuilder({
             <h2 className="font-['Syne',sans-serif] text-base font-bold text-[#1A202C] m-0">
               Vista previa
             </h2>
-            <div className="preview-info">
+            <div>
               {assigningProduct ? (
-                <span className="flex items-center gap-1 text-[#007A8C] bg-cyan-DEFAULT/8 px-2.5 py-1.5 rounded font-medium text-[0.78rem]">
+                <span className="flex items-center gap-1 text-[#007A8C] bg-cyan/10 px-2.5 py-1.5 rounded font-medium text-[0.78rem]">
                   <svg
                     width="14"
                     height="14"

@@ -135,7 +135,7 @@ export default function PageManager({
                   {TEMPLATE_DEFINITIONS.map((def) => (
                     <div
                       key={def.type}
-                      className={`p-2.5 rounded-lg cursor-pointer flex flex-col gap-[0.1rem] transition-colors hover:bg-[#F7F8FA] ${page.templateType === def.type ? "bg-cyan-DEFAULT/8" : ""}`}
+                      className={`p-2.5 rounded-lg cursor-pointer flex flex-col gap-[0.1rem] transition-colors hover:bg-[#F7F8FA] ${page.templateType === def.type ? "bg-cyan/10" : ""}`}
                       onClick={(e) => {
                         e.stopPropagation();
                         onChangeTemplate(page.id, def.type);
@@ -158,7 +158,7 @@ export default function PageManager({
 
         <div className="relative ml-1">
           <button
-            className="flex items-center gap-1 px-2.5 py-1.5 border border-dashed border-[#CBD5E1] rounded-lg bg-transparent cursor-pointer text-[0.78rem] text-[#94A3B8] font-['DM_Sans',sans-serif] transition-all whitespace-nowrap hover:border-cyan-DEFAULT hover:text-cyan-DEFAULT"
+            className="flex items-center gap-1 px-2.5 py-1.5 border border-dashed border-[#CBD5E1] rounded-lg bg-transparent cursor-pointer text-[0.78rem] text-[#94A3B8] font-['DM_Sans',sans-serif] transition-all whitespace-nowrap hover:border-cyan hover:text-cyan"
             onClick={() => setShowAddDropdown(!showAddDropdown)}
           >
             <svg width="14" height="14" viewBox="0 0 14 14" fill="none">

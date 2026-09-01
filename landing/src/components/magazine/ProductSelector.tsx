@@ -73,13 +73,13 @@ export default function ProductSelector({
             placeholder="Buscar producto..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-8 pr-2.5 py-[0.45rem] border border-[#E8EDF2] rounded-lg text-[0.8rem] font-['DM_Sans',sans-serif] outline-none transition-colors focus:border-cyan-DEFAULT"
+            className="w-full pl-8 pr-2.5 py-[0.45rem] border border-[#E8EDF2] rounded-lg text-[0.8rem] font-['DM_Sans',sans-serif] outline-none transition-colors focus:border-cyan"
           />
         </div>
         <select
           value={catFilter}
           onChange={(e) => setCatFilter(e.target.value)}
-          className="px-2.5 py-1 border border-[#E8EDF2] rounded-lg text-[0.8rem] font-['DM_Sans',sans-serif] bg-white outline-none cursor-pointer transition-colors focus:border-cyan-DEFAULT"
+          className="px-2.5 py-1 border border-[#E8EDF2] rounded-lg text-[0.8rem] font-['DM_Sans',sans-serif] bg-white outline-none cursor-pointer transition-colors focus:border-cyan"
         >
           <option value="all">Todas las categorias</option>
           {categorias.map((cat) => (
@@ -98,7 +98,7 @@ export default function ProductSelector({
         ) : (
           <>
             {assigningId && (
-              <div className="flex items-center gap-2 px-3 py-2.5 mx-2 my-2 bg-cyan-DEFAULT/8 border border-cyan-DEFAULT rounded-lg text-[#007A8C] text-[0.78rem]">
+              <div className="flex items-center gap-2 px-3 py-2.5 mx-2 my-2 bg-cyan/10 border border-cyan rounded-lg text-[#007A8C] text-[0.78rem]">
                 <svg
                   width="16"
                   height="16"
@@ -121,7 +121,7 @@ export default function ProductSelector({
                 </span>
                 <button
                   onClick={() => onStartAssigning?.(null)}
-                  className="px-2.5 py-1 bg-white border border-cyan-DEFAULT rounded text-[#00B4D8] text-[0.72rem] font-bold cursor-pointer transition-all hover:bg-cyan-DEFAULT hover:text-white"
+                  className="px-2.5 py-1 bg-white border border-cyan rounded text-[#00B4D8] text-[0.72rem] font-bold cursor-pointer transition-all hover:bg-cyan hover:text-white"
                 >
                   Cancelar
                 </button>
@@ -141,9 +141,9 @@ export default function ProductSelector({
                   key={producto.documentId}
                   className={`flex items-center gap-2.5 p-2 rounded-lg cursor-pointer transition-all border-[3px] border-transparent mb-1 select-none ${
                     isAssigning
-                      ? "border-cyan-DEFAULT shadow-[0_0_0_3px_rgba(0,180,216,0.15)] animate-[pulse_1.5s_infinite]"
+                      ? "border-cyan shadow-[0_0_0_3px_rgba(0,180,216,0.15)] animate-[magazine-card-pulse_1.5s_infinite]"
                       : isInMagazine
-                        ? "border-cyan-DEFAULT bg-cyan-DEFAULT/4"
+                        ? "border-cyan bg-cyan/5"
                         : "hover:bg-[#F7F8FA]"
                   }`}
                   onClick={(e) => {
@@ -168,7 +168,7 @@ export default function ProductSelector({
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <div className="no-image">
+                      <div>
                         <svg
                           width="20"
                           height="20"
@@ -194,7 +194,7 @@ export default function ProductSelector({
                       </div>
                     )}
                     {isInMagazine && (
-                      <div className="absolute inset-0 bg-cyan-DEFAULT/85 flex items-center justify-center">
+                      <div className="absolute inset-0 bg-cyan/85 flex items-center justify-center">
                         <svg
                           width="16"
                           height="16"
