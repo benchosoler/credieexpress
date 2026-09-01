@@ -4,7 +4,7 @@ import type { TemplateSlot } from "./types";
 import { getImageUrl, formatPrecio } from "../../lib/strapi";
 import { shortDescription } from "./shortDescription";
 
-export type MagazineCardVariant = "card" | "feature";
+export type MagazineCardVariant = "card" | "feature" | "corner";
 
 interface MagazineCardProps {
   producto: ProductoStrapi | null;
@@ -12,12 +12,15 @@ interface MagazineCardProps {
   label: string;
   /** Reuses the existing `TemplateSlot.size` union to drive card density. */
   density: TemplateSlot["size"];
-  /** `"card"` (image + text stacked, used by most templates) or
-   * `"feature"` (large centered layout, used by `fullFeature`). */
+  /** `"card"` (image + text stacked, used by most templates), `"feature"`
+   * (large centered layout, used by `fullFeature`), or `"corner"` (compact
+   * name+price row with no description/shipping, used by `showcase`'s
+   * corner slots). */
   variant?: MagazineCardVariant;
   /** `"short"` (default) resolves through `shortDescription()`; `"full"`
    * always renders the complete `descripcion`, ignoring
-   * `descripcionCorta` — required by `fullFeature`. */
+   * `descripcionCorta` — required by `fullFeature`. Ignored by the
+   * `corner` variant, which never renders a description. */
   descriptionMode?: "short" | "full";
   /** `feature` variant only: shows the product's `categoria` as a badge. */
   showCategoria?: boolean;
@@ -31,6 +34,10 @@ interface MagazineCardProps {
   /** Icon rendered above the empty-state label. Renders nothing when
    * omitted. */
   emptyIcon?: ReactNode;
+  /** Icon rendered instead of the default "Sin imagen" text when the
+   * product has no resolvable image. Renders the default text when
+   * omitted. */
+  imagePlaceholder?: ReactNode;
   /** Pixel size of the remove-button icon; the button itself scales via
    * CSS per variant/density. Defaults to 14 (the card-variant size). */
   removeIconSize?: number;
@@ -64,6 +71,7 @@ export default function MagazineCard({
   titleAccent,
   shippingIcon,
   emptyIcon,
+  imagePlaceholder,
   removeIconSize = 14,
   onDrop,
   onDragOver,
@@ -74,21 +82,23 @@ export default function MagazineCard({
   isAssigning = false,
 }: MagazineCardProps) {
   const isFeature = variant === "feature";
+  const isCorner = variant === "corner";
   const stateClass = isDragOver
     ? "is-drag-over"
     : producto
       ? "is-filled"
       : "is-empty";
 
-  const description = producto
-    ? descriptionMode === "full"
-      ? producto.descripcion || ""
-      : shortDescription(producto)
-    : "";
+  const description =
+    producto && !isCorner
+      ? descriptionMode === "full"
+        ? producto.descripcion || ""
+        : shortDescription(producto)
+      : "";
 
   return (
     <div
-      className={`magazine-card ${isFeature ? "magazine-card--feature" : ""} ${stateClass} ${isAssigning ? "is-assigning" : ""}`}
+      className={`magazine-card ${isFeature ? "magazine-card--feature" : ""} ${isCorner ? "magazine-card--corner" : ""} ${stateClass} ${isAssigning ? "is-assigning" : ""}`}
       data-density={density}
       onDrop={(e) => onDrop(e, slotId)}
       onDragOver={(e) => onDragOver(e, slotId)}
@@ -105,7 +115,9 @@ export default function MagazineCard({
                 className="magazine-card-image"
               />
             ) : (
-              <div className="magazine-card-placeholder">Sin imagen</div>
+              <div className="magazine-card-placeholder">
+                {imagePlaceholder ?? "Sin imagen"}
+              </div>
             )}
           </div>
           <div className="magazine-card-text">
@@ -118,10 +130,12 @@ export default function MagazineCard({
             <div className="magazine-card-price">
               {formatPrecio(producto.precio)}
             </div>
-            <div className="magazine-card-shipping">
-              {shippingIcon}
-              Envio incluido
-            </div>
+            {!isCorner && (
+              <div className="magazine-card-shipping">
+                {shippingIcon}
+                Envio incluido
+              </div>
+            )}
           </div>
           <button
             className="magazine-card-remove no-print"

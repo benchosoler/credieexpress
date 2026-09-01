@@ -1,4 +1,5 @@
 import React from "react";
+import { DECOR_VIEWBOX } from "./sheet";
 
 interface ConcentricCirclesProps {
   x: number;
@@ -82,18 +83,18 @@ export function CornerDecoration({
   const positions = {
     "top-left": { x: 0, y: 0, arc: "M 0 0 L 40 0 A 40 40 0 0 0 0 40 Z" },
     "top-right": {
-      x: 595 - size,
+      x: DECOR_VIEWBOX.w - size,
       y: 0,
       arc: `M ${size} 0 L ${size} ${size * 0.5} A ${size * 0.5} ${size * 0.5} 0 0 0 ${size * 0.5} 0 Z`,
     },
     "bottom-left": {
       x: 0,
-      y: 842 - size,
+      y: DECOR_VIEWBOX.h - size,
       arc: `M 0 ${size} L ${size * 0.5} ${size} A ${size * 0.5} ${size * 0.5} 0 0 0 0 ${size * 0.5} Z`,
     },
     "bottom-right": {
-      x: 595 - size,
-      y: 842 - size,
+      x: DECOR_VIEWBOX.w - size,
+      y: DECOR_VIEWBOX.h - size,
       arc: `M ${size} ${size} L ${size} ${size * 0.5} A ${size * 0.5} ${size * 0.5} 0 0 1 ${size * 0.5} ${size} Z`,
     },
   };
