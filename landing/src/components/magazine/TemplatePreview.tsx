@@ -7,6 +7,7 @@ import AsymmetricTrio from "./templates/AsymmetricTrio";
 import FullFeature from "./templates/FullFeature";
 import DynamicQuad from "./templates/DynamicQuad";
 import Showcase from "./templates/Showcase";
+import Grid4 from "./templates/Grid4";
 
 interface TemplatePreviewProps {
   page: MagazinePage;
@@ -42,6 +43,7 @@ const TEMPLATES: Record<
   fullFeature: FullFeature,
   dynamicQuad: DynamicQuad,
   showcase: Showcase,
+  grid4: Grid4,
 };
 
 export default function TemplatePreview({
