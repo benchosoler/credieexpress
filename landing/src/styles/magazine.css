@@ -67,13 +67,44 @@
   display: flex;
   align-items: center;
   justify-content: flex-end;
+  gap: 2.12mm; /* 6px */
   padding: 0 var(--chrome-side);
   pointer-events: none;
+}
+
+/*
+ * Placeholder only — no QR-encoding library is added by this change. The
+ * catalog URL it would encode is rendered as visible text beside it so
+ * the target is verifiable without decoding an image; a real encoder can
+ * replace `.magazine-sheet-footer-qr`'s contents later without touching
+ * layout.
+ */
+.magazine-sheet-footer-qr-url {
+  font-size: 8pt; /* TYPE_PT.meta */
+  color: #94a3b8;
+  letter-spacing: 0.18mm; /* 0.5px */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .magazine-sheet-footer-qr {
   width: var(--chrome-footer);
   height: var(--chrome-footer);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 0.35mm solid var(--brand-negro);
+  border-radius: 0.71mm; /* 2px */
+  background: #ffffff;
+}
+
+.magazine-sheet-footer-qr-label {
+  font-size: 8pt; /* TYPE_PT.meta */
+  font-weight: 700;
+  letter-spacing: 0.35mm; /* 1px */
+  color: var(--brand-negro);
 }
 
 /*

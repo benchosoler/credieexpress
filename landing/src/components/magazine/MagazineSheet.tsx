@@ -1,6 +1,22 @@
 import type { ReactNode } from "react";
 import { sheetCssVars } from "./sheet";
 
+/** Production catalog domain, used when `PUBLIC_SITE_URL` is not set. */
+const CATALOG_URL_FALLBACK = "https://crediexpress.com.ar";
+
+/**
+ * Resolves the URL the sheet-footer QR would encode. Every sheet shows
+ * exactly one — this is the catalog URL, never a per-product
+ * `/productos/{slug}` link — see "One QR Per Sheet In Shared Footer" in
+ * the magazine-page-templates spec.
+ */
+function resolveCatalogUrl(): string {
+  const configured = import.meta.env.PUBLIC_SITE_URL;
+  return configured && configured.length > 0
+    ? configured
+    : CATALOG_URL_FALLBACK;
+}
+
 interface MagazineSheetProps {
   /** Magazine page id. Rendered as `id="magazine-page-{id}"` for pdfExport. */
   id: string;
@@ -11,26 +27,23 @@ interface MagazineSheetProps {
   /** Reserved for the retrofit PRs that move each template's own branding
    * header out of the template and into the shared frame. Unused today. */
   header?: ReactNode;
-  /** QR placeholder slot, wired with real content in a later PR. Rendered
-   * as an absolutely-positioned overlay so it never steals layout space
-   * from `children` while it stays empty. */
-  footer?: ReactNode;
 }
 
 /**
  * Owns the physical A4 page: the mm-accurate box, the export id, a
- * reserved decor layer, and the sheet-footer QR placeholder slot.
+ * reserved decor layer, and the sheet footer's single QR placeholder.
  *
- * Structurally a pass-through frame in PR1 — `children` still render their
- * own legacy header/footer/decoration. This lets native print work before
- * any template is retrofitted to consume shared primitives.
+ * The QR is rendered here — never passed in by a template — so "exactly
+ * one QR per sheet, never per product" holds structurally: no template
+ * can accidentally render zero, duplicate, or per-card QR placeholders.
  */
 export default function MagazineSheet({
   id,
   children,
   header,
-  footer,
 }: MagazineSheetProps) {
+  const catalogUrl = resolveCatalogUrl();
+
   return (
     <div
       className="magazine-sheet"
@@ -40,8 +53,18 @@ export default function MagazineSheet({
       <div className="magazine-sheet-decor" aria-hidden="true" />
       {header && <div className="magazine-sheet-header">{header}</div>}
       <div className="magazine-sheet-content">{children}</div>
-      <div className="magazine-sheet-footer" aria-hidden="true">
-        <div className="magazine-sheet-footer-qr">{footer}</div>
+      <div className="magazine-sheet-footer">
+        <span className="magazine-sheet-footer-qr-url">{catalogUrl}</span>
+        <div
+          className="magazine-sheet-footer-qr"
+          role="img"
+          aria-label={`Codigo QR (marcador) al catalogo: ${catalogUrl}`}
+          title={catalogUrl}
+        >
+          <span className="magazine-sheet-footer-qr-label" aria-hidden="true">
+            QR
+          </span>
+        </div>
       </div>
     </div>
   );
