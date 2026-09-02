@@ -3,6 +3,7 @@ import type { ProductoStrapi } from "../../../lib/strapi-types";
 import type { MagazinePage } from "../types";
 import MagazineCard from "../MagazineCard";
 import { useSlotDnd } from "../useSlotDnd";
+import { GradientCircle, ConcentricCircles } from "../DecorativeElements";
 
 interface HeroDuoProps {
   page: MagazinePage;
@@ -115,6 +116,25 @@ export default function HeroDuo({
           strokeWidth="0.5"
           opacity="0.08"
         />
+        {/* Hero/duo signature: a soft glow behind the hero slot and
+         * concentric rings anchoring the secondary row. */}
+        <GradientCircle
+          id="hero-duo-glow"
+          cx={297}
+          cy={230}
+          r={180}
+          color1="var(--brand-azul)"
+          color2="var(--brand-turquesa)"
+          opacity={0.12}
+        />
+        <ConcentricCircles
+          x={297}
+          y={700}
+          maxRadius={90}
+          count={3}
+          color="var(--brand-verde)"
+          opacity={0.08}
+        />
       </svg>
 
       <div className="template-header">
@@ -131,6 +151,8 @@ export default function HeroDuo({
           slotId="hero"
           label="Producto Principal"
           density="hero"
+          showCategoria
+          priceEmphasis
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -149,6 +171,7 @@ export default function HeroDuo({
           slotId="secondary1"
           label="Producto Secundario 1"
           density="medium"
+          imageAspect="square"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
@@ -162,6 +185,7 @@ export default function HeroDuo({
           slotId="secondary2"
           label="Producto Secundario 2"
           density="medium"
+          imageAspect="square"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
