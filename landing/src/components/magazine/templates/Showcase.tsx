@@ -2,7 +2,11 @@ import type { ProductoStrapi } from "../../../lib/strapi-types";
 import type { MagazinePage } from "../types";
 import MagazineCard from "../MagazineCard";
 import { useSlotDnd } from "../useSlotDnd";
-import { AccentLine, GeometricDots } from "../DecorativeElements";
+import {
+  AccentLine,
+  GeometricDots,
+  CornerDecoration,
+} from "../DecorativeElements";
 
 interface ShowcaseProps {
   page: MagazinePage;
@@ -109,6 +113,14 @@ export default function Showcase({
           strokeWidth="0.5"
           opacity="0.06"
         />
+        {/* Showcase signature: a corner anchor on the side opposite the
+         * existing accent-line brand mark, distinguishing the "vitrina"
+         * layout from dynamicQuad's shared accent-line/dots treatment. */}
+        <CornerDecoration
+          position="top-right"
+          size={90}
+          color="var(--brand-cyan)"
+        />
       </svg>
 
       <div className="template-header">
@@ -162,6 +174,8 @@ export default function Showcase({
             slotId="center"
             label="Producto Central"
             density="hero"
+            showCategoria
+            priceEmphasis
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
