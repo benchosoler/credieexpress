@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import type { TemplateType, MagazinePage } from "./types";
 import { TEMPLATE_DEFINITIONS } from "./types";
 
@@ -21,19 +21,23 @@ export default function PageManager({
     null,
   );
   const [showAddDropdown, setShowAddDropdown] = useState(false);
+  const pageTabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
+  const addPageWrapperRef = useRef<HTMLDivElement>(null);
 
   React.useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
-      const target = e.target as HTMLElement;
-      if (
-        showTemplatePicker &&
-        !target.closest(".template-picker") &&
-        !target.closest(".tab-change-btn")
-      ) {
-        setShowTemplatePicker(null);
+      const target = e.target as Node;
+      if (showTemplatePicker) {
+        const activeTab = pageTabRefs.current.get(showTemplatePicker);
+        if (activeTab && !activeTab.contains(target)) {
+          setShowTemplatePicker(null);
+        }
       }
-      if (showAddDropdown && !target.closest(".add-page-wrapper")) {
-        setShowAddDropdown(false);
+      if (showAddDropdown) {
+        const wrapper = addPageWrapperRef.current;
+        if (wrapper && !wrapper.contains(target)) {
+          setShowAddDropdown(false);
+        }
       }
     };
     if (showTemplatePicker || showAddDropdown) {
@@ -60,6 +64,13 @@ export default function PageManager({
           return (
             <div
               key={page.id}
+              ref={(el) => {
+                if (el) {
+                  pageTabRefs.current.set(page.id, el);
+                } else {
+                  pageTabRefs.current.delete(page.id);
+                }
+              }}
               className="flex items-center gap-1 px-2 py-1.5 rounded-lg cursor-pointer text-[0.78rem] transition-all bg-[#F7F8FA] border border-[#E8EDF2] relative whitespace-nowrap hover:border-[#CBD5E1]"
             >
               <span className="w-[18px] h-[18px] rounded bg-[#E8EDF2] flex items-center justify-center text-[0.68rem] font-bold text-[#4A5568]">
@@ -156,7 +167,7 @@ export default function PageManager({
           );
         })}
 
-        <div className="relative ml-1">
+        <div className="relative ml-1" ref={addPageWrapperRef}>
           <button
             className="flex items-center gap-1 px-2.5 py-1.5 border border-dashed border-[#CBD5E1] rounded-lg bg-transparent cursor-pointer text-[0.78rem] text-[#94A3B8] font-['DM_Sans',sans-serif] transition-all whitespace-nowrap hover:border-cyan hover:text-cyan"
             onClick={() => setShowAddDropdown(!showAddDropdown)}
