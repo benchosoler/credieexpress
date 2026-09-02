@@ -2,6 +2,11 @@ import type { ProductoStrapi } from "../../../lib/strapi-types";
 import type { MagazinePage } from "../types";
 import MagazineCard from "../MagazineCard";
 import { useSlotDnd } from "../useSlotDnd";
+import {
+  GradientCircle,
+  CornerDecoration,
+  ConcentricCircles,
+} from "../DecorativeElements";
 
 interface FullFeatureProps {
   page: MagazinePage;
@@ -102,6 +107,33 @@ export default function FullFeature({
           strokeWidth="0.5"
           opacity="0.05"
         />
+        {/*
+         * Flagship-page signature: a soft brand glow behind the hero
+         * product plus an asymmetric corner anchor, on top of the
+         * template's original watermark decoration (kept as-is above).
+         */}
+        <GradientCircle
+          id="full-feature-glow"
+          cx={297}
+          cy={430}
+          r={260}
+          color1="var(--brand-turquesa)"
+          color2="var(--brand-cyan)"
+          opacity={0.16}
+        />
+        <CornerDecoration
+          position="bottom-left"
+          size={110}
+          color="var(--brand-azul)"
+        />
+        <ConcentricCircles
+          x={545}
+          y={70}
+          maxRadius={65}
+          count={4}
+          color="var(--brand-verde)"
+          opacity={0.1}
+        />
       </svg>
 
       <div className="template-header">
@@ -113,6 +145,9 @@ export default function FullFeature({
       </div>
 
       <div className="featured-area">
+        {page.slots["featured"] && (
+          <span className="featured-ribbon">Destacado</span>
+        )}
         <MagazineCard
           producto={page.slots["featured"] || null}
           slotId="featured"
@@ -121,6 +156,7 @@ export default function FullFeature({
           variant="feature"
           descriptionMode="full"
           showCategoria
+          priceEmphasis
           removeIconSize={16}
           titleAccent={<div className="magazine-card-title-line" />}
           shippingIcon={
@@ -200,6 +236,23 @@ export default function FullFeature({
         .featured-area .magazine-card {
           width: 100%;
           height: 100%;
+        }
+        .featured-ribbon {
+          position: absolute;
+          top: 7.06mm; /* 20px */
+          right: 4.24mm; /* 12px */
+          z-index: 2;
+          background: linear-gradient(135deg, var(--brand-azul), var(--brand-verde));
+          color: #ffffff;
+          font-family: 'Syne', sans-serif;
+          font-weight: 700;
+          font-size: 9pt;
+          letter-spacing: 0.35mm; /* 1px */
+          text-transform: uppercase;
+          padding: 1.76mm 7.06mm; /* 5px 20px */
+          transform: rotate(6deg);
+          border-radius: 1.06mm; /* 3px */
+          box-shadow: 0 1.41mm 4.24mm rgba(0, 0, 0, 0.15);
         }
       `}</style>
     </div>
