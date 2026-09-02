@@ -2,6 +2,11 @@ import type { ProductoStrapi } from "../../../lib/strapi-types";
 import type { MagazinePage } from "../types";
 import MagazineCard from "../MagazineCard";
 import { useSlotDnd } from "../useSlotDnd";
+import {
+  GeometricDots,
+  AccentLine,
+  ConcentricCircles,
+} from "../DecorativeElements";
 
 interface Grid4Props {
   page: MagazinePage;
@@ -57,6 +62,37 @@ export default function Grid4({
 
   return (
     <div className="template-grid4">
+      <svg className="template-bg-svg" viewBox="0 0 595 842" fill="none">
+        <rect width="595" height="842" fill="white" />
+        <GeometricDots
+          x={500}
+          y={60}
+          rows={3}
+          cols={5}
+          spacing={11}
+          dotSize={1.3}
+          color="var(--brand-turquesa)"
+          opacity={0.14}
+        />
+        <AccentLine
+          x1={40}
+          y1={40}
+          x2={95}
+          y2={40}
+          color="var(--brand-azul)"
+          width={2}
+          opacity={0.28}
+        />
+        <ConcentricCircles
+          x={30}
+          y={800}
+          maxRadius={70}
+          count={4}
+          color="var(--brand-verde)"
+          opacity={0.1}
+        />
+      </svg>
+
       <div className="template-header">
         <div className="header-brand">
           <span className="brand-initials gradient-brand">CE</span>
@@ -66,13 +102,17 @@ export default function Grid4({
       </div>
 
       <div className="grid4-grid">
-        {CELLS.map(({ id, label }) => (
+        {CELLS.map(({ id, label }, idx) => (
           <MagazineCard
             key={id}
             producto={page.slots[id] || null}
             slotId={id}
             label={label}
             density="medium"
+            indexBadge={idx + 1}
+            showCategoria
+            priceEmphasis
+            imageAspect="square"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -99,6 +139,14 @@ export default function Grid4({
           flex-direction: column;
           font-family: 'DM Sans', system-ui, sans-serif;
         }
+        .template-bg-svg {
+          position: absolute;
+          inset: 0;
+          width: 100%;
+          height: 100%;
+          pointer-events: none;
+          z-index: 0;
+        }
         .grid4-grid {
           flex: 1;
           padding: 5.65mm 12.71mm 0; /* 16px 36px */
@@ -107,6 +155,11 @@ export default function Grid4({
           grid-template-rows: 1fr 1fr;
           gap: 5.65mm; /* 16px */
           min-height: 0;
+          position: relative;
+          z-index: 1;
+        }
+        .grid4-grid .magazine-card.is-filled {
+          border: 0.35mm solid var(--brand-gris-medio);
         }
       `}</style>
     </div>
