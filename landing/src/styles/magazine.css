@@ -280,6 +280,42 @@
   margin-top: 1.41mm;
 }
 
+/*
+ * Optional 1-based position badge (MagazineCard's `indexBadge` prop) — a
+ * small numbered marker used by dense grid templates (e.g. grid6) to give
+ * a "catalog index" feel. Absolute-positioned against `.magazine-card`,
+ * which is already `position: relative`.
+ */
+.magazine-sheet .magazine-card-index-badge {
+  position: absolute;
+  top: 2.12mm; /* 6px */
+  left: 2.12mm;
+  width: 5.65mm; /* 16px */
+  height: 5.65mm;
+  border-radius: 50%;
+  background: var(--brand-negro);
+  color: #ffffff;
+  font-family: "Syne", sans-serif;
+  font-weight: 700;
+  font-size: 7pt;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+/*
+ * Optional price-pill treatment (MagazineCard's `priceEmphasis` prop) —
+ * a stronger price call-out for templates that want more visual weight
+ * on price than the plain text default.
+ */
+.magazine-sheet .magazine-card-price.is-emphasis {
+  display: inline-block;
+  padding: 0.15em 0.6em; /* scales with the price's own font-size */
+  background: color-mix(in srgb, var(--brand-turquesa) 10%, white);
+  border-radius: 999px;
+}
+
 .magazine-sheet .magazine-card-shipping {
   font-size: 8pt; /* TYPE_PT.meta */
   color: var(--brand-verde);

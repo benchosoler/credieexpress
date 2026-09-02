@@ -22,8 +22,21 @@ interface MagazineCardProps {
    * `descripcionCorta` — required by `fullFeature`. Ignored by the
    * `corner` variant, which never renders a description. */
   descriptionMode?: "short" | "full";
-  /** `feature` variant only: shows the product's `categoria` as a badge. */
+  /** Shows the product's `categoria` as a badge. Ignored by the `corner`
+   * variant, which has no room for it. */
   showCategoria?: boolean;
+  /** Optional 1-based position badge rendered in the card's top-left
+   * corner (e.g. `grid6`'s catalog-index numbering). Renders nothing when
+   * omitted. */
+  indexBadge?: number;
+  /** Renders the price as a colored pill instead of plain text — a
+   * stronger price treatment for templates that want it. Defaults to the
+   * plain style. */
+  priceEmphasis?: boolean;
+  /** Forces the image wrapper's aspect ratio so templates can give
+   * products a distinct frame (e.g. a square crop vs. a tall portrait
+   * crop). Omit to keep the default flexible (fill-available) sizing. */
+  imageAspect?: "square" | "wide" | "tall";
   /** Decorative accent rendered directly under the title (e.g.
    * `fullFeature`'s gradient underline bar). Renders nothing when
    * omitted — templates that don't need one simply don't pass it. */
@@ -74,6 +87,9 @@ export default function MagazineCard({
   variant = "card",
   descriptionMode = "short",
   showCategoria = false,
+  indexBadge,
+  priceEmphasis = false,
+  imageAspect,
   titleAccent,
   shippingIcon,
   emptyIcon,
@@ -112,9 +128,27 @@ export default function MagazineCard({
       onDragLeave={onDragLeave}
       onClick={onClick}
     >
+      {indexBadge !== undefined && (
+        <span className="magazine-card-index-badge">{indexBadge}</span>
+      )}
       {producto ? (
         <div className="magazine-card-content">
-          <div className="magazine-card-image-wrap">
+          <div
+            className="magazine-card-image-wrap"
+            style={
+              imageAspect
+                ? {
+                    aspectRatio:
+                      imageAspect === "square"
+                        ? "1 / 1"
+                        : imageAspect === "wide"
+                          ? "16 / 9"
+                          : "3 / 4",
+                    flex: "none",
+                  }
+                : undefined
+            }
+          >
             {getImageUrl(producto.imagen) ? (
               <img
                 src={getImageUrl(producto.imagen)}
@@ -128,7 +162,7 @@ export default function MagazineCard({
             )}
           </div>
           <div className="magazine-card-text">
-            {isFeature && showCategoria && producto.categoria && (
+            {!isCorner && showCategoria && producto.categoria && (
               <span className="magazine-card-badge">{producto.categoria}</span>
             )}
             <h3 className="magazine-card-title">{producto.nombre}</h3>
@@ -145,7 +179,9 @@ export default function MagazineCard({
                 {description}
               </p>
             )}
-            <div className="magazine-card-price">
+            <div
+              className={`magazine-card-price ${priceEmphasis ? "is-emphasis" : ""}`}
+            >
               {formatPrecio(producto.precio)}
             </div>
             {!isCorner && (
