@@ -2,7 +2,11 @@ import type { ProductoStrapi } from "../../../lib/strapi-types";
 import type { MagazinePage } from "../types";
 import MagazineCard from "../MagazineCard";
 import { useSlotDnd } from "../useSlotDnd";
-import { AccentLine, GeometricDots } from "../DecorativeElements";
+import {
+  AccentLine,
+  GeometricDots,
+  CornerDecoration,
+} from "../DecorativeElements";
 
 interface DynamicQuadProps {
   page: MagazinePage;
@@ -98,6 +102,14 @@ export default function DynamicQuad({
           strokeWidth="0.5"
           opacity="0.04"
         />
+        {/* Dynamic-quad signature: a corner anchor distinguishing this
+         * template's staggered layout from showcase's shared
+         * accent-line/dots treatment. */}
+        <CornerDecoration
+          position="bottom-right"
+          size={90}
+          color="var(--brand-azul)"
+        />
       </svg>
 
       <div className="template-header">
@@ -115,6 +127,8 @@ export default function DynamicQuad({
             slotId="topLeft"
             label="Arriba Izquierda"
             density="large"
+            showCategoria
+            priceEmphasis
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -130,6 +144,7 @@ export default function DynamicQuad({
             slotId="topRight"
             label="Arriba Derecha"
             density="medium"
+            imageAspect="square"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -145,6 +160,7 @@ export default function DynamicQuad({
             slotId="bottomLeft"
             label="Abajo Izquierda"
             density="medium"
+            imageAspect="square"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -160,6 +176,7 @@ export default function DynamicQuad({
             slotId="bottomRight"
             label="Abajo Derecha"
             density="medium"
+            imageAspect="square"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
