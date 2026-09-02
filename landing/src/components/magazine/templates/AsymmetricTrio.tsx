@@ -2,6 +2,7 @@ import type { ProductoStrapi } from "../../../lib/strapi-types";
 import type { MagazinePage } from "../types";
 import MagazineCard from "../MagazineCard";
 import { useSlotDnd } from "../useSlotDnd";
+import { CornerDecoration } from "../DecorativeElements";
 
 interface AsymmetricTrioProps {
   page: MagazinePage;
@@ -95,6 +96,13 @@ export default function AsymmetricTrio({
           strokeWidth="0.5"
           opacity="0.06"
         />
+        {/* Asymmetric-trio signature: a corner anchor on the side
+         * opposite the existing top-left brand mark. */}
+        <CornerDecoration
+          position="top-right"
+          size={90}
+          color="var(--brand-verde)"
+        />
       </svg>
 
       <div className="template-header">
@@ -112,6 +120,8 @@ export default function AsymmetricTrio({
             slotId="large"
             label="Producto Grande"
             density="large"
+            showCategoria
+            priceEmphasis
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -127,6 +137,7 @@ export default function AsymmetricTrio({
             slotId="topRight"
             label="Arriba Derecha"
             density="medium"
+            imageAspect="wide"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
@@ -140,6 +151,7 @@ export default function AsymmetricTrio({
             slotId="bottomRight"
             label="Abajo Derecha"
             density="medium"
+            imageAspect="wide"
             onDrop={handleDrop}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
