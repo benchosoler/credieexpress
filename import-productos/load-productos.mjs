@@ -55,11 +55,24 @@ async function fetchAllSubcategorias() {
   return { bySlug, byNombre };
 }
 
+// Strapi only auto-fills a `uid` field from its targetField in the admin UI.
+// A REST create leaves it null, and the catalog navigates subcategorias by slug
+// (see landing/src/lib/strapi.ts, filters[subcategorias][slug][$eq]), so an
+// unslugged subcategoria would be invisible there. Generate it explicitly.
+function slugify(value) {
+  return value
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 async function createSubcategoria(nombre) {
   const res = await fetch(`${STRAPI_URL}/api/subcategorias`, {
     method: 'POST',
     headers,
-    body: JSON.stringify({ data: { nombre, activo: true } }),
+    body: JSON.stringify({ data: { nombre, slug: slugify(nombre), activo: true } }),
   });
   const json = await res.json().catch(() => ({}));
   if (!res.ok) {
