@@ -6,7 +6,7 @@ import {
   getProductosBySubcategoria,
   getWhatsAppLink,
   formatPrecio,
-  renderBlocks,
+  renderFichaTecnica,
 } from "../../lib/strapi";
 import Layout from "../../layouts/Layout.astro";
 import NavbarCatalogo from "../../components/NavbarCatalogo.astro";
@@ -49,7 +49,7 @@ const primarySub = producto.subcategorias?.[0];
 
 // --- Ficha técnica ---
 const fichaHtml = producto.fichaTecnica
-  ? renderBlocks(JSON.parse(producto.fichaTecnica))
+  ? renderFichaTecnica(producto.fichaTecnica)
   : null;
 
 // --- Related products ---

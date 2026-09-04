@@ -291,6 +291,45 @@ export function renderBlocks(blocks: unknown): string {
     .join("\n");
 }
 
+/**
+ * Render a `fichaTecnica` value to HTML.
+ *
+ * The field is declared `richtext` in Strapi, which stores Markdown, but earlier
+ * callers assumed the `blocks` JSON shape and ran a bare `JSON.parse` in the
+ * render path — so a single Markdown value threw and took the whole catalog page
+ * down. Accept both: try blocks first, fall back to a minimal Markdown bullet
+ * list, and never throw.
+ */
+export function renderFichaTecnica(ficha: string | null | undefined): string {
+  if (!ficha || !ficha.trim()) return "";
+
+  const trimmed = ficha.trim();
+  if (trimmed.startsWith("[") || trimmed.startsWith("{")) {
+    try {
+      return renderBlocks(JSON.parse(trimmed));
+    } catch {
+      // Not valid blocks JSON after all — fall through to Markdown.
+    }
+  }
+
+  const lines = trimmed
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  if (!lines.length) return "";
+
+  const items: string[] = [];
+  const paragraphs: string[] = [];
+  for (const line of lines) {
+    const bullet = line.match(/^[-*]\s+(.*)$/);
+    if (bullet) items.push(`<li>${escapeHtml(bullet[1])}</li>`);
+    else paragraphs.push(`<p>${escapeHtml(line)}</p>`);
+  }
+
+  const list = items.length ? `<ul>${items.join("")}</ul>` : "";
+  return [...paragraphs, list].filter(Boolean).join("\n");
+}
+
 function escapeHtml(text: string): string {
   return text
     .replace(/&/g, "&amp;")

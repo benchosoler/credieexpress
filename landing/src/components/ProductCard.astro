@@ -1,6 +1,6 @@
 ---
 import type { ProductoStrapi } from "../lib/strapi-types";
-import { formatPrecio, renderBlocks } from "../lib/strapi";
+import { formatPrecio, renderFichaTecnica } from "../lib/strapi";
 import ProductGallery from "./ProductGallery.astro";
 
 interface Props {
@@ -24,7 +24,7 @@ const primarySub = producto.subcategorias?.[0]?.nombre ?? null;
 
 // Ficha técnica: parse blocks if present
 const fichaHtml = producto.fichaTecnica
-  ? renderBlocks(JSON.parse(producto.fichaTecnica))
+  ? renderFichaTecnica(producto.fichaTecnica)
   : null;
 
 // Build data-subcategorias attribute (space-separated slugs for filtering)
