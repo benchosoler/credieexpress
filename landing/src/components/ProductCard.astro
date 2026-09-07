@@ -1,5 +1,5 @@
 ---
-import type { ProductoStrapi } from "../lib/strapi-types";
+import type { ProductoStrapi, StrapiImagen } from "../lib/strapi-types";
 import { formatPrecio, renderFichaTecnica } from "../lib/strapi";
 import ProductGallery from "./ProductGallery.astro";
 
@@ -11,13 +11,28 @@ interface Props {
 const { producto, index = 0 } = Astro.props;
 const precio = formatPrecio(producto.precio);
 
-// Build images array: prefer imagenes, fall back to imagen, then imagenUrl
-const images =
+// Build images array: prefer imagenes, fall back to imagen, then imagenUrl.
+// imagenUrl is a plain string (no uploaded media asset), so it is wrapped into
+// a minimal StrapiImagen-shaped object — ProductGallery only reads .url,
+// .formats and .alternativeText from each entry.
+const images: StrapiImagen[] =
   producto.imagenes && producto.imagenes.length > 0
     ? producto.imagenes
     : producto.imagen
       ? [producto.imagen]
-      : [];
+      : producto.imagenUrl
+        ? [
+            {
+              id: 0,
+              documentId: "",
+              url: producto.imagenUrl,
+              name: producto.nombre,
+              alternativeText: producto.nombre,
+              mime: "",
+              size: 0,
+            },
+          ]
+        : [];
 
 // Primary subcategory name for badge (use first linked subcategoria)
 const primarySub = producto.subcategorias?.[0]?.nombre ?? null;

@@ -149,9 +149,9 @@ export default function MagazineCard({
                 : undefined
             }
           >
-            {getImageUrl(producto.imagen) ? (
+            {getImageUrl(producto.imagen, producto.imagenUrl) ? (
               <img
-                src={getImageUrl(producto.imagen)}
+                src={getImageUrl(producto.imagen, producto.imagenUrl)}
                 alt={producto.nombre}
                 className="magazine-card-image"
               />

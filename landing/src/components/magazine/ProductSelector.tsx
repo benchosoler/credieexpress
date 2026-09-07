@@ -10,10 +10,10 @@ interface ProductSelectorProps {
 }
 
 function getImageUrl(producto: ProductoStrapi): string {
-  if (!producto.imagen) return "";
+  if (!producto.imagen) return producto.imagenUrl || "";
   const fmt = producto.imagen.formats;
   const url = fmt?.small?.url || fmt?.thumbnail?.url || producto.imagen.url;
-  if (!url) return "";
+  if (!url) return producto.imagenUrl || "";
   if (url.startsWith("http")) return url;
   return url;
 }

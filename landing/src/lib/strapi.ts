@@ -83,13 +83,16 @@ export async function fetchCategorias(): Promise<string[]> {
   }
 }
 
-export function getImageUrl(imagen: ProductoStrapi["imagen"]): string {
-  if (!imagen) return "";
+export function getImageUrl(
+  imagen: ProductoStrapi["imagen"],
+  imagenUrl?: ProductoStrapi["imagenUrl"],
+): string {
+  if (!imagen) return imagenUrl || "";
 
   const url =
     imagen.formats?.medium?.url || imagen.formats?.small?.url || imagen.url;
 
-  if (!url) return "";
+  if (!url) return imagenUrl || "";
 
   // External URLs (Wikimedia, etc.) — return as-is
   if (url.startsWith("http")) return url;
