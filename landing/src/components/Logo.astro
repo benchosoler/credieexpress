@@ -14,6 +14,10 @@ const sizes = {
   lg: { badge: 56, font: 20, sub: 12 },
 };
 const s = sizes[size];
+
+// El logo se renderiza más de una vez por página (navbar y footer),
+// así que el gradiente necesita un id único para no colisionar.
+const gradId = `logo-grad-${crypto.randomUUID().slice(0, 8)}`;
 ---
 
 <a
@@ -33,7 +37,7 @@ const s = sizes[size];
     <!-- Fondo con gradiente de marca -->
     <defs>
       <linearGradient
-        id="logo-grad"
+        id={gradId}
         x1="0"
         y1="0"
         x2="56"
@@ -44,26 +48,21 @@ const s = sizes[size];
         <stop offset="100%" stop-color="#00C853"></stop>
       </linearGradient>
     </defs>
-    <rect width="56" height="56" rx="14" fill="url(#logo-grad)"></rect>
-    <!-- C en azul claro -->
+    <rect width="56" height="56" rx="14" fill={`url(#${gradId})`}></rect>
+    <!-- Iniciales CE — centradas por el motor de texto, no por coordenadas fijas -->
     <text
-      x="14"
-      y="38"
+      x="28"
+      y="28"
+      text-anchor="middle"
+      dominant-baseline="central"
       font-family="'Syne', Arial Black, sans-serif"
       font-weight="800"
-      font-size="30"
-      fill="white"
-      fill-opacity="0.95">C</text
+      font-size="18"
+      textLength="44"
+      lengthAdjust="spacingAndGlyphs"
     >
-    <!-- E en verde más cálido -->
-    <text
-      x="31"
-      y="38"
-      font-family="'Syne', Arial Black, sans-serif"
-      font-weight="800"
-      font-size="30"
-      fill="#A8F0C6">E</text
-    >
+      <tspan fill="white">C</tspan><tspan fill="#A8F0C6">E</tspan>
+    </text>
   </svg>
 
   <!-- Texto del logo -->
